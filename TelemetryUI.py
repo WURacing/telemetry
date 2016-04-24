@@ -114,6 +114,8 @@ if not os.path.exists(directory):
 #mostRecentVals = []
 
 def readData():
+	global count
+	count += 1
 	with open(directory + file_name, 'a') as csvfile:
 		while (radioData.inWaiting()==0): 		#Wait here for data
 			pass 								#Do Nothing
@@ -192,7 +194,9 @@ def readData():
 
 			f.canvas.update()											#Updates Graph
 			f.canvas.flush_events()
-
+	if count > 1000:
+		radioData.flushInput()
+		count = 0
 	root.after(5, readData)
 
 
