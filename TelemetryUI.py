@@ -27,7 +27,7 @@ import Tkinter
 from Tkinter import *
 
 valArrays = []			#initialize arrays to hold collected values
-for x in range (0, 6):
+for x in range (0, 7):
 	valArrays.append([])
 
 timeArray = []		#Stores corresponding time values
@@ -46,18 +46,18 @@ if argc == 0:		#sets defaults in the event of no commandline arguments
 	argv.append("0")
 	argv.append("1")
 	argv.append("2")
-	argv.append("3")
+	argv.append("4")
 	argc = 4
 else:
 	argv = sys.argv
 
 
-colorArr = ["blue", "green", "red", "brown", "orange", "magenta", "black"]		#just an array of color codes (please tell me someone knows a better way to do this)
+colorArr = ["blue", "green", "red", "cyan", "brown", "orange", "magenta", "black"]		#just an array of color codes (please tell me someone knows a better way to do this)
 
-prefixes = ["Engine Speed", "Engine Load", "Engine Coolant Temp", "Vehicle Speed", "Gear Calculated", "Battery Volts"]
-suffixes = ["rpm", "%", "°C", "mph", "", "V"]
+prefixes = ["Engine Speed", "Engine Load", "Engine Coolant Temp", "O2 Level", "Vehicle Speed", "Gear Calculated", "Battery Volts"]
+suffixes = ["rpm", "%", "°C", "Lambda", "mph", "", "V"]
 
-yLims = [(0, 12000), (0, 100), (0, 100), (0, 90), (0, 10), (0, 13)]
+yLims = [(0, 12000), (0, 100), (0, 100), (0, 2), (0, 90), (0, 10), (0, 13)]
 
 number_regex = re.compile(r"\d+\.?\d*")
 
@@ -96,11 +96,11 @@ plt.show(block = False)
 root = Tk()
 
 labelStrings = []
-for i in range (0,6):
+for i in range (0,7):
 	labelStrings.append(StringVar())
 
 
-radioData = serial.Serial('/dev/ttyUSB1',9600)		#IMPORTANT: change this to your computer's incoming serial port
+radioData = serial.Serial('/dev/ttyUSB0',9600)		#IMPORTANT: change this to your computer's incoming serial port
 
 directory = os.getcwd()		#get name of current directory and create subdirectory "logs" to store csv files
 if os.name == "posix":
@@ -128,19 +128,19 @@ def readData():
 			#print "String was NOT empty"
 			newArray = radioString.split(',') 
 			print newArray							
-			if len(newArray)==7:										
-				for x in range (0 , 6):
+			if len(newArray)==8:										
+				for x in range (0 , 7):
 					match = number_regex.match(newArray[x])
 					if match is not None:
 						valArrays[x].append(float(match.group(0)))				#append new data to val arrays
 					labelStrings[x].set(prefixes[x] + ": " + newArray[x] + suffixes[x])
 					#mostRecentVals = newArray
-				timeArray.append(int(newArray[6]))
-				csvfile.write(str(newArray[0])+","+str(newArray[6])) 	#Writes value array to a csv file
+				timeArray.append(int(newArray[7]))
+				csvfile.write(str(newArray[0])+","+str(newArray[7])) 	#Writes value array to a csv file
 
 
 			if len(timeArray)>200:				#Sets max array length to 200
-				for x in range (0 , 6):
+				for x in range (0 , 7):
 					valArrays[x].pop(0)			
 				timeArray.pop(0)
 
@@ -155,7 +155,7 @@ def readData():
 
 
 			x = 0								#count of graphs that have been plotted
-			for i in range (0, 6):				#loops through and prints specified graphs
+			for i in range (0, 7):				#loops through and prints specified graphs
 				if inArgs(i):					#makes sure graph was specified
 					if (rowscols[0] == 1 and rowscols[1] == 1):
 						line, = axarr.plot(timeArray, valArrays[i], colorArr[i])
@@ -194,14 +194,14 @@ def readData():
 
 			f.canvas.update()											#Updates Graph
 			f.canvas.flush_events()
-	if count > 1000:
+	if count > 500:
 		radioData.flushInput()
 		count = 0
 	root.after(5, readData)
 
 
 labels = []
-for i in range (0, 6):
+for i in range (0, 7):
 	labels.append(Label(root, textvariable=labelStrings[i], fg=colorArr[i]).grid(row = (i + 1), column = 0))
 
 button1 = Button(root, text = "Go!", command=readData).grid(row=0, column=0)
