@@ -1,0 +1,71 @@
+/**
+ * Using some off white for the background color and
+ * padding the top.
+ */
+body
+{
+    background: whitesmoke;
+    color: #505050;
+    text-shadow: 2px 1px 3px rgba(200, 200, 200, 0.43);
+}
+
+/**
+ * Coloring h1 a bit off black, removing bold, and shadowing
+ * a touch.
+ */
+h1 {
+    color: #505050;
+    text-shadow: 2px 1px 3px rgba(200, 200, 200, 0.43);
+    font-weight: normal;
+    margin-bottom: 0px;
+}
+
+#header {
+	position: relative;
+	width: 900px;
+	margin: auto;
+    vertical-align: middle;
+    font-weight: lighter;
+}
+
+#header img {
+    display: inline-block;
+    margin-right: .5em;
+    margin-bottom: -1em;
+    height: 5em;
+}
+#header h1 {
+    display: inline-block;
+    font-size: 3em;
+}
+#content {
+    width: 880px;
+    margin: 0 auto;
+    padding: 10px;
+    clear: both;
+}
+a:link, a:visited {
+    color: blue;
+}
+a:hover {
+    color: red;
+}
+#miniature {
+    float: left; 
+    display: inline-block;
+    margin-left: 20px; 
+    margin-top: 50px;
+}
+
+#overviewLegend {
+    margin-left: 10px;
+}
+
+#overviewLegend li > div {
+    display: inline-block;
+    margin-right: 4px;
+}
+
+#overviewLegend li label {
+    margin-left: 3px;
+}
