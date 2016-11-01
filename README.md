@@ -1,21 +1,15 @@
-socket.io Flot Chart Example
+WashU Racing TelemetryWeb
 ======================
 
-This is an example of pushing data to a [flot charts](http://www.flotcharts.org/) through
-[socket.io](http://socket.io/).  This mimics the real time updates
-[example](http://www.flotcharts.org/flot/examples/realtime/index.html) from flot charts with the difference being
-that instead of ajax calls it utilizes web sockets if your browser supports them.
+This is, at the moment, a demonstration of sending multiple series of data over Socket.io from a server to a client and plotting that data in real-time.
 
-[Online Demo](http://socketioflot.herokuapp.com/)
-
-<p align="center">
-  <img src="readme-media/flot-chart-screen.png?raw=true" alt="Sign In"/>
-</p>
+The goal of this project is to build a WebApplication which will serve data retrieved from our car to anyone who visits the site. This WebApp will be hosted on a Raspberry Pi 3 and connected to our car over XBee radio.
+As our use-case for this requires that we be able to run it from the pits, where internet access is not available, our solution absolutely had to be locally hosted. This ended up being more of a challenge than expected as many of the more refined solutions we found turned out to outsource various functionality to the cloud. Additionally, while there are plenty of great examples of streaming one data series, these examples did not scale nicely to multiple series.
 
 # Installation
 ```
-git clone https://github.com/FrankHassanabad/socket.io-flot-example.git
-cd socket.io-flot-example/
+git clone https://github.com/WURacing/TelemetryWeb.git
+cd TelemetryWeb/
 npm install
 node app.js
 ```
