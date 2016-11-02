@@ -8,7 +8,7 @@ var randomizer = require('./randomizer');
 var app = express();
 
 // all environments
-app.set('port', process.env.PORT || 5000);
+// app.set('port', process.env.PORT || 5000);
 app.use(express.favicon());
 app.use(express.logger('dev'));
 app.set('view engine', 'ejs');
@@ -16,6 +16,7 @@ app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.methodOverride());
 app.use(app.router);
+app.set('port', 80);
 app.use(express.static(path.join(__dirname, 'public')));
 
 // development only
