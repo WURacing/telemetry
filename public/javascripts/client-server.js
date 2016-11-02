@@ -65,7 +65,7 @@ var startClientServer = function() {
     var host = slashes.concat(window.location.hostname);
 
     //Socket IO communications
-    socket = io.connect('http://ec2-54-86-204-151.compute-1.amazonaws.com/TelemetryWeb');
+    socket = io.connect(host);
 
     socket.emit('updateInterval', serverUpdates);
     /**
