@@ -65,7 +65,7 @@ var startClientServer = function() {
     var host = slashes.concat(window.location.hostname);
 
     //Socket IO communications
-    socket = io.connect(host);
+    socket = io.connect();
 
     socket.emit('updateInterval', serverUpdates);
     /**
