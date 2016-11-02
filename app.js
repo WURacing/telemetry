@@ -10,7 +10,7 @@ var express = require('express'),
     randomizer = require('./randomizer');
 
 // all environments
-app.set('port', 80);
+app.set('port', 5000);
 // app.use(express.favicon());
 app.use(express.logger('dev'));
 app.set('view engine', 'ejs');
