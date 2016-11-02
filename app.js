@@ -1,7 +1,11 @@
 /**
  * Module dependencies.
  */
-var app = require('express'),
+var express = require('express'),
+    app = express(),
+    http = require('http'),
+    path = require('path'),
+
     // io = require('socket.io').listen(app),
     randomizer = require('./randomizer');
 
