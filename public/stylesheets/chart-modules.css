@@ -1,12 +1,11 @@
 .demo-container {
     box-sizing: border-box;
-    width: 850px;
-    height: 450px;
-    padding: 15px 15px 15px;
+    width: 85%;
+    height: 27em;
+    padding: 15px 0 15px 15px;
     margin: 15px auto 30px auto;
     border: 1px solid #ddd;
-    float: left
-    display: inline-block;
+    display: flex;
     background: #fff;
     background: linear-gradient(#f6f6f6 0, #fff 50px);
     background: -o-linear-gradient(#f6f6f6 0, #fff 50px);
@@ -25,4 +24,5 @@
     height: 100%;
     font-size: 14px;
     line-height: 1.2em;
+    margin-left: -.6em;
 }

@@ -6,6 +6,8 @@ body
 {
     background: whitesmoke;
     color: #505050;
+    display: flex;
+    flex-flow: column;
     text-shadow: 2px 1px 3px rgba(200, 200, 200, 0.43);
 }
 
@@ -22,7 +24,7 @@ h1 {
 
 #header {
 	position: relative;
-	width: 900px;
+	width: 58em;
 	margin: auto;
     vertical-align: middle;
     font-weight: lighter;
@@ -39,33 +41,36 @@ h1 {
     font-size: 3em;
 }
 #content {
-    width: 880px;
+    width: 55em;
     margin: 0 auto;
     padding: 10px;
     clear: both;
 }
-a:link, a:visited {
-    color: blue;
-}
-a:hover {
-    color: red;
-}
 #miniature {
     float: left; 
-    display: inline-block;
-    margin-left: 20px; 
-    margin-top: 50px;
 }
 
 #overviewLegend {
-    margin-left: 10px;
+    list-style: none;
+}
+
+#overviewLegend li {
+    display: flex;
+    flex-flow: row;
 }
 
 #overviewLegend li > div {
-    display: inline-block;
-    margin-right: 4px;
+    margin-right: .125em;
 }
 
-#overviewLegend li label {
-    margin-left: 3px;
+.colorTile {
+    margin-left: .375em;
+}
+#middle {
+    display: flex;
+    flex-flow: row;
+}
+#center {
+    max-width: 85%;
+    margin: 0 auto 0 auto;
 }

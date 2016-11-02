@@ -18,9 +18,7 @@ var options = {
         }
     },
     legend: {
-        labelFormatter: function(label, series){
-          return '<a href="#" onClick="togglePlot('+series.idx+'); return false;">'+label+'</a>';
-        }
+        show: false
     },
     xaxis: {
         show: false
@@ -30,15 +28,14 @@ var options = {
             min: 0,
             max: 100,
             tickSize: 5,
-            axisLabel: "Data 1",
             axisLabelUseCanvas: true,
             axisLabelFontSizePixels: 12,
             axisLabelFontFamily: 'Verdana, Arial',
             axisLabelPadding: 6
         }, {
+            min: 0,
             max: 50,
             position: "right",
-            axisLabel: "Data 2",
             axisLabelUseCanvas: true,
             axisLabelFontSizePixels: 12,
             axisLabelFontFamily: 'Verdana, Arial',
@@ -56,8 +53,8 @@ function initData() {
         data2.push(temp);
     }
     dataset = [
-        { label: "data1", data: data1, lines: { lineWidth: 1.2 }, color: "#00FF00", idx: 0},
-        { label: "data2", data: data2, lines: { lineWidth: 1.2 }, color: "#0044FF", yaxis: 2, idx: 1 }
+        { label: "data 1", data: data1, lines: { lineWidth: 1.2 }, color: "#00FF00", idx: 0},
+        { label: "data 2", data: data2, lines: { lineWidth: 1.2 }, color: "#0044FF", yaxis: 2, idx: 1 }
     ];
 }
 var startClientServer = function() {

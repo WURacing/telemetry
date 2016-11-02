@@ -25,14 +25,11 @@
             initData();
             somePlot = $.plot($("#placeholder"), dataset, options);
             startClientServer();
-            var i = 0;
             $.each(dataset, function(key, val) {
-                val.color = i;
-                ++i;
                 l = val.label;
                 var li = $('<li />').appendTo($("#overviewLegend"));
                 
-                $('<input name="' + l + '" id="' + val.idx + '" class="checkbox" type="checkbox" checked="checked" />').appendTo(li);
+                $('<input name="' + l + '" id="' + val.idx + '" class="checkbox" type="checkbox" checked="checked" /><div class="colorTile" style="border:1px solid #ccc;padding:1px"><div style="width:4px;height:0;border:5px solid ' + val.color + ';overflow:hidden"></div></div>').appendTo(li);
                 $('<label>', {
                     text: l, 
                     'for': l
@@ -41,6 +38,9 @@
             $(".checkbox").change(function() {
                 var idx = Number(this.id);
                 togglePlot(idx);
+            });
+            $('.legendColorBox > div').each(function(i){
+                $(this).clone().prependTo(choiceContainer.find("li").eq(i));
             });
 
         });
@@ -51,25 +51,25 @@
     </script>
 </head>
 <body>
-
-<div id="header">
-    <img src="media/logo.png">
-    <h1>TelemetryWeb</h1>
-</div>
-
-<div id="content">
-    <div class="demo-container">
-        <div id="placeholder" class="demo-placeholder"></div>
+    <div id="center">
+        <div id="header">
+            <img src="media/logo.png">
+            <h1>TelemetryWeb</h1>
+        </div>
+        <div id="content">
+            <div id="middle">
+                <div class="demo-container">
+                    <div id="placeholder" class="demo-placeholder"></div>
+                </div>
+                <div id="miniature">
+                    <ul id="overviewLegend">
+                    </ul>
+                </div>
+            </div>
+            <p>
+                The graph takes a little while to populate before it begins accurately displaying data.
+            </p>
+        </div>
     </div>
-
-    <div id="miniature">
-        <ul id="overviewLegend">
-        </ul>
-    </div>
-
-    <p>
-        The graph takes a little while to populate before it begins accurately displaying data.
-    </p>
-</div>
 </body>
 </html>
