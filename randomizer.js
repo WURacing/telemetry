@@ -1,28 +1,26 @@
 /**
  * Generates a random number or points to plot
  */
-var prev1 = 50, prev2 = 25, totalPoints = 300 , coeff1 = 1, coeff2 = 1;
+var prev = [], coeff = [];
+var numSeries = 6;
+for (var i = 0; i < numSeries; i++) {
+    prev[i] = 50;
+    coeff[i] = 1;
+}
 
 exports.getRandomData = function() {
-    var y1 = prev1 + Math.random() * 5 - coeff1 * Math.random() * 5;
-    var y2 = prev2 + Math.random() * 2.5 - coeff2 * Math.random() * 2.5;
-    prev1 = y1;
-    prev2 = y2;
-
-    if (y1 < 10) {
-        coeff1 = -4;
-    } else if (y1 > 90) {
-        coeff1 = 4;
-    } else {
-        coeff1 = 1;
+    var y = [];
+    y[0] = Date.now();
+    for (var i = 0; i < numSeries; i++) {
+        y[i+1] = prev[i] + Math.random() * 5 - coeff[i] * Math.random() * 5;
+        prev[i] = y[i+1];
+        if (y[i+1] < 10) {
+            coeff[i] = -4;
+        } else if (y[i+1] > 90) {
+            coeff[i] = 4;
+        } else {
+            coeff[i] = 1;
+        }
     }
-
-    if (y2 < 5) {
-        coeff2 = -2;
-    } else if (y2 > 40) {
-        coeff2 = 2;
-    } else {
-        coeff2 = 1;
-    }
-    return [Date.now(), y1, y2];
+    return y;
 }
