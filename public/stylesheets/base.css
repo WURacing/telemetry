@@ -48,6 +48,7 @@ h1 {
 }
 #miniature {
     float: left; 
+    white-space: nowrap;
 }
 
 #overviewLegend {
