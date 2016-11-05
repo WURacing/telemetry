@@ -12,7 +12,7 @@ exports.getRandomData = function() {
     var y = [];
     y[0] = Date.now();
     for (var i = 0; i < numSeries; i++) {
-        y[i+1] = prev[i] + Math.random() * 2 - coeff[i] * Math.random() * 2;
+        y[i+1] = prev[i] + Math.random() * 3 - coeff[i] * Math.random() * 3;
         prev[i] = y[i+1];
         if (y[i+1] < 10) {
             coeff[i] = -2;

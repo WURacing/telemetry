@@ -14,11 +14,9 @@
     <!-- icon for site -->
     <link rel="shortcut icon" href="media/logo_icon.ico">
 
-    <!--[if lte IE 8]><script type="text/javascript" src="javascripts/excanvas.min.js"></script><![endif]-->
     <script type="text/javascript" src="javascripts/jquery.min.js"></script>
     <script type="text/javascript" src="javascripts/jquery.flot.min.js"></script>
     <script type="text/javascript" src="javascripts/socket.io-1.0.6.js"></script>
-    <!-- <script type="text/javascript" src="javascripts/simplify.min.js"></script> -->
     <script type="text/javascript" src="javascripts/client-server.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
@@ -29,7 +27,7 @@
                 l = val.label;
                 var li = $('<li />').appendTo($("#overviewLegend"));
                 
-                $('<input name="' + l + '" id="' + val.idx + '" class="checkbox" type="checkbox" checked="checked" /><div class="colorTile" style="border:1px solid #ccc;padding:1px"><div style="width:4px;height:0;border:5px solid ' + val.color + ';overflow:hidden"></div></div>').appendTo(li);
+                $('<input name="' + l + '" id="' + val.idx + '" class="checkbox" type="checkbox" checked="checked" /><div class="colorTile"><div style="width:4px;height:0;border:5px solid ' + val.color + ';overflow:hidden"></div></div>').appendTo(li);
                 $('<label>', {
                     text: l, 
                     'for': l
@@ -43,10 +41,14 @@
                 $(this).clone().prependTo(choiceContainer.find("li").eq(i));
             });
 
+            window.onresize = function(event) {
+                somePlot = $.plot($("#placeholder"), somePlot.getData(), options);
+            }
         });
         window.onbeforeunload = function(e) {
             socket.disconnect();
         };
+
 
     </script>
 </head>

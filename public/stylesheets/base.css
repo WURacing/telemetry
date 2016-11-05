@@ -23,9 +23,8 @@ h1 {
 }
 
 #header {
-	position: relative;
-	width: 58em;
-	margin: auto;
+    position: relative;
+    margin: auto;
     vertical-align: middle;
     font-weight: lighter;
 }
@@ -41,14 +40,12 @@ h1 {
     font-size: 3em;
 }
 #content {
-    width: 55em;
     margin: 0 auto;
     padding: 10px;
     clear: both;
 }
 #miniature {
-    float: left; 
-    white-space: nowrap;
+    float: left;
 }
 
 #overviewLegend {
@@ -73,12 +70,15 @@ h1 {
 
 .colorTile {
     margin-left: .375em;
+    border: 1px solid #ccc;
+    padding: 1px;
+    margin-bottom: auto;
 }
 #middle {
     display: flex;
     flex-flow: row;
 }
 #center {
-    max-width: 85%;
+    width: 80%;
     margin: 0 auto 0 auto;
 }
