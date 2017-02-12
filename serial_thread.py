@@ -8,7 +8,7 @@ def init(port):
 
 def record(prefix, timestamp, payload):
 	with open(global_vars.filenames[prefix], 'a') as csvfile:
-		csvfile.write(timestamp+','+payload+'\n')
+		csvfile.write(str(timestamp)+','+str(payload)+'\n')
 
 def readData(lock):
 	global ser
@@ -34,6 +34,7 @@ def readData(lock):
 				if (data == bytes(b'0')):
 					timestamp = struct.unpack('>I',ser.read(4))[0]
 					payload = struct.unpack('>f',ser.read(4))[0]
+					#print(payload)
 					with lock:
 						global_vars.data["RPMs"] = payload
 					record(prefix="RPMs",timestamp=timestamp,payload=payload)
@@ -76,6 +77,7 @@ def readData(lock):
 				elif (data == bytes(b'6')):
 					timestamp = struct.unpack('>I',ser.read(4))[0]
 					payload = int(list(ser.read())[0])
+					#print(payload)
 					with lock:
 						global_vars.data["Gear"] = payload
 					record(prefix="Gear",timestamp=timestamp,payload=payload)

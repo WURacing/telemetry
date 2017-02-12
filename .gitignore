@@ -4,3 +4,4 @@ plotting.sublime-project
 plotting.sublime-workspace
 venv/
 logs/
+__pycache__/

@@ -18,10 +18,10 @@ lock = Lock()
 eventlet.monkey_patch()
 
 if __name__ == "__main__":
-	global thread
-	global lock
-
 	serial_thread.init(get_port())
 	global_vars.init()
+
+	thread = Thread(target=serial_thread.readData, args=(lock,))
+	thread.start()
 
 	socketio.run(app)
