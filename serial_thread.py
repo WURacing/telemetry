@@ -10,10 +10,10 @@ def record(prefix, timestamp, payload):
 	with open(global_vars.filenames[prefix], 'a') as csvfile:
 		csvfile.write(str(timestamp)+','+str(payload)+'\n')
 
-def readData(lock):
+def readData(lock,stop_event):
 	global ser
 	ser.flush()
-	while True:
+	while not stop_event.is_set():
 		if (ser.inWaiting() > 0):
 			data = ser.read()
 			if (data == bytes(b'!')):

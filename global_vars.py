@@ -4,6 +4,13 @@ from datetime import datetime
 def init():
 	global prefixes
 	prefixes = ["RPMs","Load","Throttle","Coolant","O2","Speed","Gear","Volts","RRPot","RLPot"]
+
+	global primaries
+	primaries = ["RPMs","Load","Throttle","RRPot","RLPot"]
+
+	global secondaries
+	secondaries = ["Coolant","O2","Speed","Gear","Volts"]
+
 	global data
 	data = {prefix: 0 for prefix in prefixes}
 
