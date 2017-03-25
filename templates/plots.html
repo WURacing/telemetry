@@ -1,0 +1,23 @@
+{% extends "index.html" %}
+{% block body %}
+<div id="center">
+    <div id="header">
+        <img src="{{url_for('static',filename='img/logo.png')}}">
+        <h1>TelemetryWeb</h1>
+    </div>
+    <div id="content">
+        <div id="middle">
+            <div class="demo-container">
+                <div id="placeholder" class="demo-placeholder"></div>
+            </div>
+            <div id="miniature">
+                <ul id="overviewLegend">
+                </ul>
+            </div>
+        </div>
+        <p>
+            The graph takes a little while to populate before it begins accurately displaying data.
+        </p>
+    </div>
+</div>
+{% endblock %}

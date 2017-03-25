@@ -9,6 +9,8 @@ import atexit
 import global_vars
 import serial_thread
 
+debug = False
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
@@ -22,7 +24,7 @@ lock = Lock()
 stop_event = Event()
 
 @app.route('/')
-def index():
+def dash():
 	global emit_thread1
 	global emit_thread2
 
@@ -34,15 +36,36 @@ def index():
 		emit_thread2 = Thread(target=emitData,args=(global_vars.secondaries,1))
 		emit_thread2.start()
 
-	return render_template('index.html')
+	statics = [('js','dash-client.js'), ('css','dash-style.css')]
+	return render_template('dash.html', statics=statics)
+
+@app.route('/plots')
+def plots():
+	global emit_thread1
+	global emit_thread2
+
+	if emit_thread1 is None:
+		emit_thread1 = Thread(target=emitData,args=(global_vars.primaries,0.2))
+		emit_thread1.start()
+
+	if emit_thread2 is None:
+		emit_thread2 = Thread(target=emitData,args=(global_vars.secondaries,1))
+		emit_thread2.start()
+
+	statics = [('js','jquery.flot.min.js'), ('js','plots-client.js'), ('css','base.css'), ('css','chart-modules.css'), ('css','pure-min.css')]
+	return render_template('plots.html', statics=statics)
 
 def emitData(keys,delay):
 	global lock
 	global stop_event
 	while not stop_event.is_set():
 		with lock:
+			if debug:
+				global_vars.data["RPMs"] = global_vars.data["RPMs"] + 100
+				if global_vars.data["RPMs"] > 12000:
+					global_vars.data["RPMs"] = 0
 			message = {key: global_vars.data[key] for key in keys}
-		print(message)
+		#print(message)
 		socketio.emit('message', message)
 		time.sleep(delay)
 
@@ -55,15 +78,18 @@ def cleanup():
 		emit_thread2.join()
 	if ser_thread is not None:
 		ser_thread.join()
-	serial_thread.cleanup()
+	if not debug:
+		serial_thread.cleanup()
 
 if __name__ == "__main__":
-	serial_thread.init(get_port())
+
 	global_vars.init()
 
-	atexit.register(cleanup)
+	if not debug:
+		serial_thread.init(get_port())
+		ser_thread = Thread(target=serial_thread.readData, args=(lock,stop_event))
+		ser_thread.start()
 
-	ser_thread = Thread(target=serial_thread.readData, args=(lock,stop_event))
-	ser_thread.start()
+	atexit.register(cleanup)
 
 	socketio.run(app)
