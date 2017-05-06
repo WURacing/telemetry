@@ -10,15 +10,16 @@
 			<label for="RPMs"><b>RPMs:</b></label>
 			<div id="RPMs" class="data" decimals = "0">0</div>
 		</div>
-		<div class="text_container" id="gear_and_temp">
+		<!-- <div class="text_container" id="gear_and_temp">
 			<div class="half_text_container" id="gear_container">
 				<label for="Gear"><b>Gear:&nbsp;</b></label>
 				<div id="Gear" class="data" decimals="0">0</div>
-			</div>
-			<div class="half_text_container" id="coolant_container">
+			</div> -->
+			<div class="text_container" id="coolant_container">
+				<label for="Coolant"><b>Coolant:</b></label>
 				<div id="Coolant" class="data" decimals="1">0</div>
 			</div>
-		</div>
+		<!-- </div> -->
 	</div>
 	<div class="dash_row">
 		<div class="text_container" id="load_and_throttle">
@@ -36,11 +37,11 @@
 			<div id="Volts" class="data" decimals="2">0</div>
 		</div>
 		<div class="text_container" id="oxygen_container">
-			<label for="O2"><b>Oxygen:</b></label>
+			<label for="O2"><b>Exhaust Oxygen:</b></label>
 			<div id="O2" class="data" decimals="1">0</div>
 		</div>
 	</div>
-	<div class="dash_row">
+	<!-- <div class="dash_row">
 		<div class="text_container" id="speed_container">
 			<label for="Speed"><b>Speed:</b></label>
 			<div id="Speed" class="data" decimals="0">0</div>
@@ -53,6 +54,6 @@
 			<label for="RLPot"><b>Left Potentiometer:</b></label>
 			<div id="RLPot" class="data" decimals="1">0</div>
 		</div>
-	</div>
+	</div> -->
 </div>
 {% endblock %}

@@ -9,7 +9,7 @@ import atexit
 import global_vars
 import serial_thread
 
-debug = False
+debug = True
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'

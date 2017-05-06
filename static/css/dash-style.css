@@ -2,8 +2,8 @@
 	width: 1600px;
 	height: 300px;
 	margin: auto;
-	margin-top: 25px;
-	margin-bottom: 25px;
+	margin-top: 75px;
+	margin-bottom: 75px;
 	
 	display: flex;
 	justify-content: space-between;
@@ -59,16 +59,17 @@
 	color: #450070;
 }
 
-#gear_and_temp{
+/*#gear_and_temp{
 	width: 400px;
 }
 
 #gear_container{
 	color: #0104a8; 
-}
+}*/
 
 #coolant_container{
 	color: #097000;
+	width: 400px;
 }
 
 #load_and_throttle{
@@ -130,6 +131,10 @@
 	font-size: 32pt;
 }
 
+#O2::after{
+	content: "%";
+}
+
 .text_container label {
 	font-family: "Arial", sans-serif;
 	font-size: 48pt;
@@ -166,6 +171,11 @@
 
 #load_container div{
 	font-size: 64pt;
+}
+
+#oxygen_container label{
+	font-size: 42pt;
+	width: 500px;
 }
 
 #rrpot_container label{
