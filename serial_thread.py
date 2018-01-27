@@ -103,6 +103,20 @@ def readData(lock,stop_event):
 						global_vars.data["RLPot"] = payload
 					record(prefix="RLPot",timestamp=timestamp,payload=payload)
 
+				elif (data == bytes(b'@')):
+					timestamp = struct.unpack('>I',ser.read(4))[0]
+					payload = struct.unpack('>f',ser.read(4))[0]
+					with lock:
+						global_vars.data["FBrake"] = payload
+					record(prefix="FBrake",timestamp=timestamp,payload=payload)
+
+				elif (data == bytes(b'A')):
+					timestamp = struct.unpack('>I',ser.read(4))[0]
+					payload = struct.unpack('>f',ser.read(4))[0]
+					with lock:
+						global_vars.data["RBrake"] = payload
+					record(prefix="RBrake",timestamp=timestamp,payload=payload)
+
 				else:
 					print("ERROR: Corrupted Data")
 			else:

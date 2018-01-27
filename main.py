@@ -9,7 +9,7 @@ import atexit
 import global_vars
 import serial_thread
 
-debug = True
+debug = False
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -61,9 +61,18 @@ def emitData(keys,delay):
 	while not stop_event.is_set():
 		with lock:
 			if debug:
-				global_vars.data["RPMs"] = global_vars.data["RPMs"] + 100
+				global_vars.data["RPMs"] += 100
+				global_vars.data["Coolant"] += 15.5
+				global_vars.data["Throttle"] += 10.2
+				global_vars.data["Load"] = 10.5
+				global_vars.data["Volts"] = 12.0
+				global_vars.data["O2"] = 1.2
 				if global_vars.data["RPMs"] > 12000:
 					global_vars.data["RPMs"] = 0
+				if global_vars.data["Coolant"] > 200:
+					global_vars.data["Coolant"] = 140
+				if global_vars.data["Throttle"] > 80:
+					global_vars.data["Throttle"] = 0
 			message = {key: global_vars.data[key] for key in keys}
 		#print(message)
 		socketio.emit('message', message)

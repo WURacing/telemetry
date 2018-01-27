@@ -110,6 +110,16 @@
 	color: #097000;
 }
 
+#fbrake_container{
+	width: 400px;
+	color: #a30606;
+}
+
+#rbrake_container{
+	width: 400px;
+	color: #bc5405;
+}
+
 #Coolant::after{
 	content: "\00b0 F";
 }
@@ -133,6 +143,26 @@
 
 #O2::after{
 	content: "%";
+}
+
+#RRPot::after{
+	font-size: 32pt;
+	content: "mm";
+}
+
+#RLPot::after{
+	font-size: 32pt;
+	content: "mm";
+}
+
+#FBrake::after{
+	font-size: 32pt;
+	content: "psi";
+}
+
+#RBrake::after{
+	font-size: 32pt;
+	content: "psi";
 }
 
 .text_container label {
