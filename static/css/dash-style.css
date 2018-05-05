@@ -120,6 +120,16 @@
 	color: #bc5405;
 }
 
+#fbrakebias_container{
+	width: 400px;
+	color: #a30606;
+}
+
+#rbrakebias_container{
+	width: 400px;
+	color: #bc5405;
+}
+
 #Coolant::after{
 	content: "\00b0 F";
 }
@@ -164,6 +174,14 @@
 #RBrake::after{
 	font-size: 32pt;
 	content: "psi";
+}
+
+#FBrakeBias::after{
+	content: "%";
+}
+
+#RBrakeBias::after{
+	content: "%";
 }
 
 .text_container label {

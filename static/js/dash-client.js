@@ -11,9 +11,21 @@ $(function(){
 		for (var key in data){
 			if (data.hasOwnProperty(key)){
 				$("#"+key).text(data[key].toFixed(decimalPlaces[key]));
+				if (key === 'FBrake' || key == 'RBrake'){
+					brakeBias();
+				}
 			}
 		}
 	});
+
+	function brakeBias() {
+		var fbrake = parseFloat($('#FBrake').text());
+		var rbrake = parseFloat($('#RBrake').text());
+		var fbrakeb = 100 * fbrake / (fbrake + rbrake);
+		var rbrakeb = 100 * rbrake / (fbrake + rbrake);
+		$('#FBrakeBias').text(fbrakeb.toFixed(decimalPlaces['FBrakeBias']));
+		$('#RBrakeBias').text(rbrakeb.toFixed(decimalPlaces['RBrakeBias']));		
+	}
 
 	function rotate(){
 
@@ -36,6 +48,14 @@ $(function(){
 	}
 
 	setInterval(rotate, 500);
+
+	/*$('#FBrake').change(function(){
+		console.log('change!')
+		brakeBias();
+	});
+	$('#RBrake').change(function(){
+		brakeBias();
+	});*/
 
 });
 

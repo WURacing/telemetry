@@ -67,12 +67,18 @@ def emitData(keys,delay):
 				global_vars.data["Load"] = 10.5
 				global_vars.data["Volts"] = 12.0
 				global_vars.data["O2"] = 1.2
+				global_vars.data["FBrake"] += 200
+				global_vars.data["RBrake"] += 100
 				if global_vars.data["RPMs"] > 12000:
 					global_vars.data["RPMs"] = 0
 				if global_vars.data["Coolant"] > 200:
 					global_vars.data["Coolant"] = 140
 				if global_vars.data["Throttle"] > 80:
 					global_vars.data["Throttle"] = 0
+				if global_vars.data["FBrake"] > 5000:
+					global_vars.data["FBrake"] = 0
+				if global_vars.data["RBrake"] > 5000:
+					global_vars.data["RBrake"] = 0
 			message = {key: global_vars.data[key] for key in keys}
 		#print(message)
 		socketio.emit('message', message)
