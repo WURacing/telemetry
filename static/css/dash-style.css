@@ -142,7 +142,8 @@
 }
 
 #O2::after{
-	content: "%";
+	font-size: 32pt;
+	content: "AFR";
 }
 
 #RRPot::after{

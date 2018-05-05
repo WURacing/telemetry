@@ -3,10 +3,10 @@ from datetime import datetime
 
 def init():
 	global prefixes
-	prefixes = ["RPMs","Load","Throttle","Coolant","O2","Speed","Gear","Volts","RRPot","RLPot","FBrake","RBrake"]
+	prefixes = ["RPMs","Load","Throttle","Coolant","O2","Speed","Gear","Volts","RRPot","RLPot","FBrake","RBrake", "Intake", "Ignition", "SeatAccX", "SeatAccY", "SeatAccZ", "WheelAccX", "WheelAccY", "WheelAccZ"]
 
 	global primaries
-	primaries = ["RPMs","Load","Throttle","RRPot","RLPot", "FBrake", "RBrake"]
+	primaries = ["RPMs","Load","Throttle","RRPot","RLPot", "FBrake", "RBrake", "Intake", "Ignition", "SeatAccX", "SeatAccY", "SeatAccZ", "WheelAccX", "WheelAccY", "WheelAccZ"]
 
 	global secondaries
 	secondaries = ["Coolant","O2","Speed","Gear","Volts"]

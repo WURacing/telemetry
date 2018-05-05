@@ -117,6 +117,75 @@ def readData(lock,stop_event):
 						global_vars.data["RBrake"] = payload
 					record(prefix="RBrake",timestamp=timestamp,payload=payload)
 
+				elif (data == bytes(b'B')):
+					timestamp = struct.unpack('>I',ser.read(4))[0]
+					payload = struct.unpack('>f',ser.read(4))[0]
+					print('GOT LATITUDE')
+					print(payload)
+
+				elif (data == bytes(b'C')):
+					timestamp = struct.unpack('>I',ser.read(4))[0]
+					payload = struct.unpack('>f',ser.read(4))[0]
+					print('GOT LONGITUDE')
+					print(payload)
+
+				elif (data == bytes(b'D')):
+					timestamp = struct.unpack('>I',ser.read(4))[0]
+					payload = struct.unpack('>f',ser.read(4))[0]
+					with lock:
+						global_vars.data["Intake"] = payload
+					record(prefix="Intake",timestamp=timestamp,payload=payload)
+
+				elif (data == bytes(b'E')):
+					timestamp = struct.unpack('>I',ser.read(4))[0]
+					payload = struct.unpack('>f',ser.read(4))[0]
+					with lock:
+						global_vars.data["Ignition"] = payload
+					record(prefix="Ignition",timestamp=timestamp,payload=payload)
+
+				elif (data == bytes(b'F')):
+					timestamp = struct.unpack('>I',ser.read(4))[0]
+					payload = struct.unpack('>f',ser.read(4))[0]
+					with lock:
+						global_vars.data["SeatAccX"] = payload
+					record(prefix="SeatAccX",timestamp=timestamp,payload=payload)
+
+				elif (data == bytes(b'G')):
+					timestamp = struct.unpack('>I',ser.read(4))[0]
+					payload = struct.unpack('>f',ser.read(4))[0]
+					with lock:
+						global_vars.data["SeatAccY"] = payload
+					record(prefix="SeatAccY",timestamp=timestamp,payload=payload)
+
+				elif (data == bytes(b'H')):
+					timestamp = struct.unpack('>I',ser.read(4))[0]
+					payload = struct.unpack('>f',ser.read(4))[0]
+					with lock:
+						global_vars.data["SeatAccZ"] = payload
+					record(prefix="SeatAccZ",timestamp=timestamp,payload=payload)
+
+				elif (data == bytes(b'I')):
+					timestamp = struct.unpack('>I',ser.read(4))[0]
+					payload = struct.unpack('>f',ser.read(4))[0]
+					with lock:
+						global_vars.data["WheelAccX"] = payload
+					record(prefix="WheelAccX",timestamp=timestamp,payload=payload)
+
+				elif (data == bytes(b'J')):
+					timestamp = struct.unpack('>I',ser.read(4))[0]
+					payload = struct.unpack('>f',ser.read(4))[0]
+					with lock:
+						global_vars.data["WheelAccY"] = payload
+					record(prefix="WheelAccY",timestamp=timestamp,payload=payload)
+
+				elif (data == bytes(b'K')):
+					timestamp = struct.unpack('>I',ser.read(4))[0]
+					payload = struct.unpack('>f',ser.read(4))[0]
+					with lock:
+						global_vars.data["WheelAccZ"] = payload
+					record(prefix="WheelAccZ",timestamp=timestamp,payload=payload)
+
+
 				else:
 					print("ERROR: Corrupted Data")
 			else:
