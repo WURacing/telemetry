@@ -61,19 +61,21 @@ def emitData(keys,delay):
 	while not stop_event.is_set():
 		with lock:
 			if debug:
-				global_vars.data["RPMs"] += 106
-				global_vars.data["Coolant"] += 15.3
-				global_vars.data["Throttle"] += 10.1
-				global_vars.data["Load"] = 10.5
-				global_vars.data["Volts"] = 12.0
-				global_vars.data["O2"] = 1.2
-				global_vars.data["FBrake"] += 200
-				global_vars.data["RBrake"] += 100
+				global_vars.data["RPMs"] = 10206
+				global_vars.data["Coolant"] = 183.2
+				global_vars.data["Throttle"] = 82.1
+				global_vars.data["Load"] = 60.5
+				global_vars.data["Volts"] = 11.9
+				global_vars.data["O2"] = 15.1
+				global_vars.data["FBrake"] = 487
+				global_vars.data["RBrake"] = 467
+				global_vars.data["MAP"] = 80
+				global_vars.data["InnerMAP"] = 90
 				if global_vars.data["RPMs"] > 12000:
 					global_vars.data["RPMs"] = 0
 				if global_vars.data["Coolant"] > 200:
 					global_vars.data["Coolant"] = 140
-				if global_vars.data["Throttle"] > 80:
+				if global_vars.data["Throttle"] > 100:
 					global_vars.data["Throttle"] = 0
 				if global_vars.data["FBrake"] > 5000:
 					global_vars.data["FBrake"] = 0

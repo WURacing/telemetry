@@ -113,7 +113,26 @@ var options = {
             axisLabelFontSizePixels: 12,
             axisLabelFontFamily: 'Verdana, Arial',
             axisLabelPadding: 6
+        }, {
+            min: 0,
+            max: 110,
+            show: false,
+            position: "right",
+            axisLabelUseCanvas: true,
+            axisLabelFontSizePixels: 12,
+            axisLabelFontFamily: 'Verdana, Arial',
+            axisLabelPadding: 6
+        }, {
+            min: 0,
+            max: 110,
+            show: false,
+            position: "right",
+            axisLabelUseCanvas: true,
+            axisLabelFontSizePixels: 12,
+            axisLabelFontFamily: 'Verdana, Arial',
+            axisLabelPadding: 6
         }
+
     ]
 };
 
@@ -131,7 +150,7 @@ function variablePoints(i){
     else{
         return totalPoints
     }*/
-    if ((i >= 0 && i <= 2) || i == 8 || i == 9){
+    if ((i >= 0 && i <= 2) || (i >= 8 && i <= 11)){
         return 5*totalPoints;
     }
     else{
@@ -140,7 +159,7 @@ function variablePoints(i){
 }
 
 function initData() {
-    var numSeries = 10;
+    var numSeries = 12;
     var dataSeries = [];
     for (var i = 0; i < numSeries; i++) {
         dataSeries[i] = [];
@@ -163,7 +182,9 @@ function initData() {
         { label: "Gear",                    data: dataSeries[6], lines: { lineWidth: 1.2 }, color: "#008080", yaxis: 7, idx: 6 },
         { label: "Battery Voltage (V)",     data: dataSeries[7], lines: { lineWidth: 1.2 }, color: "#228B22", yaxis: 8, idx: 7 },
         { label: "Right Rear Potentiometer",data: dataSeries[8], lines: { lineWidth: 1.2 }, color: "#104AAE", yaxis: 9, idx: 8 },
-        { label: "Left Rear Potentiometer", data: dataSeries[9], lines: { lineWidth: 1.2 }, color: "#AE10A7", yaxis: 10, idx: 9 }
+        { label: "Left Rear Potentiometer", data: dataSeries[9], lines: { lineWidth: 1.2 }, color: "#AE10A7", yaxis: 10, idx: 9 },
+        { label: "MAP", data: dataSeries[10], lines: { lineWidth: 1.2 }, color: "#551A8B", yaxis: 11, idx: 10 },
+        { label: "InnerMAP", data: dataSeries[11], lines: { lineWidth: 1.2 }, color: "#008080", yaxis: 12, idx: 11 }
     ];
     map = { "RPMs":     0,
             "Load":     1, 
@@ -174,7 +195,9 @@ function initData() {
             "Gear":     6, 
             "Volts":    7, 
             "RRPot":    8, 
-            "RLPot":    9
+            "RLPot":    9,
+            "MAP":     10,
+            "InnerMAP": 11
     };
     for (var i = 0; i < dataset.length; i++) {
         showData[i] = true;

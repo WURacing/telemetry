@@ -41,7 +41,7 @@ def readData(lock,stop_event):
 
 				elif (data == bytes(b'1')):
 					timestamp = struct.unpack('>I',ser.read(4))[0]
-					payload = struct.unpack('>f',ser.read(4))[0]
+					payload = abs(struct.unpack('>f',ser.read(4))[0])
 					with lock:
 						global_vars.data["Load"] = payload
 					record(prefix="Load",timestamp=timestamp,payload=payload)
@@ -184,6 +184,25 @@ def readData(lock,stop_event):
 					with lock:
 						global_vars.data["WheelAccZ"] = payload
 					record(prefix="WheelAccZ",timestamp=timestamp,payload=payload)
+
+				elif (data == bytes(b'R')):
+					timestamp = struct.unpack('>I',ser.read(4))[0]
+					payload = abs(struct.unpack('>f',ser.read(4))[0])
+					payload = 101.325 - payload
+					with lock:
+						global_vars.data["MAP"] = payload
+					record(prefix="MAP",timestamp=timestamp,payload=payload)
+					#print("MAP:")
+					#print(payload)
+
+				elif (data == bytes(b'S')):
+					timestamp = struct.unpack('>I',ser.read(4))[0]
+					payload = struct.unpack('>f',ser.read(4))[0]
+					with lock:
+						global_vars.data["InnerMAP"] = payload
+					record(prefix="InnerMAP",timestamp=timestamp,payload=payload)
+					#print("Inner MAP:")
+					#print(payload)
 
 
 				else:
