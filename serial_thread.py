@@ -2,216 +2,50 @@ import serial
 import global_vars
 import struct
 
-def init(port):
-	global ser
-	ser = serial.Serial(port)
+class SerialInterface():
+	def __init__(self, port):
+		self.ser = serial.Serial(port)
 
-def record(prefix, timestamp, payload):
-	with open(global_vars.filenames[prefix], 'a') as csvfile:
-		csvfile.write(str(timestamp)+','+str(payload)+'\n')
+	def record(self, prefix, timestamp, payload):
+		with open(global_vars.filenames[prefix], 'a') as csvfile:
+			csvfile.write(str(timestamp)+','+str(payload)+'\n')
 
-def readData(lock,stop_event):
-	global ser
-	ser.flush()
-	while not stop_event.is_set():
-		if (ser.inWaiting() > 0):
-			data = ser.read()
-			if (data == bytes(b'!')):
+	def unpack(self, key, lock):
+		name = global_vars.key_table[key][0]
+
+		timestamp = struct.unpack('>I',ser.read(4))[0]
+		payload = struct.unpack('>f',ser.read(4))[0]
+		with lock:
+			global_vars.data[name] = payload
+			record(prefix=name,timestamp=timestamp,payload=payload)
+
+	def readData(self, lock, stop_event):
+		self.ser.flush()
+		while not stop_event.is_set():
+			if (ser.inWaiting() > 0):
 				data = ser.read()
+				if (data == bytes(b'!')):
+					data = ser.read()
 
-				# Packet Headers:
-				# 0x30 : RPMs
-				# 0x31 : Engine Load
-				# 0x32 : throttle
-				# 0x33 : Coolant Temp (F)
-				# 0x34 : O2 level
-				# 0x35 : Vehicle Speed (The shitty one from the ECU anyway)
-				# 0x36 : Gear (Again, shitty ECU version)
-				# 0x37 : Battery Voltage
-				# 0x38 : Shock pot sensor on right rear wheel
-				# 0x39 : Shock pot sensor on left rear wheel
+					# Packet Headers:
+					# 0x30 : RPMs
+					# 0x31 : Engine Load
+					# 0x32 : throttle
+					# 0x33 : Coolant Temp (F)
+					# 0x34 : O2 level
+					# 0x35 : Vehicle Speed
+					# 0x36 : Gear (Again)
+					# 0x37 : Battery Voltage
+					# 0x38 : Shock pot sensor on right rear wheel
+					# 0x39 : Shock pot sensor on left rear wheel
 
-				if (data == bytes(b'0')):
-					timestamp = struct.unpack('>I',ser.read(4))[0]
-					payload = struct.unpack('>f',ser.read(4))[0]
-					#print(payload)
-					with lock:
-						global_vars.data["RPMs"] = payload
-					record(prefix="RPMs",timestamp=timestamp,payload=payload)
-
-				elif (data == bytes(b'1')):
-					timestamp = struct.unpack('>I',ser.read(4))[0]
-					payload = abs(struct.unpack('>f',ser.read(4))[0])
-					with lock:
-						global_vars.data["Load"] = payload
-					record(prefix="Load",timestamp=timestamp,payload=payload)
-
-				elif (data == bytes(b'2')):
-					timestamp = struct.unpack('>I',ser.read(4))[0]
-					payload = struct.unpack('>f',ser.read(4))[0]
-					with lock:
-						global_vars.data["Throttle"] = payload
-					record(prefix="Throttle",timestamp=timestamp,payload=payload)
-
-				elif (data == bytes(b'3')):
-					timestamp = struct.unpack('>I',ser.read(4))[0]
-					payload = struct.unpack('>f',ser.read(4))[0]
-					with lock:
-						global_vars.data["Coolant"] = payload
-					record(prefix="Coolant",timestamp=timestamp,payload=payload)
-
-				elif (data == bytes(b'4')):
-					timestamp = struct.unpack('>I',ser.read(4))[0]
-					payload = struct.unpack('>f',ser.read(4))[0]
-					with lock:
-						global_vars.data["O2"] = payload
-					record(prefix="O2",timestamp=timestamp,payload=payload)
-
-				elif (data == bytes(b'5')):
-					timestamp = struct.unpack('>I',ser.read(4))[0]
-					payload = struct.unpack('>f',ser.read(4))[0]
-					with lock:
-						global_vars.data["Speed"] = payload
-					record(prefix="Speed",timestamp=timestamp,payload=payload)
-
-				elif (data == bytes(b'6')):
-					timestamp = struct.unpack('>I',ser.read(4))[0]
-					payload = int(list(ser.read())[0])
-					#print(payload)
-					with lock:
-						global_vars.data["Gear"] = payload
-					record(prefix="Gear",timestamp=timestamp,payload=payload)
-
-				elif (data == bytes(b'7')):
-					timestamp = struct.unpack('>I',ser.read(4))[0]
-					payload = struct.unpack('>f',ser.read(4))[0]
-					with lock:
-						global_vars.data["Volts"] = payload
-					record(prefix="Volts",timestamp=timestamp,payload=payload)
-
-				elif (data == bytes(b'8')):
-					timestamp = struct.unpack('>I',ser.read(4))[0]
-					payload = struct.unpack('>f',ser.read(4))[0]
-					with lock:
-						global_vars.data["RRPot"] = payload
-					record(prefix="RRPot",timestamp=timestamp,payload=payload)
-
-				elif (data == bytes(b'9')):
-					timestamp = struct.unpack('>I',ser.read(4))[0]
-					payload = struct.unpack('>f',ser.read(4))[0]
-					with lock:
-						global_vars.data["RLPot"] = payload
-					record(prefix="RLPot",timestamp=timestamp,payload=payload)
-
-				elif (data == bytes(b'@')):
-					timestamp = struct.unpack('>I',ser.read(4))[0]
-					payload = struct.unpack('>f',ser.read(4))[0]
-					with lock:
-						global_vars.data["FBrake"] = payload
-					record(prefix="FBrake",timestamp=timestamp,payload=payload)
-
-				elif (data == bytes(b'A')):
-					timestamp = struct.unpack('>I',ser.read(4))[0]
-					payload = struct.unpack('>f',ser.read(4))[0]
-					with lock:
-						global_vars.data["RBrake"] = payload
-					record(prefix="RBrake",timestamp=timestamp,payload=payload)
-
-				elif (data == bytes(b'B')):
-					timestamp = struct.unpack('>I',ser.read(4))[0]
-					payload = struct.unpack('>f',ser.read(4))[0]
-					print('GOT LATITUDE')
-					print(payload)
-
-				elif (data == bytes(b'C')):
-					timestamp = struct.unpack('>I',ser.read(4))[0]
-					payload = struct.unpack('>f',ser.read(4))[0]
-					print('GOT LONGITUDE')
-					print(payload)
-
-				elif (data == bytes(b'D')):
-					timestamp = struct.unpack('>I',ser.read(4))[0]
-					payload = struct.unpack('>f',ser.read(4))[0]
-					with lock:
-						global_vars.data["Intake"] = payload
-					record(prefix="Intake",timestamp=timestamp,payload=payload)
-
-				elif (data == bytes(b'E')):
-					timestamp = struct.unpack('>I',ser.read(4))[0]
-					payload = struct.unpack('>f',ser.read(4))[0]
-					with lock:
-						global_vars.data["Ignition"] = payload
-					record(prefix="Ignition",timestamp=timestamp,payload=payload)
-
-				elif (data == bytes(b'F')):
-					timestamp = struct.unpack('>I',ser.read(4))[0]
-					payload = struct.unpack('>f',ser.read(4))[0]
-					with lock:
-						global_vars.data["SeatAccX"] = payload
-					record(prefix="SeatAccX",timestamp=timestamp,payload=payload)
-
-				elif (data == bytes(b'G')):
-					timestamp = struct.unpack('>I',ser.read(4))[0]
-					payload = struct.unpack('>f',ser.read(4))[0]
-					with lock:
-						global_vars.data["SeatAccY"] = payload
-					record(prefix="SeatAccY",timestamp=timestamp,payload=payload)
-
-				elif (data == bytes(b'H')):
-					timestamp = struct.unpack('>I',ser.read(4))[0]
-					payload = struct.unpack('>f',ser.read(4))[0]
-					with lock:
-						global_vars.data["SeatAccZ"] = payload
-					record(prefix="SeatAccZ",timestamp=timestamp,payload=payload)
-
-				elif (data == bytes(b'I')):
-					timestamp = struct.unpack('>I',ser.read(4))[0]
-					payload = struct.unpack('>f',ser.read(4))[0]
-					with lock:
-						global_vars.data["WheelAccX"] = payload
-					record(prefix="WheelAccX",timestamp=timestamp,payload=payload)
-
-				elif (data == bytes(b'J')):
-					timestamp = struct.unpack('>I',ser.read(4))[0]
-					payload = struct.unpack('>f',ser.read(4))[0]
-					with lock:
-						global_vars.data["WheelAccY"] = payload
-					record(prefix="WheelAccY",timestamp=timestamp,payload=payload)
-
-				elif (data == bytes(b'K')):
-					timestamp = struct.unpack('>I',ser.read(4))[0]
-					payload = struct.unpack('>f',ser.read(4))[0]
-					with lock:
-						global_vars.data["WheelAccZ"] = payload
-					record(prefix="WheelAccZ",timestamp=timestamp,payload=payload)
-
-				elif (data == bytes(b'R')):
-					timestamp = struct.unpack('>I',ser.read(4))[0]
-					payload = abs(struct.unpack('>f',ser.read(4))[0])
-					payload = 101.325 - payload
-					with lock:
-						global_vars.data["MAP"] = payload
-					record(prefix="MAP",timestamp=timestamp,payload=payload)
-					#print("MAP:")
-					#print(payload)
-
-				elif (data == bytes(b'S')):
-					timestamp = struct.unpack('>I',ser.read(4))[0]
-					payload = struct.unpack('>f',ser.read(4))[0]
-					with lock:
-						global_vars.data["InnerMAP"] = payload
-					record(prefix="InnerMAP",timestamp=timestamp,payload=payload)
-					#print("Inner MAP:")
-					#print(payload)
-
+					self.unpack(key=data, lock=lock)
 
 				else:
-					print("ERROR: Corrupted Data")
+					pass
 			else:
 				pass
-		else:
-			pass
 
-def cleanup():
-	global ser
-	ser.close()
+	def cleanup():
+		global ser
+		ser.close()

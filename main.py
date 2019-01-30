@@ -9,7 +9,7 @@ import atexit
 import global_vars
 import serial_thread
 
-debug = False
+debug = True
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -61,25 +61,27 @@ def emitData(keys,delay):
 	while not stop_event.is_set():
 		with lock:
 			if debug:
-				global_vars.data["RPMs"] = 10206
-				global_vars.data["Coolant"] = 183.2
-				global_vars.data["Throttle"] = 82.1
-				global_vars.data["Load"] = 60.5
+				global_vars.data["RPMs"] += 206
+				global_vars.data["Coolant"] += 5.2
+				global_vars.data["Throttle"] += 10.1
+				global_vars.data["Load"] += 10.5
 				global_vars.data["Volts"] = 11.9
-				global_vars.data["O2"] = 15.1
-				global_vars.data["FBrake"] = 487
-				global_vars.data["RBrake"] = 467
-				global_vars.data["MAP"] = 80
-				global_vars.data["InnerMAP"] = 90
+				global_vars.data["O2"] += 0.6
+				global_vars.data["FBrake"] += 207
+				global_vars.data["RBrake"] += 306
+				global_vars.data["MAP"] += 10
+				global_vars.data["InnerMAP"] += 10
 				if global_vars.data["RPMs"] > 12000:
 					global_vars.data["RPMs"] = 0
 				if global_vars.data["Coolant"] > 200:
 					global_vars.data["Coolant"] = 140
 				if global_vars.data["Throttle"] > 100:
 					global_vars.data["Throttle"] = 0
-				if global_vars.data["FBrake"] > 5000:
+				if global_vars.data["Load"] > 100:
+					global_vars.data["Load"] = 0
+				if global_vars.data["FBrake"] > 1500:
 					global_vars.data["FBrake"] = 0
-				if global_vars.data["RBrake"] > 5000:
+				if global_vars.data["RBrake"] > 1500:
 					global_vars.data["RBrake"] = 0
 			message = {key: global_vars.data[key] for key in keys}
 		#print(message)
@@ -103,7 +105,7 @@ if __name__ == "__main__":
 	global_vars.init()
 
 	if not debug:
-		serial_thread.init(get_port())
+		serial_thread = SerialInterface.init(get_port())
 		ser_thread = Thread(target=serial_thread.readData, args=(lock,stop_event))
 		ser_thread.start()
 
