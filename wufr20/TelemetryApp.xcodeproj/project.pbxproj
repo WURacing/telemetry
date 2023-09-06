@@ -1,0 +1,793 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 51;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		230A0CD5237A77E3002A208C /* RollingAverageUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230A0CD4237A77E3002A208C /* RollingAverageUtils.swift */; };
+		2317311D237BE91600BE6483 /* DetailLiveSciChartVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2317311C237BE91600BE6483 /* DetailLiveSciChartVC.swift */; };
+		2317311F237BE9B500BE6483 /* DetailLiveSciChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2317311E237BE9B500BE6483 /* DetailLiveSciChart.swift */; };
+		23173121237BEA5D00BE6483 /* TelemetrySCIChartSurface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23173120237BEA5D00BE6483 /* TelemetrySCIChartSurface.swift */; };
+		23268AB52394B982006D1238 /* SelectSensorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23268AB42394B982006D1238 /* SelectSensorViewController.swift */; };
+		23268AB72394D864006D1238 /* DetailSciChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23268AB62394D864006D1238 /* DetailSciChart.swift */; };
+		23268AB92394DA1C006D1238 /* DetailPlotViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23268AB82394DA1C006D1238 /* DetailPlotViewController.swift */; };
+		236AC4902376387100014AA1 /* GraphCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 236AC48F2376387100014AA1 /* GraphCollectionViewCell.swift */; };
+		2398B040237CE5BD006C69D9 /* CollapsibleTableViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2398B03F237CE5BD006C69D9 /* CollapsibleTableViewHeader.swift */; };
+		2398B042237CE7D1006C69D9 /* CollapsibleTableSectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2398B041237CE7D1006C69D9 /* CollapsibleTableSectionViewController.swift */; };
+		239981F82378F6B7002AEEC9 /* SmallLiveSciChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 239981F72378F6B7002AEEC9 /* SmallLiveSciChart.swift */; };
+		23E37373237C860600E0A500 /* DatabaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23E37372237C860600E0A500 /* DatabaseViewController.swift */; };
+		7093A1A1237C7EAC00098486 /* Weather.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7093A1A0237C7EAC00098486 /* Weather.swift */; };
+		835B3677A0C5E7B384A972AE /* Pods_TelemetryApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B22950E09878D842173933E /* Pods_TelemetryApp.framework */; };
+		A0119410237380B7002625C5 /* TelemetryViewContoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = A011940F237380B7002625C5 /* TelemetryViewContoller.swift */; };
+		A011941A23738470002625C5 /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = A011941923738470002625C5 /* Protocols.swift */; };
+		A01194282373EFA6002625C5 /* DockMinimizedView.xib in Resources */ = {isa = PBXBuildFile; fileRef = A01194272373EFA6002625C5 /* DockMinimizedView.xib */; };
+		A011942A2373EFB2002625C5 /* DockExpandedView.xib in Resources */ = {isa = PBXBuildFile; fileRef = A01194292373EFB2002625C5 /* DockExpandedView.xib */; };
+		A011942C2373EFC6002625C5 /* DockMinimizedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A011942B2373EFC6002625C5 /* DockMinimizedView.swift */; };
+		A011942F2373FAB2002625C5 /* DockExpandedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A011942E2373FAB2002625C5 /* DockExpandedView.swift */; };
+		A01194312373FB9B002625C5 /* DockManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01194302373FB9B002625C5 /* DockManager.swift */; };
+		A0188D36237A30CE00D95F00 /* ModalCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0188D34237A30CE00D95F00 /* ModalCell.swift */; };
+		A0188D37237A30CE00D95F00 /* ModalCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A0188D35237A30CE00D95F00 /* ModalCell.xib */; };
+		A01C1E49236A47770026D76F /* Telemetry.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01C1E48236A47770026D76F /* Telemetry.swift */; };
+		A01CA522236A3D02007B6713 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01CA521236A3D02007B6713 /* AppDelegate.swift */; };
+		A01CA524236A3D02007B6713 /* ConsoleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01CA523236A3D02007B6713 /* ConsoleViewController.swift */; };
+		A01CA527236A3D02007B6713 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A01CA525236A3D02007B6713 /* Main.storyboard */; };
+		A01CA529236A3D03007B6713 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A01CA528236A3D03007B6713 /* Assets.xcassets */; };
+		A01D976D2393A48800E33A72 /* InProgress.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A01D976C2393A48800E33A72 /* InProgress.storyboard */; };
+		A01D976F2393A4A700E33A72 /* InProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01D976E2393A4A700E33A72 /* InProgress.swift */; };
+		A0398BED2374F679005454E2 /* WebsiteController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0398BEC2374F679005454E2 /* WebsiteController.swift */; };
+		A04A3E892394C6AD004F2423 /* DockHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A04A3E872394C6AD004F2423 /* DockHeaderView.swift */; };
+		A04A3E8A2394C6AD004F2423 /* DockHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = A04A3E882394C6AD004F2423 /* DockHeaderView.xib */; };
+		A04A3E8C2394DC47004F2423 /* DockOptionsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A04A3E8B2394DC47004F2423 /* DockOptionsController.swift */; };
+		A04A3E902394DDB5004F2423 /* DockOptionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A04A3E8F2394DDB5004F2423 /* DockOptionsCell.swift */; };
+		A04A3E922394E24C004F2423 /* DockOptions.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A04A3E912394E24C004F2423 /* DockOptions.storyboard */; };
+		A04D5D252376A7EE00B07241 /* TelemetryChartUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = A04D5D242376A7EE00B07241 /* TelemetryChartUpdates.swift */; };
+		A073C3EB2375D8C500BDB7CD /* DraggableDock.swift in Sources */ = {isa = PBXBuildFile; fileRef = A073C3EA2375D8C500BDB7CD /* DraggableDock.swift */; };
+		A073C3EF2375F43200BDB7CD /* TelemetryCollectionViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A073C3EE2375F43200BDB7CD /* TelemetryCollectionViews.swift */; };
+		A073C3F12376335600BDB7CD /* OverallTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A073C3F02376335600BDB7CD /* OverallTabViewController.swift */; };
+		A0764E40237B445A0077FB88 /* BugReport.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A0764E3F237B445A0077FB88 /* BugReport.storyboard */; };
+		A0764E43237B49170077FB88 /* SettingsModalController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0764E41237B49170077FB88 /* SettingsModalController.swift */; };
+		A0764E44237B49170077FB88 /* SettingsModalController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A0764E42237B49170077FB88 /* SettingsModalController.xib */; };
+		A077D984237938D400250EC6 /* SciChart.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A077D983237938D300250EC6 /* SciChart.framework */; };
+		A077D985237938D400250EC6 /* SciChart.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A077D983237938D300250EC6 /* SciChart.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A077D988237938F500250EC6 /* SCIGenericWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A077D987237938F500250EC6 /* SCIGenericWrapper.swift */; };
+		A077D9892379CC9800250EC6 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0F4A835237142420025CAA1 /* WebKit.framework */; };
+		A08290F72375546F00AF0E20 /* HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A08290F62375546F00AF0E20 /* HeaderView.swift */; };
+		A08290F92375592B00AF0E20 /* HeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = A08290F82375592B00AF0E20 /* HeaderView.xib */; };
+		A0AA6909237A6EA800AB795B /* BugReportController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0AA6908237A6EA800AB795B /* BugReportController.swift */; };
+		A0B9D38F2395B55A00E92AB5 /* SciChartsLicense.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0B9D38E2395B55A00E92AB5 /* SciChartsLicense.swift */; };
+		A0CC52E9237C70B00022E1EC /* Weather.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A0CC52E8237C70B00022E1EC /* Weather.storyboard */; };
+		A0CC52EB237C70BD0022E1EC /* WeatherViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0CC52EA237C70BD0022E1EC /* WeatherViewController.swift */; };
+		A0CC52EE237C72410022E1EC /* DetailLiveSciChart.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A0CC52ED237C72410022E1EC /* DetailLiveSciChart.storyboard */; };
+		A0CC52F1237C7D140022E1EC /* WeatherModalController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0CC52EF237C7D140022E1EC /* WeatherModalController.swift */; };
+		A0CC52F2237C7D140022E1EC /* WeatherModalController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A0CC52F0237C7D140022E1EC /* WeatherModalController.xib */; };
+		A0DB467D2394813700ADD41D /* FavoritesSettings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A0DB467C2394813700ADD41D /* FavoritesSettings.storyboard */; };
+		A0DB467F2394815A00ADD41D /* FavoritesSettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0DB467E2394815A00ADD41D /* FavoritesSettingsController.swift */; };
+		A0DB4681239483E200ADD41D /* FavoritesCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0DB4680239483E200ADD41D /* FavoritesCell.swift */; };
+		A0E2701023768F0800440719 /* DockExpandedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0E2700E23768F0800440719 /* DockExpandedCell.swift */; };
+		A0E2701123768F0800440719 /* DockExpandedCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A0E2700F23768F0800440719 /* DockExpandedCell.xib */; };
+		A0F3D86223721AFD00D10CF8 /* Sensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F3D86123721AFD00D10CF8 /* Sensor.swift */; };
+		A0F4A83423713D480025CAA1 /* LivestreamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F4A83323713D480025CAA1 /* LivestreamView.swift */; };
+		A0FE983B2374A8D20033F6E6 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0FE983A2374A8D20033F6E6 /* Extensions.swift */; };
+		B92D3A57238F5812009DD817 /* CustomTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B92D3A56238F5812009DD817 /* CustomTable.swift */; };
+		B92D3A5B238F9B61009DD817 /* snow.png in Resources */ = {isa = PBXBuildFile; fileRef = B92D3A5A238F9B61009DD817 /* snow.png */; };
+		B92D3A5D238F9C1C009DD817 /* clear-day.png in Resources */ = {isa = PBXBuildFile; fileRef = B92D3A5C238F9C1B009DD817 /* clear-day.png */; };
+		B92D3A5F238F9C68009DD817 /* cloudy.png in Resources */ = {isa = PBXBuildFile; fileRef = B92D3A5E238F9C68009DD817 /* cloudy.png */; };
+		B92D3A61238F9F3B009DD817 /* clear-night.png in Resources */ = {isa = PBXBuildFile; fileRef = B92D3A60238F9F3B009DD817 /* clear-night.png */; };
+		B92D3A63238F9F49009DD817 /* partly-cloudy-night.png in Resources */ = {isa = PBXBuildFile; fileRef = B92D3A62238F9F49009DD817 /* partly-cloudy-night.png */; };
+		B92D3A65238F9F54009DD817 /* partly-cloudy-day.png in Resources */ = {isa = PBXBuildFile; fileRef = B92D3A64238F9F54009DD817 /* partly-cloudy-day.png */; };
+		B92D3A67238F9F5E009DD817 /* fog.png in Resources */ = {isa = PBXBuildFile; fileRef = B92D3A66238F9F5E009DD817 /* fog.png */; };
+		B92D3A69238F9FF1009DD817 /* wind.png in Resources */ = {isa = PBXBuildFile; fileRef = B92D3A68238F9FF1009DD817 /* wind.png */; };
+		B92D3A6B238F9FF9009DD817 /* sleet.png in Resources */ = {isa = PBXBuildFile; fileRef = B92D3A6A238F9FF9009DD817 /* sleet.png */; };
+		B92D3A6D238FA04E009DD817 /* rain.png in Resources */ = {isa = PBXBuildFile; fileRef = B92D3A6C238FA04E009DD817 /* rain.png */; };
+		B92D3A6F238FA271009DD817 /* question-mark.png in Resources */ = {isa = PBXBuildFile; fileRef = B92D3A6E238FA271009DD817 /* question-mark.png */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A077D986237938D400250EC6 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 8;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				A077D985237938D400250EC6 /* SciChart.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		144BD5E6415349B6695AAAEF /* Pods-TelemetryApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TelemetryApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TelemetryApp/Pods-TelemetryApp.debug.xcconfig"; sourceTree = "<group>"; };
+		230A0CD4237A77E3002A208C /* RollingAverageUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RollingAverageUtils.swift; sourceTree = "<group>"; };
+		2317311C237BE91600BE6483 /* DetailLiveSciChartVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailLiveSciChartVC.swift; sourceTree = "<group>"; };
+		2317311E237BE9B500BE6483 /* DetailLiveSciChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailLiveSciChart.swift; sourceTree = "<group>"; };
+		23173120237BEA5D00BE6483 /* TelemetrySCIChartSurface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelemetrySCIChartSurface.swift; sourceTree = "<group>"; };
+		23268AB42394B982006D1238 /* SelectSensorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectSensorViewController.swift; sourceTree = "<group>"; };
+		23268AB62394D864006D1238 /* DetailSciChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailSciChart.swift; sourceTree = "<group>"; };
+		23268AB82394DA1C006D1238 /* DetailPlotViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailPlotViewController.swift; sourceTree = "<group>"; };
+		236AC48F2376387100014AA1 /* GraphCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphCollectionViewCell.swift; sourceTree = "<group>"; };
+		2398B03F237CE5BD006C69D9 /* CollapsibleTableViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapsibleTableViewHeader.swift; sourceTree = "<group>"; };
+		2398B041237CE7D1006C69D9 /* CollapsibleTableSectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapsibleTableSectionViewController.swift; sourceTree = "<group>"; };
+		239981F72378F6B7002AEEC9 /* SmallLiveSciChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmallLiveSciChart.swift; sourceTree = "<group>"; };
+		23E37372237C860600E0A500 /* DatabaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseViewController.swift; sourceTree = "<group>"; };
+		6B22950E09878D842173933E /* Pods_TelemetryApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TelemetryApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7093A1A0237C7EAC00098486 /* Weather.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Weather.swift; sourceTree = "<group>"; };
+		A011940F237380B7002625C5 /* TelemetryViewContoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelemetryViewContoller.swift; sourceTree = "<group>"; };
+		A011941923738470002625C5 /* Protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
+		A01194272373EFA6002625C5 /* DockMinimizedView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DockMinimizedView.xib; sourceTree = "<group>"; };
+		A01194292373EFB2002625C5 /* DockExpandedView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DockExpandedView.xib; sourceTree = "<group>"; };
+		A011942B2373EFC6002625C5 /* DockMinimizedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DockMinimizedView.swift; sourceTree = "<group>"; };
+		A011942E2373FAB2002625C5 /* DockExpandedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DockExpandedView.swift; sourceTree = "<group>"; };
+		A01194302373FB9B002625C5 /* DockManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DockManager.swift; sourceTree = "<group>"; };
+		A0188D34237A30CE00D95F00 /* ModalCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCell.swift; sourceTree = "<group>"; };
+		A0188D35237A30CE00D95F00 /* ModalCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ModalCell.xib; sourceTree = "<group>"; };
+		A01C1E48236A47770026D76F /* Telemetry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Telemetry.swift; sourceTree = "<group>"; };
+		A01CA51E236A3D02007B6713 /* TelemetryApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TelemetryApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A01CA521236A3D02007B6713 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		A01CA523236A3D02007B6713 /* ConsoleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsoleViewController.swift; sourceTree = "<group>"; };
+		A01CA526236A3D02007B6713 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		A01CA528236A3D03007B6713 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A01CA52D236A3D03007B6713 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A01D976C2393A48800E33A72 /* InProgress.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = InProgress.storyboard; sourceTree = "<group>"; };
+		A01D976E2393A4A700E33A72 /* InProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InProgress.swift; sourceTree = "<group>"; };
+		A0398BEC2374F679005454E2 /* WebsiteController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebsiteController.swift; sourceTree = "<group>"; };
+		A04A3E872394C6AD004F2423 /* DockHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DockHeaderView.swift; sourceTree = "<group>"; };
+		A04A3E882394C6AD004F2423 /* DockHeaderView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DockHeaderView.xib; sourceTree = "<group>"; };
+		A04A3E8B2394DC47004F2423 /* DockOptionsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DockOptionsController.swift; sourceTree = "<group>"; };
+		A04A3E8F2394DDB5004F2423 /* DockOptionsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DockOptionsCell.swift; sourceTree = "<group>"; };
+		A04A3E912394E24C004F2423 /* DockOptions.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = DockOptions.storyboard; sourceTree = "<group>"; };
+		A04D5D242376A7EE00B07241 /* TelemetryChartUpdates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelemetryChartUpdates.swift; sourceTree = "<group>"; };
+		A073C3EA2375D8C500BDB7CD /* DraggableDock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraggableDock.swift; sourceTree = "<group>"; };
+		A073C3EE2375F43200BDB7CD /* TelemetryCollectionViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelemetryCollectionViews.swift; sourceTree = "<group>"; };
+		A073C3F02376335600BDB7CD /* OverallTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverallTabViewController.swift; sourceTree = "<group>"; };
+		A0764E3F237B445A0077FB88 /* BugReport.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = BugReport.storyboard; sourceTree = "<group>"; };
+		A0764E41237B49170077FB88 /* SettingsModalController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsModalController.swift; sourceTree = "<group>"; };
+		A0764E42237B49170077FB88 /* SettingsModalController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SettingsModalController.xib; sourceTree = "<group>"; };
+		A077D983237938D300250EC6 /* SciChart.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SciChart.framework; sourceTree = "<group>"; };
+		A077D987237938F500250EC6 /* SCIGenericWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCIGenericWrapper.swift; sourceTree = "<group>"; };
+		A08290F62375546F00AF0E20 /* HeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderView.swift; sourceTree = "<group>"; };
+		A08290F82375592B00AF0E20 /* HeaderView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = HeaderView.xib; sourceTree = "<group>"; };
+		A0AA6908237A6EA800AB795B /* BugReportController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BugReportController.swift; sourceTree = "<group>"; };
+		A0B9D38E2395B55A00E92AB5 /* SciChartsLicense.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SciChartsLicense.swift; sourceTree = "<group>"; };
+		A0CC52E8237C70B00022E1EC /* Weather.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Weather.storyboard; sourceTree = "<group>"; };
+		A0CC52EA237C70BD0022E1EC /* WeatherViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherViewController.swift; sourceTree = "<group>"; };
+		A0CC52ED237C72410022E1EC /* DetailLiveSciChart.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = DetailLiveSciChart.storyboard; sourceTree = "<group>"; };
+		A0CC52EF237C7D140022E1EC /* WeatherModalController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherModalController.swift; sourceTree = "<group>"; };
+		A0CC52F0237C7D140022E1EC /* WeatherModalController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WeatherModalController.xib; sourceTree = "<group>"; };
+		A0DB467C2394813700ADD41D /* FavoritesSettings.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = FavoritesSettings.storyboard; sourceTree = "<group>"; };
+		A0DB467E2394815A00ADD41D /* FavoritesSettingsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesSettingsController.swift; sourceTree = "<group>"; };
+		A0DB4680239483E200ADD41D /* FavoritesCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesCell.swift; sourceTree = "<group>"; };
+		A0E2700E23768F0800440719 /* DockExpandedCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DockExpandedCell.swift; sourceTree = "<group>"; };
+		A0E2700F23768F0800440719 /* DockExpandedCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DockExpandedCell.xib; sourceTree = "<group>"; };
+		A0F3D86123721AFD00D10CF8 /* Sensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sensor.swift; sourceTree = "<group>"; };
+		A0F4A83323713D480025CAA1 /* LivestreamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LivestreamView.swift; sourceTree = "<group>"; };
+		A0F4A835237142420025CAA1 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		A0FE983A2374A8D20033F6E6 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		B92D3A56238F5812009DD817 /* CustomTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTable.swift; sourceTree = "<group>"; };
+		B92D3A5A238F9B61009DD817 /* snow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = snow.png; sourceTree = "<group>"; };
+		B92D3A5C238F9C1B009DD817 /* clear-day.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "clear-day.png"; sourceTree = "<group>"; };
+		B92D3A5E238F9C68009DD817 /* cloudy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cloudy.png; sourceTree = "<group>"; };
+		B92D3A60238F9F3B009DD817 /* clear-night.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "clear-night.png"; sourceTree = "<group>"; };
+		B92D3A62238F9F49009DD817 /* partly-cloudy-night.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "partly-cloudy-night.png"; sourceTree = "<group>"; };
+		B92D3A64238F9F54009DD817 /* partly-cloudy-day.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "partly-cloudy-day.png"; sourceTree = "<group>"; };
+		B92D3A66238F9F5E009DD817 /* fog.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fog.png; sourceTree = "<group>"; };
+		B92D3A68238F9FF1009DD817 /* wind.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = wind.png; sourceTree = "<group>"; };
+		B92D3A6A238F9FF9009DD817 /* sleet.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sleet.png; sourceTree = "<group>"; };
+		B92D3A6C238FA04E009DD817 /* rain.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rain.png; sourceTree = "<group>"; };
+		B92D3A6E238FA271009DD817 /* question-mark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "question-mark.png"; sourceTree = "<group>"; };
+		C38FE4A35ABDC7E96FFAB128 /* Pods-TelemetryApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TelemetryApp.release.xcconfig"; path = "Pods/Target Support Files/Pods-TelemetryApp/Pods-TelemetryApp.release.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A01CA51B236A3D02007B6713 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A077D9892379CC9800250EC6 /* WebKit.framework in Frameworks */,
+				835B3677A0C5E7B384A972AE /* Pods_TelemetryApp.framework in Frameworks */,
+				A077D984237938D400250EC6 /* SciChart.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		23173119237BDB4400BE6483 /* SciChart Graphing */ = {
+			isa = PBXGroup;
+			children = (
+				230A0CD4237A77E3002A208C /* RollingAverageUtils.swift */,
+				239981F72378F6B7002AEEC9 /* SmallLiveSciChart.swift */,
+				2317311E237BE9B500BE6483 /* DetailLiveSciChart.swift */,
+				23173120237BEA5D00BE6483 /* TelemetrySCIChartSurface.swift */,
+				23268AB62394D864006D1238 /* DetailSciChart.swift */,
+			);
+			path = "SciChart Graphing";
+			sourceTree = "<group>";
+		};
+		2317311A237BDB7400BE6483 /* Website Tab */ = {
+			isa = PBXGroup;
+			children = (
+				A0398BEC2374F679005454E2 /* WebsiteController.swift */,
+			);
+			path = "Website Tab";
+			sourceTree = "<group>";
+		};
+		2317311B237BE8EB00BE6483 /* Detailed View */ = {
+			isa = PBXGroup;
+			children = (
+				2317311C237BE91600BE6483 /* DetailLiveSciChartVC.swift */,
+				A0CC52ED237C72410022E1EC /* DetailLiveSciChart.storyboard */,
+			);
+			path = "Detailed View";
+			sourceTree = "<group>";
+		};
+		23E37371237C85EE00E0A500 /* Database View */ = {
+			isa = PBXGroup;
+			children = (
+				23E37372237C860600E0A500 /* DatabaseViewController.swift */,
+				2398B03F237CE5BD006C69D9 /* CollapsibleTableViewHeader.swift */,
+				2398B041237CE7D1006C69D9 /* CollapsibleTableSectionViewController.swift */,
+				23268AB42394B982006D1238 /* SelectSensorViewController.swift */,
+				23268AB82394DA1C006D1238 /* DetailPlotViewController.swift */,
+			);
+			path = "Database View";
+			sourceTree = "<group>";
+		};
+		69FC17B818426CF39FED3FDC /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				144BD5E6415349B6695AAAEF /* Pods-TelemetryApp.debug.xcconfig */,
+				C38FE4A35ABDC7E96FFAB128 /* Pods-TelemetryApp.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		72B096A68E3FC05641DA99CA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A0F4A835237142420025CAA1 /* WebKit.framework */,
+				6B22950E09878D842173933E /* Pods_TelemetryApp.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A0119412237380D8002625C5 /* Telemetry Tab */ = {
+			isa = PBXGroup;
+			children = (
+				2317311B237BE8EB00BE6483 /* Detailed View */,
+				A011940F237380B7002625C5 /* TelemetryViewContoller.swift */,
+				A04D5D242376A7EE00B07241 /* TelemetryChartUpdates.swift */,
+				A073C3EE2375F43200BDB7CD /* TelemetryCollectionViews.swift */,
+				A073C3EA2375D8C500BDB7CD /* DraggableDock.swift */,
+				236AC48F2376387100014AA1 /* GraphCollectionViewCell.swift */,
+				A08290F62375546F00AF0E20 /* HeaderView.swift */,
+				A08290F82375592B00AF0E20 /* HeaderView.xib */,
+				A011942D2373F646002625C5 /* Dock View */,
+			);
+			path = "Telemetry Tab";
+			sourceTree = "<group>";
+		};
+		A0119413237380E2002625C5 /* Livestream Tab */ = {
+			isa = PBXGroup;
+			children = (
+				A0F4A83323713D480025CAA1 /* LivestreamView.swift */,
+			);
+			path = "Livestream Tab";
+			sourceTree = "<group>";
+		};
+		A011942D2373F646002625C5 /* Dock View */ = {
+			isa = PBXGroup;
+			children = (
+				A01194302373FB9B002625C5 /* DockManager.swift */,
+				A011942B2373EFC6002625C5 /* DockMinimizedView.swift */,
+				A01194272373EFA6002625C5 /* DockMinimizedView.xib */,
+				A011942E2373FAB2002625C5 /* DockExpandedView.swift */,
+				A01194292373EFB2002625C5 /* DockExpandedView.xib */,
+				A0E2700E23768F0800440719 /* DockExpandedCell.swift */,
+				A0E2700F23768F0800440719 /* DockExpandedCell.xib */,
+				A04A3E872394C6AD004F2423 /* DockHeaderView.swift */,
+				A04A3E882394C6AD004F2423 /* DockHeaderView.xib */,
+			);
+			path = "Dock View";
+			sourceTree = "<group>";
+		};
+		A0188D2F237A0A9500D95F00 /* Settings Modal */ = {
+			isa = PBXGroup;
+			children = (
+				A0764E41237B49170077FB88 /* SettingsModalController.swift */,
+				A0764E42237B49170077FB88 /* SettingsModalController.xib */,
+				A0188D34237A30CE00D95F00 /* ModalCell.swift */,
+				A0188D35237A30CE00D95F00 /* ModalCell.xib */,
+				A0CC52EC237C70C50022E1EC /* Weather */,
+				A0AA6907237A6E8A00AB795B /* SettingsPushViews */,
+			);
+			path = "Settings Modal";
+			sourceTree = "<group>";
+		};
+		A01CA515236A3D02007B6713 = {
+			isa = PBXGroup;
+			children = (
+				A077D987237938F500250EC6 /* SCIGenericWrapper.swift */,
+				A077D983237938D300250EC6 /* SciChart.framework */,
+				A01CA520236A3D02007B6713 /* TelemetryApp */,
+				A01CA51F236A3D02007B6713 /* Products */,
+				69FC17B818426CF39FED3FDC /* Pods */,
+				72B096A68E3FC05641DA99CA /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		A01CA51F236A3D02007B6713 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A01CA51E236A3D02007B6713 /* TelemetryApp.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A01CA520236A3D02007B6713 /* TelemetryApp */ = {
+			isa = PBXGroup;
+			children = (
+				23E37371237C85EE00E0A500 /* Database View */,
+				2317311A237BDB7400BE6483 /* Website Tab */,
+				23173119237BDB4400BE6483 /* SciChart Graphing */,
+				A01CA521236A3D02007B6713 /* AppDelegate.swift */,
+				A01CA523236A3D02007B6713 /* ConsoleViewController.swift */,
+				A073C3F02376335600BDB7CD /* OverallTabViewController.swift */,
+				A01CA525236A3D02007B6713 /* Main.storyboard */,
+				A011941923738470002625C5 /* Protocols.swift */,
+				A0FE983A2374A8D20033F6E6 /* Extensions.swift */,
+				A01C1E48236A47770026D76F /* Telemetry.swift */,
+				A0F3D86123721AFD00D10CF8 /* Sensor.swift */,
+				A0188D2F237A0A9500D95F00 /* Settings Modal */,
+				A0119412237380D8002625C5 /* Telemetry Tab */,
+				A0119413237380E2002625C5 /* Livestream Tab */,
+				A0B9D3902395B56500E92AB5 /* SciChartsLicense */,
+				A01CA528236A3D03007B6713 /* Assets.xcassets */,
+				A01CA52D236A3D03007B6713 /* Info.plist */,
+			);
+			path = TelemetryApp;
+			sourceTree = "<group>";
+		};
+		A0AA6907237A6E8A00AB795B /* SettingsPushViews */ = {
+			isa = PBXGroup;
+			children = (
+				A0AA6908237A6EA800AB795B /* BugReportController.swift */,
+				A0764E3F237B445A0077FB88 /* BugReport.storyboard */,
+				A0DB467E2394815A00ADD41D /* FavoritesSettingsController.swift */,
+				A0DB467C2394813700ADD41D /* FavoritesSettings.storyboard */,
+				A0DB4680239483E200ADD41D /* FavoritesCell.swift */,
+				A04A3E8B2394DC47004F2423 /* DockOptionsController.swift */,
+				A04A3E912394E24C004F2423 /* DockOptions.storyboard */,
+				A04A3E8F2394DDB5004F2423 /* DockOptionsCell.swift */,
+				A01D976E2393A4A700E33A72 /* InProgress.swift */,
+				A01D976C2393A48800E33A72 /* InProgress.storyboard */,
+			);
+			path = SettingsPushViews;
+			sourceTree = "<group>";
+		};
+		A0B9D3902395B56500E92AB5 /* SciChartsLicense */ = {
+			isa = PBXGroup;
+			children = (
+				A0B9D38E2395B55A00E92AB5 /* SciChartsLicense.swift */,
+			);
+			path = SciChartsLicense;
+			sourceTree = "<group>";
+		};
+		A0CC52EC237C70C50022E1EC /* Weather */ = {
+			isa = PBXGroup;
+			children = (
+				A0CC52EA237C70BD0022E1EC /* WeatherViewController.swift */,
+				B92D3A5C238F9C1B009DD817 /* clear-day.png */,
+				B92D3A60238F9F3B009DD817 /* clear-night.png */,
+				B92D3A64238F9F54009DD817 /* partly-cloudy-day.png */,
+				B92D3A68238F9FF1009DD817 /* wind.png */,
+				B92D3A5E238F9C68009DD817 /* cloudy.png */,
+				B92D3A6A238F9FF9009DD817 /* sleet.png */,
+				B92D3A66238F9F5E009DD817 /* fog.png */,
+				B92D3A5A238F9B61009DD817 /* snow.png */,
+				B92D3A6E238FA271009DD817 /* question-mark.png */,
+				B92D3A6C238FA04E009DD817 /* rain.png */,
+				B92D3A62238F9F49009DD817 /* partly-cloudy-night.png */,
+				A0CC52E8237C70B00022E1EC /* Weather.storyboard */,
+				B92D3A56238F5812009DD817 /* CustomTable.swift */,
+				A0CC52EF237C7D140022E1EC /* WeatherModalController.swift */,
+				A0CC52F0237C7D140022E1EC /* WeatherModalController.xib */,
+				7093A1A0237C7EAC00098486 /* Weather.swift */,
+			);
+			path = Weather;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A01CA51D236A3D02007B6713 /* TelemetryApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A01CA546236A3D03007B6713 /* Build configuration list for PBXNativeTarget "TelemetryApp" */;
+			buildPhases = (
+				4C1754689566A76EF692634F /* [CP] Check Pods Manifest.lock */,
+				A01CA51A236A3D02007B6713 /* Sources */,
+				A01CA51B236A3D02007B6713 /* Frameworks */,
+				A01CA51C236A3D02007B6713 /* Resources */,
+				75A90B1FA7D352775B17FF51 /* [CP] Embed Pods Frameworks */,
+				A077D986237938D400250EC6 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TelemetryApp;
+			productName = TelemetryApp;
+			productReference = A01CA51E236A3D02007B6713 /* TelemetryApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A01CA516236A3D02007B6713 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1020;
+				LastUpgradeCheck = 1020;
+				ORGANIZATIONNAME = "Jeff Ahlers";
+				TargetAttributes = {
+					A01CA51D236A3D02007B6713 = {
+						CreatedOnToolsVersion = 10.2.1;
+					};
+				};
+			};
+			buildConfigurationList = A01CA519236A3D02007B6713 /* Build configuration list for PBXProject "TelemetryApp" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A01CA515236A3D02007B6713;
+			productRefGroup = A01CA51F236A3D02007B6713 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A01CA51D236A3D02007B6713 /* TelemetryApp */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A01CA51C236A3D02007B6713 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A04A3E922394E24C004F2423 /* DockOptions.storyboard in Resources */,
+				B92D3A61238F9F3B009DD817 /* clear-night.png in Resources */,
+				A0CC52EE237C72410022E1EC /* DetailLiveSciChart.storyboard in Resources */,
+				A01194282373EFA6002625C5 /* DockMinimizedView.xib in Resources */,
+				B92D3A6B238F9FF9009DD817 /* sleet.png in Resources */,
+				A0CC52F2237C7D140022E1EC /* WeatherModalController.xib in Resources */,
+				A01CA529236A3D03007B6713 /* Assets.xcassets in Resources */,
+				B92D3A67238F9F5E009DD817 /* fog.png in Resources */,
+				A0188D37237A30CE00D95F00 /* ModalCell.xib in Resources */,
+				A0764E40237B445A0077FB88 /* BugReport.storyboard in Resources */,
+				A08290F92375592B00AF0E20 /* HeaderView.xib in Resources */,
+				A0E2701123768F0800440719 /* DockExpandedCell.xib in Resources */,
+				B92D3A5D238F9C1C009DD817 /* clear-day.png in Resources */,
+				B92D3A63238F9F49009DD817 /* partly-cloudy-night.png in Resources */,
+				B92D3A65238F9F54009DD817 /* partly-cloudy-day.png in Resources */,
+				B92D3A5F238F9C68009DD817 /* cloudy.png in Resources */,
+				A011942A2373EFB2002625C5 /* DockExpandedView.xib in Resources */,
+				A01D976D2393A48800E33A72 /* InProgress.storyboard in Resources */,
+				B92D3A6D238FA04E009DD817 /* rain.png in Resources */,
+				A04A3E8A2394C6AD004F2423 /* DockHeaderView.xib in Resources */,
+				B92D3A5B238F9B61009DD817 /* snow.png in Resources */,
+				A0CC52E9237C70B00022E1EC /* Weather.storyboard in Resources */,
+				B92D3A6F238FA271009DD817 /* question-mark.png in Resources */,
+				A01CA527236A3D02007B6713 /* Main.storyboard in Resources */,
+				A0764E44237B49170077FB88 /* SettingsModalController.xib in Resources */,
+				B92D3A69238F9FF1009DD817 /* wind.png in Resources */,
+				A0DB467D2394813700ADD41D /* FavoritesSettings.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		4C1754689566A76EF692634F /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-TelemetryApp-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		75A90B1FA7D352775B17FF51 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TelemetryApp/Pods-TelemetryApp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TelemetryApp/Pods-TelemetryApp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-TelemetryApp/Pods-TelemetryApp-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A01CA51A236A3D02007B6713 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A077D988237938F500250EC6 /* SCIGenericWrapper.swift in Sources */,
+				A04D5D252376A7EE00B07241 /* TelemetryChartUpdates.swift in Sources */,
+				A0119410237380B7002625C5 /* TelemetryViewContoller.swift in Sources */,
+				A0188D36237A30CE00D95F00 /* ModalCell.swift in Sources */,
+				A04A3E902394DDB5004F2423 /* DockOptionsCell.swift in Sources */,
+				A01CA524236A3D02007B6713 /* ConsoleViewController.swift in Sources */,
+				A0AA6909237A6EA800AB795B /* BugReportController.swift in Sources */,
+				A011941A23738470002625C5 /* Protocols.swift in Sources */,
+				2317311F237BE9B500BE6483 /* DetailLiveSciChart.swift in Sources */,
+				A0F3D86223721AFD00D10CF8 /* Sensor.swift in Sources */,
+				236AC4902376387100014AA1 /* GraphCollectionViewCell.swift in Sources */,
+				A0398BED2374F679005454E2 /* WebsiteController.swift in Sources */,
+				A0F4A83423713D480025CAA1 /* LivestreamView.swift in Sources */,
+				239981F82378F6B7002AEEC9 /* SmallLiveSciChart.swift in Sources */,
+				A08290F72375546F00AF0E20 /* HeaderView.swift in Sources */,
+				A04A3E8C2394DC47004F2423 /* DockOptionsController.swift in Sources */,
+				A0B9D38F2395B55A00E92AB5 /* SciChartsLicense.swift in Sources */,
+				A011942F2373FAB2002625C5 /* DockExpandedView.swift in Sources */,
+				23268AB72394D864006D1238 /* DetailSciChart.swift in Sources */,
+				23268AB52394B982006D1238 /* SelectSensorViewController.swift in Sources */,
+				A01D976F2393A4A700E33A72 /* InProgress.swift in Sources */,
+				2317311D237BE91600BE6483 /* DetailLiveSciChartVC.swift in Sources */,
+				A0FE983B2374A8D20033F6E6 /* Extensions.swift in Sources */,
+				2398B042237CE7D1006C69D9 /* CollapsibleTableSectionViewController.swift in Sources */,
+				A0764E43237B49170077FB88 /* SettingsModalController.swift in Sources */,
+				A0CC52EB237C70BD0022E1EC /* WeatherViewController.swift in Sources */,
+				A073C3EB2375D8C500BDB7CD /* DraggableDock.swift in Sources */,
+				A0CC52F1237C7D140022E1EC /* WeatherModalController.swift in Sources */,
+				A011942C2373EFC6002625C5 /* DockMinimizedView.swift in Sources */,
+				A073C3EF2375F43200BDB7CD /* TelemetryCollectionViews.swift in Sources */,
+				230A0CD5237A77E3002A208C /* RollingAverageUtils.swift in Sources */,
+				A01C1E49236A47770026D76F /* Telemetry.swift in Sources */,
+				A0DB4681239483E200ADD41D /* FavoritesCell.swift in Sources */,
+				7093A1A1237C7EAC00098486 /* Weather.swift in Sources */,
+				23268AB92394DA1C006D1238 /* DetailPlotViewController.swift in Sources */,
+				A01194312373FB9B002625C5 /* DockManager.swift in Sources */,
+				A0DB467F2394815A00ADD41D /* FavoritesSettingsController.swift in Sources */,
+				A073C3F12376335600BDB7CD /* OverallTabViewController.swift in Sources */,
+				23173121237BEA5D00BE6483 /* TelemetrySCIChartSurface.swift in Sources */,
+				A0E2701023768F0800440719 /* DockExpandedCell.swift in Sources */,
+				2398B040237CE5BD006C69D9 /* CollapsibleTableViewHeader.swift in Sources */,
+				A01CA522236A3D02007B6713 /* AppDelegate.swift in Sources */,
+				23E37373237C860600E0A500 /* DatabaseViewController.swift in Sources */,
+				A04A3E892394C6AD004F2423 /* DockHeaderView.swift in Sources */,
+				B92D3A57238F5812009DD817 /* CustomTable.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		A01CA525236A3D02007B6713 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A01CA526236A3D02007B6713 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		A01CA544236A3D03007B6713 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		A01CA545236A3D03007B6713 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A01CA547236A3D03007B6713 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 144BD5E6415349B6695AAAEF /* Pods-TelemetryApp.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = LVD3AQD899;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Pods",
+				);
+				INFOPLIST_FILE = TelemetryApp/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "CSE-438.TelemetryApp";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A01CA548236A3D03007B6713 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C38FE4A35ABDC7E96FFAB128 /* Pods-TelemetryApp.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = LVD3AQD899;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Pods",
+				);
+				INFOPLIST_FILE = TelemetryApp/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "CSE-438.TelemetryApp";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A01CA519236A3D02007B6713 /* Build configuration list for PBXProject "TelemetryApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A01CA544236A3D03007B6713 /* Debug */,
+				A01CA545236A3D03007B6713 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A01CA546236A3D03007B6713 /* Build configuration list for PBXNativeTarget "TelemetryApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A01CA547236A3D03007B6713 /* Debug */,
+				A01CA548236A3D03007B6713 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A01CA516236A3D02007B6713 /* Project object */;
+}
