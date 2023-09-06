@@ -1,0 +1,84 @@
+/**
+ * Using some off white for the background color and
+ * padding the top.
+ */
+body
+{
+    background: whitesmoke;
+    color: #505050;
+    display: flex;
+    flex-flow: column;
+    text-shadow: 2px 1px 3px rgba(200, 200, 200, 0.43);
+}
+
+/**
+ * Coloring h1 a bit off black, removing bold, and shadowing
+ * a touch.
+ */
+h1 {
+    color: #505050;
+    text-shadow: 2px 1px 3px rgba(200, 200, 200, 0.43);
+    font-weight: normal;
+    margin-bottom: 0px;
+}
+
+#header {
+    position: relative;
+    margin: auto;
+    vertical-align: middle;
+    font-weight: lighter;
+}
+
+#header img {
+    display: inline-block;
+    margin-right: .5em;
+    margin-bottom: -1em;
+    height: 5em;
+}
+#header h1 {
+    display: inline-block;
+    font-size: 3em;
+}
+#content {
+    margin: 0 auto;
+    padding: 10px;
+    clear: both;
+}
+#miniature {
+    float: left;
+}
+
+#overviewLegend {
+    list-style: none;
+    -webkit-user-select: none; /* Chrome/Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+ */
+
+    /* Rules below not implemented in browsers yet */
+    -o-user-select: none;
+    user-select: none;
+}
+
+#overviewLegend li {
+    display: flex;
+    flex-flow: row;
+}
+
+#overviewLegend li > div {
+    margin-right: .125em;
+}
+
+.colorTile {
+    margin-left: .375em;
+    border: 1px solid #ccc;
+    padding: 1px;
+    margin-bottom: auto;
+}
+#middle {
+    display: flex;
+    flex-flow: row;
+}
+#center {
+    width: 80%;
+    margin: 0 auto 0 auto;
+}

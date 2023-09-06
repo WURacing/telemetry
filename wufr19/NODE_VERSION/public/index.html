@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>WURacing TelemetryWeb</title>
+    <meta name="description" content="WashU Racing TelemetryWeb Project. Creator: Evan Simkowitz. Contact: esimkowitz@wustl.edu">
+    <meta name="author" content="Evan Simkowitz"> 
+
+    <!-- CSS files -->
+    <link href="stylesheets/pure-min.css" rel="stylesheet" type="text/css">
+    <link href="stylesheets/base.css" rel="stylesheet" type="text/css">
+    <link href="stylesheets/chart-modules.css" rel="stylesheet" type="text/css">
+
+    <!-- icon for site -->
+    <link rel="shortcut icon" href="media/logo_icon.ico">
+
+    <script type="text/javascript" src="javascripts/jquery.min.js"></script>
+    <script type="text/javascript" src="javascripts/jquery.flot.min.js"></script>
+    <script type="text/javascript" src="javascripts/socket.io-1.0.6.js"></script>
+    <script type="text/javascript" src="javascripts/client-server.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            initData();
+            somePlot = $.plot($("#placeholder"), dataset, options);
+            startClientServer();
+            $.each(dataset, function(key, val) {
+                l = val.label;
+                var li = $('<li />').appendTo($("#overviewLegend"));
+                
+                $('<input name="' + l + '" id="' + val.idx + '" class="checkbox" type="checkbox" checked="checked" /><div class="colorTile"><div style="width:4px;height:0;border:5px solid ' + val.color + ';overflow:hidden"></div></div>').appendTo(li);
+                $('<label>', {
+                    text: l, 
+                    'for': l
+                }).appendTo(li);
+            });
+            $(".checkbox").change(function() {
+                var idx = Number(this.id);
+                togglePlot(idx);
+            });
+            $('.legendColorBox > div').each(function(i){
+                $(this).clone().prependTo(choiceContainer.find("li").eq(i));
+            });
+
+            window.onresize = function(event) {
+                somePlot = $.plot($("#placeholder"), somePlot.getData(), options);
+            }
+        });
+        window.onbeforeunload = function(e) {
+            socket.disconnect();
+        };
+
+
+    </script>
+</head>
+<body>
+    <div id="center">
+        <div id="header">
+            <img src="media/logo.png">
+            <h1>TelemetryWeb</h1>
+        </div>
+        <div id="content">
+            <div id="middle">
+                <div class="demo-container">
+                    <div id="placeholder" class="demo-placeholder"></div>
+                </div>
+                <div id="miniature">
+                    <ul id="overviewLegend">
+                    </ul>
+                </div>
+            </div>
+            <p>
+                The graph takes a little while to populate before it begins accurately displaying data.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
