@@ -1,2 +1,0 @@
-plotly==1.12.9
-pyserial==3.1.1
