@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>WURacing 2017</title>
+	<script type="text/javascript" src="{{url_for('static',filename='js/jquery.min.js')}}" ></script>
+	<script type="text/javascript" src="{{url_for('static',filename='js/socket.io.min.js')}}" ></script>
+	<link rel="stylesheet" href="{{url_for('static',filename='css/index.css')}}">
+	{% for x in statics %}
+		{% if x[0] == 'js' %}
+			<script type="text/javascript" src="{{url_for('static',filename='js/'+x[1])}}" ></script>
+		{% elif x[0] == 'css' %}
+			<link rel="stylesheet" href="{{url_for('static',filename='css/'+x[1])}}">
+		{% endif %}
+	{% endfor %}
+</head>
+<body>
+	<ul class="navbar">
+		<li class="navbar_li"><a class="navbar_a" href="/"><b>Dashboard</b></a></li>
+		<li class="navbar_li"><a class="navbar_a" href="/plots"><b>Plots</b></a></li>
+	</ul>
+{% block body %}{% endblock %}
+</body>
+</html>

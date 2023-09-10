@@ -1,0 +1,16 @@
+{
+  "name": "TelemetryWeb",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "ejs": "0.7.x",
+    "express": "3.4.x",
+    "socket.io": "^1.5.1"
+  },
+  "engines": {
+    "node": "0.10.x",
+    "npm": "1.2.x"
+  }
+}
