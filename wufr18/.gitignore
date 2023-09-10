@@ -1,9 +1,0 @@
-NODE_VERSION/node_modules/
-yarn.lock
-plotting.sublime-project
-plotting.sublime-workspace
-venv/
-logs/
-__pycache__/
-node_modules/
-*.pyc
