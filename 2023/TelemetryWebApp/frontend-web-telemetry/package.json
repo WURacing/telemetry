@@ -1,0 +1,26 @@
+{
+  "name": "gg-plot",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@chrisheanan/vue-gauge": "^1.2.2",
+    "apexcharts": "^3.46.0",
+    "pinia": "^2.1.7",
+    "plotly.js-dist": "^2.29.1",
+    "vue": "^3.3.4",
+    "vue-plotly": "^1.1.0",
+    "vue-router": "^4.3.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.4.0",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.3.5",
+    "vite": "^4.5.2"
+  }
+}
