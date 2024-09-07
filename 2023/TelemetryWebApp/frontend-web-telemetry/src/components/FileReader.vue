@@ -1,5 +1,5 @@
 <template>
-  <div class="left-5 text-red-400 w-1/5 justify-start"> 
+  <div class="left-5 text-red-400 w-1/5 justify-start">
     <label class="text-red-100 p-4">
       <input type="file" id="input" name="input" accept=".csv" @change="loadTextFromFile" class="block w-full text-sm text-slate-500
       file:mr-4 file:py-2 file:px-4
@@ -16,7 +16,10 @@
 import { type Ref, ref } from 'vue';
 import papaparse from 'papaparse';
 import { useFileStoreStore } from '../stores/FileStore';
+import { WebSocket } from 'vite';
+import { useWebSocket } from '@vueuse/core';
 
+const url = "https://example.com/data.csv";
 const store = useFileStoreStore();
 const LatAcc:Ref<number[]> = ref([]);
 const LongAcc:Ref<number[]> = ref([]);

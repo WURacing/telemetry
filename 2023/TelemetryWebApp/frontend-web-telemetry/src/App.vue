@@ -1,14 +1,19 @@
-<template id="home">
-  <div class="flex pt-1 flex-start align-baseline" id="header-wrapper">
-    <h2 class="text-2xl inline-block p-5 ml-10 text-start text-red-600">WashU Racing Telemetry Display</h2>
+<template class="bg-base-100" id="home">
+
+
+
+  <div>
+    <a class="btn btn-ghost text-2xl">WashU Racing Telemetry Display </a>
     <FileReader class="inline-block" />
   </div>
   <div class="flex-right max-w-full text-right px-10" id="section-wrapper">
     <router-link class="text-red-600 m-3" to="/">Home</router-link>
     <router-link class="text-orange-400 m-3" to="/suspension">Race Engineer</router-link>
   </div>
-  <router-view class="flex max-w-full"/>
 
+  <label for="side-drawer" aria-label="close sidebar" class="drawer-overlay">
+  <router-view class="flex max-w-full"/>
+  </label>
 </template>
 
 <script setup lang="ts">
