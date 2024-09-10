@@ -7,7 +7,7 @@ module.exports = {
       {
         mytheme: {
           "primary": "#5f0f0f",
-          "secondary": "#f3f4f6",
+          "secondary": "#f3bdbd",
           "accent": "#1c1917",
           "neutral": "#181818",
           "base-100": "#242a3f",
@@ -21,7 +21,17 @@ module.exports = {
   },
   darkMode: false,
   theme: {
-    extend: {},
+    extend: {
+      keyframes:{
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
+      },
+      animation: {
+        float: 'float 2s ease-in-out infinite',
+      },
+    },
   },
   variants: {
     extend: {},

@@ -1,19 +1,18 @@
-<template class="bg-base-100" id="home">
+<template class="bg-accent" id="home">
 
-
-
-  <div>
-    <a class="btn btn-ghost text-2xl">WashU Racing Telemetry Display </a>
-    <FileReader class="inline-block" />
-  </div>
-  <div class="flex-right max-w-full text-right px-10" id="section-wrapper">
-    <router-link class="text-red-600 m-3" to="/">Home</router-link>
-    <router-link class="text-orange-400 m-3" to="/suspension">Race Engineer</router-link>
-  </div>
-
-  <label for="side-drawer" aria-label="close sidebar" class="drawer-overlay">
+  <div class="flex justify-center w-full">
+    <div class="navbar rounded-3xl bg-primary border-amber-200 w-3/4 m-3 sticky justify-center hover:animate-float">
+      <a class="btn btn-ghost text-2xl">WashU Racing Telemetry Display </a>
+      <FileReader class="inline-block" />
+      <div class="flex-none text-right px-10" id="section-wrapper">
+        <router-link class="btn text-red-900 m-3" to="/">Home</router-link>
+        <router-link class="btn text-orange-700 m-3" to="/suspension">Race Engineer</router-link>
+        <router-link class="btn text-blue-700 m-3" to="/suspension">Aero</router-link>
+        <router-link class="btn text-green-700 m-3" to="/">Powertrain</router-link>
+      </div>
+    </div>
+</div>
   <router-view class="flex max-w-full"/>
-  </label>
 </template>
 
 <script setup lang="ts">
