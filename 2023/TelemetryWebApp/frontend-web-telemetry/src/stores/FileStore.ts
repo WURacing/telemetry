@@ -13,7 +13,8 @@ export const useFileStoreStore = defineStore('fileStore', () => {
     const ThrottlePosition:Ref<number[]> = ref([])
     const OilPressure:Ref<number[]> = ref([])
     const OilTemp:Ref<number[]> = ref([])
-    
+    const ExternalVoltage:Ref<number[]> = ref([])
+
     const getLatAcc = computed(() => LatAcc.value)
     const getLongAcc = computed(() => LongAcc.value)
     const getEngineRPM = computed(() => EngineRPM.value)
@@ -25,20 +26,22 @@ export const useFileStoreStore = defineStore('fileStore', () => {
     const getThrottlePosition = computed(() => ThrottlePosition.value)
     const getOilPressure = computed(() => OilPressure.value)
     const getOilTemp = computed(() => OilTemp.value)
+    const getExternalVoltage = computed(() => ExternalVoltage.value)
 
     async function updateCollectedData(
         LatAccIn: number[],
         LongAccIn: number[],
-        EngineRPMIn: number[], 
-        TimeIn: number[], 
-        GPSXPosIn: number[], 
+        EngineRPMIn: number[],
+        TimeIn: number[],
+        GPSXPosIn: number[],
         GPSYPosIn: number[],
         AirSpeedIn: number[],
         BrakePressureIn: number[],
         ThrottlePositionIn: number[],
         OilPressureIn: number[],
-        OilTempIn: number[]) {
-        
+        OilTempIn: number[],
+        ExternalVoltageIn: number[]){
+
         LatAcc.value = LatAccIn
         LongAcc.value = LongAccIn
         EngineRPM.value = EngineRPMIn
@@ -50,61 +53,66 @@ export const useFileStoreStore = defineStore('fileStore', () => {
         ThrottlePosition.value = ThrottlePositionIn
         OilPressure.value = OilPressureIn
         OilTemp.value = OilTempIn
+        ExternalVoltage.value = ExternalVoltageIn
         }
 
     // subscribe function
-    const subscribe = (callback: 
-        (LatAccIn: number[], 
-            LongAccIn: number[], 
-            EngineRPMIn: number[], 
-            TimeIn: number[], 
-            GPSXPosIn: number[], 
-            GPSYPosIn: number[], 
+    const subscribe = (callback:
+        (LatAccIn: number[],
+            LongAccIn: number[],
+            EngineRPMIn: number[],
+            TimeIn: number[],
+            GPSXPosIn: number[],
+            GPSYPosIn: number[],
             AirSpeedIn: number[],
             BrakePressureIn: number[],
             ThrottlePositionIn: number[],
             OilPressureIn: number[],
-            OilTempIn: number[]) => void) => {
+            OilTempIn: number[],
+            ExternalVoltageIn: number[]) => void) => {
         const interval = setInterval(() => {
-            callback(LatAcc.value, 
-                LongAcc.value, 
-                EngineRPM.value, 
+            callback(LatAcc.value,
+                LongAcc.value,
+                EngineRPM.value,
                 Time.value,
-                 GPSXPos.value, 
-                 GPSYPos.value, 
-                 AirSpeed.value, 
+                 GPSXPos.value,
+                 GPSYPos.value,
+                 AirSpeed.value,
                  BrakePressure.value,
                  ThrottlePosition.value,
                  OilPressure.value,
-                 OilTemp.value)
+                 OilTemp.value,
+                 ExternalVoltage.value)
         }, 1000)
         return () => clearInterval(interval)
     }
 
     return {
-        subscribe, 
-        LatAcc, 
-        LongAcc, 
-        EngineRPM, 
-        Time, 
-        GPSXPos, 
-        GPSYPos, 
+        subscribe,
+        LatAcc,
+        LongAcc,
+        EngineRPM,
+        Time,
+        GPSXPos,
+        GPSYPos,
         AirSpeed,
         BrakePressure,
         ThrottlePosition,
         OilPressure,
         OilTemp,
-        updateCollectedData, 
-        getLatAcc, 
-        getLongAcc, 
-        getEngineRPM, 
-        getTime, 
-        getGPSXPos, 
-        getGPSYPos, 
+        ExternalVoltage,
+        updateCollectedData,
+        getLatAcc,
+        getLongAcc,
+        getEngineRPM,
+        getTime,
+        getGPSXPos,
+        getGPSYPos,
         getAirSpeed,
         getBrakePressure,
         getThrottlePosition,
         getOilPressure,
-        getOilTemp
+        getOilTemp,
+        getExternalVoltage
         }
 });

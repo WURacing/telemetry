@@ -8,7 +8,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@chrisheanan/vue-gauge": "^1.2.2",
     "apexcharts": "^3.46.0",
     "pinia": "^2.1.7",
     "plotly.js-dist": "^2.29.1",

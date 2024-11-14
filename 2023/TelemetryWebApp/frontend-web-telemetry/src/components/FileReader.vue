@@ -32,6 +32,7 @@ const BrakePressure:Ref<number[]> = ref([]);
 const ThrottlePosition:Ref<number[]> = ref([]);
 const OilPressure:Ref<number[]> = ref([]);
 const OilTemp:Ref<number[]> = ref([]);
+const ExternalVoltage:Ref<number[]> = ref([]);
 
 function loadTextFromFile(ev: Event) {
   const file: File = (ev.target as HTMLInputElement).files![0];
@@ -60,6 +61,7 @@ function loadTextFromFile(ev: Event) {
     ThrottlePosition.value = result.data.map((column: number[]) => column["ThrottlePosition"]);
     OilPressure.value = result.data.map((column: number[]) => column["OilPressure"]);
     OilTemp.value = result.data.map((column: number[]) => column["Oil Temp"]);
+    ExternalVoltage.value = result.data.map((column: number[]) => column["External Voltage"]);
 
     store.updateCollectedData(
       LatAcc.value,
@@ -72,18 +74,9 @@ function loadTextFromFile(ev: Event) {
       BrakePressure.value,
       ThrottlePosition.value,
       OilPressure.value,
-      OilTemp.value);
+      OilTemp.value,
+      ExternalVoltage.value);
 
-    console.log(
-      "LatAcc: " + LatAcc.value + "\n",
-    LatAcc.value,
-      "\n\n"
-    );
-    console.log(
-      "LongAcc: " + LongAcc.value + "\n",
-      LongAcc.value,
-      "\n\n"
-    );
       }
 }
 

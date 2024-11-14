@@ -65,10 +65,10 @@ async function initSciChart() {
 
       // Add X and Y axes with growBy padding
       const xMin = (Math.min.apply(null, GPSXPos.value.map(function(x) { return !isNaN(x); }).filter(Boolean))) + 0.001;
-      const xMax = (Math.max.apply(null, GPSXPos.value.map(function(x) { return !isNaN(x); }).filter(Boolean))) + 0.001;
+      const xMax = (Math.max.apply(null, GPSXPos.value.map(function(x) { return !isNaN(x); }).filter(Boolean))) + 0.101;
       const yMin = (Math.min.apply(null, GPSYPos.value.map(function(x) { return !isNaN(x); }).filter(Boolean))) + 0.001;
-      const yMax = (Math.max.apply(null, GPSYPos.value.map(function(x) { return !isNaN(x); }).filter(Boolean))) + 0.001;
-      const growBy = new NumberRange(0.001, 0.001);
+      const yMax = (Math.max.apply(null, GPSYPos.value.map(function(x) { return !isNaN(x); }).filter(Boolean))) + 0.101;
+      const growBy = new NumberRange(0.100, 0.100);
       const xAxis = new NumericAxis(wasmContext, {
         drawMajorGridLines: false,
         drawMinorGridLines: false,

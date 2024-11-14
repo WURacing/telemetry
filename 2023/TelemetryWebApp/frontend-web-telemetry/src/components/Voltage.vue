@@ -1,6 +1,6 @@
 <template>
-  <div class="throttle">
-    <div id="scichart-throttle"></div>
+  <div class="voltage">
+    <div id="scichart-voltage"></div>
   </div>
 </template>
 
@@ -26,17 +26,17 @@ import {
 // Retrieve data from store
 const store = useFileStoreStore();
 const Time = ref([] as number[]);
-const ThrottlePosition = ref([] as number[]);
+const ExternalVoltage = ref([] as number[]);
 
 // Setup variables for realtime chart updates
 const numberOfPointsPerTimerTick = 10; // 10 points every timer tick
 const timerInterval = 50; // timer tick every 50 milliseconds
 
 // Watch for changes in the GPSXPos and GPSYPos variables of the Pinia store
-watch([() => store.Time, () => store.ThrottlePosition], ([newTime, newThrottlePosition]) => {
+watch([() => store.Time, () => store.ExternalVoltage], ([newTime, newExternalVoltage]) => {
   // Update the local GPSXPos and GPSYPos variables with the new values
   Time.value = newTime;
-  ThrottlePosition.value = newThrottlePosition;
+  ExternalVoltage.value = newExternalVoltage;
 
   // Call the initSciChart function to update the chart
   initSciChart();
@@ -51,36 +51,36 @@ async function initSciChart() {
   SciChartSurface.useWasmFromCDN();
 
   // Initialize SciChartSurface. Don't forget to await!
-  const { sciChartSurface, wasmContext } = await SciChartSurface.create("scichart-throttle", {
+  const { sciChartSurface, wasmContext } = await SciChartSurface.create("scichart-voltage", {
     theme: new SciChartJSDarkTheme(),
-    title: "Throttle Position",
+    title: "Voltage",
     titleStyle: { fontSize: 32 }
   });
   SciChartSurface.UseCommunityLicense();
 
   // Create an XAxis and YAxis with growBy padding
   sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { axisTitle: "Time (s)", autoRange: EAutoRange.Always}));
-  sciChartSurface.yAxes.add(new NumericAxis(wasmContext, { axisTitle: "%", autoRange: EAutoRange.Always}));
+  sciChartSurface.yAxes.add(new NumericAxis(wasmContext, { axisTitle: "Volts", visibleRange: new NumberRange(7, 13)}));
 
   // Import the data from our CSV into an array
   const xValues = [0, 0];
   const yValues = [0, 0];
   for (let i = 0; i < Time.value.length; i++) {
     xValues.push(Time.value[i]);
-    yValues.push(ThrottlePosition.value[i]);
+    yValues.push(ExternalVoltage.value[i]);
   }
 
-  const speedDataSeries = new XyDataSeries(wasmContext);
+  const voltageDataSeries = new XyDataSeries(wasmContext);
   // Map each point to (x, y) coordinates
   for (let i = 0; i < Time.value.length; i++) {
-    speedDataSeries.append(xValues[i], yValues[i]);
+    voltageDataSeries.append(xValues[i], yValues[i]);
   }
   // Create a line series with some initial data
   sciChartSurface.renderableSeries.add(new FastLineRenderableSeries(wasmContext, {
-    stroke: "green",
+    stroke: "yellow",
     strokeThickness: 3,
     opacity: 1,
-    dataSeries: speedDataSeries,
+    dataSeries: voltageDataSeries,
   }));
 
   // Add some interaction modifiers to show zooming and panning
@@ -107,7 +107,7 @@ li {
 a {
   color: #42b983;
 }
-#scichart-throttle {
+#scichart-voltage {
   width: 100%;
   height: 240px;
 }

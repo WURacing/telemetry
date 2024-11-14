@@ -106,7 +106,7 @@ li {
 a {
   color: #42b983;
 }
-#scichart-brakes {
+#scichart-oilTemp {
   width: 100%;
   height: 240px;
 }

@@ -7,12 +7,14 @@
       <TrackMap class="w-96" msg="Track Map" />
       <ScichartGGPlot class="w-96" msg="GG Plot" />
       <BrakePressure class="w-96" msg="Brake Pressure" />
+      <Voltage class="w-96" msg="Voltage" />
   </div>
 </template>
 
 <script setup>
 import ScichartGGPlot from "/src/components/ScichartGGPlot.vue";
 import TrackMap from "/src/components/TrackMap.vue";
+import Voltage from "@/components/Voltage.vue";
 </script>
 
 <style scoped>
