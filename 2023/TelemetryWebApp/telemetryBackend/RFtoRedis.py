@@ -76,45 +76,50 @@ class SerialProcessor:
         return telemetry_data
 
 
-@asynccontextmanager
-async def lifespan():
-    logger.info("Starting serial reading...")
-    ser = serial.Serial(SERIAL_CONFIG['PORT'], SERIAL_CONFIG['BAUD_RATE'], timeout=SERIAL_CONFIG['TIMEOUT'])
-    processor = SerialProcessor()
-    await redis.Redis(host=REDIS_CONFIG['HOST'], port=REDIS_CONFIG['PORT'], password=REDIS_CONFIG['PASSWORD'])
+""" 
+@app.on_event("startup") will be deprecated in a future version. The commented code below will allow
+us the same functionality. However, I'm pretty sure it doesn't work.
+"""
 
-    async def read_from_serial():
-        while True:
-            logger.info("Data available on serial port.")
-            line = ser.readline().decode().strip()
-            data = await process_line(line)
-            if data:
-                telemetry_data = TelemetryData(
-                    timestamp=datetime.utcnow(),
-                    session_name=processor.current_session,
-                    channels=data
-                )
-                # Log parsed telemetry data
-                # logger.info(f"Raw data from serial: {line}")
-                # logger.info(f"Parsed telemetry data: {telemetry_data}")
-
-                # Save to Redis and Emit to Socket.IO
-                await processor.save_to_redis(data)
-                saved_data = await processor.save_to_redis(data)
-                # logger.info(f"Data saved to Redis.")
-                logger.info(f"Data saved to Redis: {saved_data}")
-                await sio.emit("telemetry_update", saved_data)
-                await asyncio.sleep(0.01)  # Adjust rate as needed
-
-    await asyncio.create_task(read_from_serial())
-
-    yield
-
-    if ser:
-        ser.close()
-
-    if redis_client:
-        await redis_client.aclose()
+# @asynccontextmanager
+# async def lifespan():
+#     logger.info("Starting serial reading...")
+#     ser = serial.Serial(SERIAL_CONFIG['PORT'], SERIAL_CONFIG['BAUD_RATE'], timeout=SERIAL_CONFIG['TIMEOUT'])
+#     processor = SerialProcessor()
+#     await redis.Redis(host=REDIS_CONFIG['HOST'], port=REDIS_CONFIG['PORT'], password=REDIS_CONFIG['PASSWORD'])
+#
+#     async def read_from_serial():
+#         while True:
+#             logger.info("Data available on serial port.")
+#             line = ser.readline().decode().strip()
+#             data = await process_line(line)
+#             if data:
+#                 telemetry_data = TelemetryData(
+#                     timestamp=datetime.utcnow(),
+#                     session_name=processor.current_session,
+#                     channels=data
+#                 )
+#                 # Log parsed telemetry data
+#                 # logger.info(f"Raw data from serial: {line}")
+#                 # logger.info(f"Parsed telemetry data: {telemetry_data}")
+#
+#                 # Save to Redis and Emit to Socket.IO
+#                 await processor.save_to_redis(data)
+#                 saved_data = await processor.save_to_redis(data)
+#                 # logger.info(f"Data saved to Redis.")
+#                 logger.info(f"Data saved to Redis: {saved_data}")
+#                 await sio.emit("telemetry_update", saved_data)
+#                 await asyncio.sleep(0.01)  # Adjust rate as needed
+#
+#     await asyncio.create_task(read_from_serial())
+#
+#     yield
+#
+#     if ser:
+#         ser.close()
+#
+#     if redis_client:
+#         await redis_client.aclose()
 
 
 # Setup FastAPI app and sockets
@@ -125,24 +130,6 @@ sio_app = socketio.ASGIApp(sio, app)
 origins = [
     "http://localhost:4000",
 ]
-
-
-@sio.event
-async def connect(sid, environ):
-    print(f"Client connected: {sid}")
-    await start_serial_reading()
-    await post_telemetry()
-
-
-@sio.event
-async def disconnect(sid):
-    print('Client disconnected:', sid)
-
-    if ser:
-        ser.close()
-
-    if redis_client:
-        await redis_client.aclose()
 
 
 @app.on_event("startup")
@@ -163,7 +150,7 @@ async def start_serial_reading():
                     session_name=processor.current_session,
                     channels=data
                 )
-                # Log parsed telemetry data
+                # Raw telemetry data logging
                 # logger.info(f"Raw data from serial: {line}")
                 # logger.info(f"Parsed telemetry data: {telemetry_data}")
 
@@ -172,20 +159,9 @@ async def start_serial_reading():
                 saved_data = await processor.save_to_redis(data)
                 logger.info(f"Data saved to Redis.")
                 logger.info(f"Data saved to Redis: {saved_data}")
-                await sio.emit("telemetry_update", saved_data)
                 await asyncio.sleep(0.01)  # Adjust rate as needed
 
     await asyncio.create_task(read_from_serial())
-
-
-@app.post("/telemetry")
-async def post_telemetry(data: TelemetryData):
-    logger.info(f'Posting Telemetry: {data}')
-    timestamp = data.timestamp.isoformat()
-    key = f"telemetry_at_{timestamp}"
-    await redis_client.set(key, json.dumps(data.dict()))
-    await app.state.socket_manager.emit("telemetry_update", data.dict())
-    return {"status": "success"}
 
 
 async def get_latest_data_from_redis() -> Optional[Tuple[str, TelemetryData]]:
