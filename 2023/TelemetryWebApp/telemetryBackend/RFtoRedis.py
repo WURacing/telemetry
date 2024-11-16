@@ -73,8 +73,10 @@ class SerialProcessor:
         }
 
         await (self.redis.set(telemetry_name, json.dumps(telemetry_data), ex=3600))
+        await redis_client.publish("telemetry_channel", json.dumps(telemetry_data))
 
         return telemetry_data
+
 
 
 """ 
@@ -213,4 +215,4 @@ client_manager = ClientManager()
 
 # Initialize Test Server
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=4000, log_level="info")
+    uvicorn.run(app, host="0.0.0.0", port=4500, log_level="info")

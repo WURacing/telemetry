@@ -15,90 +15,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onUnmounted, watch } from 'vue';
-import { io, Socket } from 'socket.io-client';
-import { wsService } from '../services/websocketService';
+import { ref, onUnmounted } from 'vue';
 import { useFileStoreStore } from '../stores/FileStore';
-import type { TelemetryData, TelemetryMetrics } from '../types/telemetry';
+import { WebSocketService } from '../services/websocketService';
 
 const store = useFileStoreStore();
 const isConnected = ref(false);
 const isLoading = ref(false);
 const connectionError = ref<string | null>(null);
-const metrics = ref<TelemetryMetrics>({
-  queueSize: 0,
-  droppedMessages: 0,
-  processInterval: 16,
-  isProcessing: false
-});
 
-// const fetchLatestTelemetryData = async () => {
-//   try {
-//     const response = await     Socket.call('telemetry');
-//     if (response.data) {
-//       const data: TelemetryData = response.data;
-//       await store.updateCollectedData(
-//           [...store.LatAcc, data.channels[0]].slice(-100),
-//           [...store.LongAcc, data.channels[1]].slice(-100),
-//           [...store.EngineRPM, data.channels[2]].slice(-100),
-//           [...store.Time, Date.now()].slice(-100),
-//           [...store.GPSXPos, data.channels[3]].slice(-100),
-//           [...store.GPSYPos, data.channels[4]].slice(-100),
-//           [...store.AirSpeed, data.channels[5]].slice(-100),
-//           [...store.BrakePressure, data.channels[6]].slice(-100),
-//           [...store.ThrottlePosition, data.channels[7]].slice(-100),
-//           [...store.OilPressure, data.channels[8]].slice(-100),
-//           [...store.OilTemp, data.channels[9]].slice(-100),
-//           [...store.ExternalVoltage, data.channels[10]].slice(-100)
-//       );
-//     }
-//   } catch (error) {
-//     console.error('Error fetching telemetry data:', error);
-//   }
-// };
-
-// Call the fetchLatestTelemetryData function periodically
-let fetchInterval = null
-// const startFetchingData = () => {
-//     fetchInterval = setInterval(fetchLatestTelemetryData, 1000); // Fetch data every 1 second
-// };
-
-const stopFetchingData = () => {
-  if (fetchInterval !== null) {
-    clearInterval(fetchInterval);
-    fetchInterval = null;
-  }
-};
-
-
-
-// Update metrics periodically when connected
-let metricsInterval: number | null = null;
-
-const startMetricsMonitoring = () => {
-  metricsInterval = window.setInterval(() => {
-    metrics.value = wsService.getMetrics();
-  }, 1000);
-};
-
-const stopMetricsMonitoring = () => {
-  if (metricsInterval !== null) {
-    clearInterval(metricsInterval);
-    metricsInterval = null;
-  }
-};
+const wsService = new WebSocketService();
 
 const connect = async () => {
+  if (isConnected.value) return; // Already connected
+
   try {
     isLoading.value = true;
     connectionError.value = null;
 
-
-    // Connect to WebSocket server
-    wsService.connect();
-
-    // Start monitoring metrics
-    startMetricsMonitoring();
+    wsService.connect(); // The service handles the connection and data updates
 
     isConnected.value = true;
   } catch (error) {
@@ -110,35 +45,19 @@ const connect = async () => {
 };
 
 const disconnect = () => {
+  if (!isConnected.value) return;
+
   wsService.disconnect();
-  stopMetricsMonitoring();
   isConnected.value = false;
   connectionError.value = null;
 
-  // Clear store data
-  store.updateCollectedData(
-      [], [], [], [], [], [], [], [], [], [], [],[]
-  );
+  // Clear store data (if needed – clearing on disconnect is often appropriate)
+  store.updateCollectedData([], [], [], [], [], [], [], [], [], [], [], []);
 };
 
 const toggleConnection = async () => {
-  if (isConnected.value) {
-    disconnect();
-  } else {
-    await connect();
-  }
+  isConnected.value ? disconnect() : await connect();
 };
-
-watch(
-    () => isConnected.value,
-    (connected) => {
-      if (connected) {
-        startFetchingData();
-      } else {
-        stopFetchingData();
-      }
-    }
-);
 
 // Cleanup on component unmount
 onUnmounted(() => {

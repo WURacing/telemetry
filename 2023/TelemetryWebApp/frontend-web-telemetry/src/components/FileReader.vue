@@ -16,8 +16,6 @@
 import { type Ref, ref } from 'vue';
 import papaparse from 'papaparse';
 import { useFileStoreStore } from '../stores/FileStore';
-import { WebSocket } from 'vite';
-import { useWebSocket } from '@vueuse/core';
 
 const url = "https://example.com/data.csv";
 const store = useFileStoreStore();

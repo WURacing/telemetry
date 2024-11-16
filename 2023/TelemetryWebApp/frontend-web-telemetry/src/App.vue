@@ -18,7 +18,6 @@
 
 <script setup lang="ts">
 import FileReader from "./components/FileReader.vue";
-import BeginSession from "./components/StartStreamingButton.vue";
 import StartStreamingButton from "./components/StartStreamingButton.vue";
 </script>
 

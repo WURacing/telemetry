@@ -9,13 +9,6 @@ export interface ChartDataPoint {
     value: number;
 }
 
-export interface TelemetryMetrics {
-    queueSize: number;
-    droppedMessages: number;
-    processInterval: number;
-    isProcessing: boolean;
-}
-
 // Add channel mapping type for type safety
 export interface ChannelMap {
     latAcc: number;
