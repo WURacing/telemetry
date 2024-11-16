@@ -5,8 +5,10 @@ from redis.asyncio.client import Redis
 from typing import List, Optional, Tuple
 from pydantic import BaseModel
 from datetime import datetime
+from dotenv import load_dotenv
 import asyncio
 import time
+import os
 import serial
 import uvicorn
 import socketio
@@ -15,23 +17,22 @@ import json
 import logging
 
 # Configuration
+load_dotenv()
+
 SERIAL_CONFIG = {
     'PORT': '/dev/tty.usbmodem101',
     'BAUD_RATE': 115200,
     'TIMEOUT': 0.01
 }
 
-REDIS_CONFIG = {
-    'HOST': 'redis-13487.c12.us-east-1-4.ec2.redns.redis-cloud.com',
-    'PORT': 13487,
-    'DB': 12635445,
-    'PASSWORD': 'Py0BLbmkxrGWNUF2basWNOEplbuubfc3'
-}
+# Get Redis credentials from the OS
+REDIS_HOST = os.environ.get("REDIS_HOST")
+REDIS_PORT = int(os.environ.get("REDIS_PORT"))
+REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD")
 
 # Global variables for background tasks
 serial_task: Optional[asyncio.Task] = None
-redis_client: Optional[Redis] = Redis(host=REDIS_CONFIG['HOST'], port=REDIS_CONFIG['PORT'],
-                                      password=REDIS_CONFIG['PASSWORD'])
+redis_client: Optional[Redis] = Redis(host=REDIS_HOST, port=REDIS_PORT, password=REDIS_PASSWORD)
 ser: Optional[serial] = None
 
 logging.basicConfig(level=logging.INFO)
@@ -137,7 +138,7 @@ async def start_serial_reading():
     logger.info("Starting serial reading...")
     ser = serial.Serial(SERIAL_CONFIG['PORT'], SERIAL_CONFIG['BAUD_RATE'], timeout=SERIAL_CONFIG['TIMEOUT'])
     processor = SerialProcessor()
-    await redis.Redis(host=REDIS_CONFIG['HOST'], port=REDIS_CONFIG['PORT'], password=REDIS_CONFIG['PASSWORD'])
+    await redis.Redis(host=REDIS_HOST, port=REDIS_PORT, password=REDIS_PASSWORD)
 
     async def read_from_serial():
         while True:

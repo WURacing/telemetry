@@ -16,11 +16,12 @@ coverage
 
 /cypress/videos/
 /cypress/screenshots/
-
+23-05-05-Skidpad-ANunez2.csv*
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
 .idea
+*.env
 *.suo
 *.ntvs*
 *.njsproj

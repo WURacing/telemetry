@@ -3,16 +3,19 @@ from redis.asyncio.client import Redis
 from typing import List, Optional, Tuple
 from pydantic import BaseModel
 from datetime import datetime
+from dotenv import load_dotenv
 import asyncio
+import os
 import uvicorn
 import socketio
 import redis.asyncio as redis
 import json
 import logging
 
-REDIS_CONFIG = {
-
-}
+# Get Redis credentials from the OS
+REDIS_HOST = os.environ.get("REDIS_HOST")
+REDIS_PORT = os.environ.get("REDIS_PORT")
+REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD")
 
 
 class TelemetryData(BaseModel):
@@ -21,7 +24,7 @@ class TelemetryData(BaseModel):
     channels: list[float]
 
 
-redis_client: Optional[Redis] = Redis(host=REDIS_CONFIG['HOST'], port=REDIS_CONFIG['PORT'], password=REDIS_CONFIG['PASSWORD'])
+redis_client: Optional[Redis] = Redis(host=REDIS_HOST, port=REDIS_PORT, password=REDIS_PASSWORD)
 sio = socketio.AsyncServer(async_mode='asgi', cors_allowed_origins='*')
 app = socketio.ASGIApp(sio)
 
@@ -49,14 +52,9 @@ async def connect(sid, environ):
     await sio.emit("connected", sid)
 
 
-
-
 @sio.event
 async def disconnect(sid):
     print('Client disconnected:', sid)
-
-    @sio.event
-    async def(seid):
 
 
 if __name__ == "__main__":
