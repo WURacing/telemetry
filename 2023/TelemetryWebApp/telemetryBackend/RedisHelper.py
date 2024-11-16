@@ -11,10 +11,7 @@ import json
 import logging
 
 REDIS_CONFIG = {
-    'HOST': 'redis-13487.c12.us-east-1-4.ec2.redns.redis-cloud.com',
-    'PORT': 13487,
-    'DB': 12635445,
-    'PASSWORD': 'Py0BLbmkxrGWNUF2basWNOEplbuubfc3'
+
 }
 
 
@@ -52,9 +49,14 @@ async def connect(sid, environ):
     await sio.emit("connected", sid)
 
 
+
+
 @sio.event
 async def disconnect(sid):
     print('Client disconnected:', sid)
+
+    @sio.event
+    async def(seid):
 
 
 if __name__ == "__main__":
