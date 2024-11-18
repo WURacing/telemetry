@@ -33,18 +33,6 @@ sio_app = socketio.ASGIApp(sio, app)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# await sio.emit("telemetry_update", saved_data)
-# async def get_latest_data_from_redis() -> Optional[Tuple[str, TelemetryData]]:
-#     keys = await redis_client.keys("telemetry_at_*")
-#     if not keys:
-#         return None
-#
-#     latest_key = max(keys, key=lambda k: k.replace("telemetry_at_", ""))
-#     data = await redis_client.get(latest_key)
-#     if data:
-#         return latest_key, TelemetryData(**json.loads(data))
-#     return None
-
 
 @app.on_event("startup")
 async def startup_event():

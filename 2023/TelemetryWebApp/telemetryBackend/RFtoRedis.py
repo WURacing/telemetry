@@ -161,8 +161,8 @@ async def start_serial_reading():
                 await processor.save_to_redis(data)
                 saved_data = await processor.save_to_redis(data)
                 logger.info(f"Data saved to Redis.")
-                logger.info(f"Data saved to Redis: {saved_data}")
-                await asyncio.sleep(0.01)  # Adjust rate as needed
+                # logger.info(f"Data saved to Redis: {saved_data}")
+                await asyncio.sleep(0.05)  # Adjust rate as needed
 
     await asyncio.create_task(read_from_serial())
 
