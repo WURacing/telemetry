@@ -38,7 +38,6 @@ logger = logging.getLogger(__name__)
 async def startup_event():
     global redis_client  # Access the global variable
     redis_client = Redis(host=REDIS_HOST, port=REDIS_PORT, password=REDIS_PASSWORD, decode_responses=True)
-    asyncio.create_task(redis_streamer())  # Start the streaming task
 
 
 async def redis_streamer():
@@ -56,11 +55,14 @@ async def redis_streamer():
 async def connect(sid, environ):
     print(f"Client connected: {sid}")
     await sio.emit("connected", data={'sid': sid}, to=sid)  # Send SID to client
+    asyncio.create_task(redis_streamer())  # Start the streaming task
 
 
 @sio.event
 async def disconnect(sid):
     print('Client disconnected:', sid)
+    pubsub = redis_client.pubsub()
+    await pubsub.unsubscribe("telemetry_channel")
 
 
 if __name__ == "__main__":
