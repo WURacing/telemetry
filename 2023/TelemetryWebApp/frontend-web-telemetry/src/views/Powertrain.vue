@@ -9,14 +9,14 @@
       <TrackMap msg="Track Map" />
     </div>
     <div class="w-full h-84" >
-      <Scichart2d msg="Airspeed Plot" />
+      <VehicleSpeed msg="Airspeed Plot" />
     </div>
   </div>
 </div>
 <div class="flex flex-col">
   <div class="flex items-center justify-between text-white p-4">
     <div class="w-72 h-240 bg-red-900 mr-4">
-    <ScichartGGPlot msg="GG Plot" />
+    <GGPlot msg="GG Plot" />
     </div>
     <div class="w-full h-1/2" >
       <ThrottlePos msg="Throttle Position" />
@@ -26,7 +26,7 @@
 <div class="flex flex-col">
   <div class="flex items-center justify-between text-white p-4">
     <div class="w-72 h-240 bg-red-900 mr-4">
-      <BrakePressure msg="Brake Pressure" />
+<!--  Something will go in here    -->
     </div>
     <div class="w-full h-1/2" >
       <BrakePos msg="Brake Position" />
@@ -57,8 +57,8 @@
 
 <script setup>
 import BrakePos from "../components/BrakePos.vue";
-import Scichart2d from "../components/Scichart2d.vue";
-import ScichartGGPlot from "/src/components/ScichartGGPlot.vue";
+import VehicleSpeed from "../components/VehicleSpeed.vue";
+import GGPlot from "/src/components/GGPlot.vue";
 import TrackMap from "/src/components/TrackMap.vue";
 import ThrottlePos from "/src/components/ThrottlePos.vue";
 import OilPressure from "/src/components/OilPressure.vue";

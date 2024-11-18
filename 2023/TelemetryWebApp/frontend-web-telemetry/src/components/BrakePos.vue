@@ -5,8 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineComponent } from "vue";
-import { type Ref, ref, watch } from "vue";
+import {computed, onMounted, watch} from "vue";
 import { useFileStoreStore } from "../stores/FileStore.js";
 import {
   SciChartSurface,
@@ -14,10 +13,8 @@ import {
   EAutoRange,
   FastLineRenderableSeries,
   XyDataSeries,
-  EllipsePointMarker,
   SweepAnimation,
   SciChartJSDarkTheme,
-  NumberRange,
   MouseWheelZoomModifier,
   ZoomPanModifier,
   ZoomExtentsModifier
@@ -25,56 +22,37 @@ import {
 
 // Retrieve data from store
 const store = useFileStoreStore();
-const Time = ref([] as number[]);
-const BrakePressure = ref([] as number[]);
+let sciChartSurface: SciChartSurface | null = null;
+let brakeDataSeries: XyDataSeries | null = null;
 
-// Setup variables for realtime chart updates
-const numberOfPointsPerTimerTick = 10; // 10 points every timer tick
-const timerInterval = 50; // timer tick every 50 milliseconds
+const timeData = computed(() => store.Time);
+const brakepressureData = computed(() => store.BrakePressure);
 
-// Watch for changes in the GPSXPos and GPSYPos variables of the Pinia store
-watch([() => store.Time, () => store.BrakePressure], ([newTime, newBrakePressure]) => {
-  // Update the local GPSXPos and GPSYPos variables with the new values
-  Time.value = newTime;
-  BrakePressure.value = newBrakePressure;
+const updateChart = () => {
+  if (!sciChartSurface || !brakeDataSeries) {
+    return; // Chart hasn't been initialized yet
+  }
 
-  // Call the initSciChart function to update the chart
-  initSciChart();
-});
+  brakeDataSeries.append();
 
-async function initSciChart() {
-  // LICENSING
-  // Commercial licenses set your license code here
-  // Purchased license keys can be viewed at https://www.scichart.com/profile
-  // How-to steps at https://www.scichart.com/licensing-scichart-js/
-  SciChartSurface.setRuntimeLicenseKey("BDF7cXttucLnCaaYIAS54uSgBWzs487JMNwSckfExL1EP3xIsI4RElNwQLBZwn5trxtZ3IsQ8fRT5vz7K/eXslQKwlqyltc7sFCeuQJlbTngfgVUgFKKkL/ocK6+aE0zvnCLdBcmKp12xyCIMc/S25Nh50woR7K1ORF4wWXCBOGe6twlLm4UVBbsRrOpZI057eSH8jmk7GEM40WPQvGd+osy3cehnEezJ8QFg4TFYr67SRwAMDIRWh7z6XTWwS+ilrt8QTo1t6DDqXpQiz2lC/ajwAlxc90PXVKbXNAAxcvdPp4yIapUH/cMuoqNWL229ctFZc6wCe2+n0/deGgsYc8PXtHTzdrdcY+YP+TlQzwEKilPzLxtswLlPkggV9k+8sd4JiCy6Ok3WQ2nkbRaR0aUnZi3CEWMqHM7qORAxQsgcS6jwfc4zsmgnSq3zW4VRwU3DXf2BLAiW9/H3brDXEN+RaW8bJovXH2Y2gxmiMTN3t4Hlzjl9aFceNBRuehv1tuS7o4rQCmXX5YqUYJC7CWd8h4XtiW5n7q8vlxClLNH+4EYia2SvHLzhI/AWK/JzKpm7u1dNqltd117RowqORy9jeuxlUZRfeNUZfg98QcUZtnOK+OHsCnjH+r9FfJ5UcLge297/NkThKKuukUfWw==");  SciChartSurface.useWasmFromCDN();
+  for (let i = 0; i < timeData.value.length; i++) {
+    brakeDataSeries.append(timeData.value[i], brakepressureData.value[i]);
+  }
+};
+
+onMounted(async () => {
   SciChartSurface.useWasmFromCDN();
+  SciChartSurface.setRuntimeLicenseKey("BDF7cXttucLnCaaYIAS54uSgBWzs487JMNwSckfExL1EP3xIsI4RElNwQLBZwn5trxtZ3IsQ8fRT5vz7K/eXslQKwlqyltc7sFCeuQJlbTngfgVUgFKKkL/ocK6+aE0zvnCLdBcmKp12xyCIMc/S25Nh50woR7K1ORF4wWXCBOGe6twlLm4UVBbsRrOpZI057eSH8jmk7GEM40WPQvGd+osy3cehnEezJ8QFg4TFYr67SRwAMDIRWh7z6XTWwS+ilrt8QTo1t6DDqXpQiz2lC/ajwAlxc90PXVKbXNAAxcvdPp4yIapUH/cMuoqNWL229ctFZc6wCe2+n0/deGgsYc8PXtHTzdrdcY+YP+TlQzwEKilPzLxtswLlPkggV9k+8sd4JiCy6Ok3WQ2nkbRaR0aUnZi3CEWMqHM7qORAxQsgcS6jwfc4zsmgnSq3zW4VRwU3DXf2BLAiW9/H3brDXEN+RaW8bJovXH2Y2gxmiMTN3t4Hlzjl9aFceNBRuehv1tuS7o4rQCmXX5YqUYJC7CWd8h4XtiW5n7q8vlxClLNH+4EYia2SvHLzhI/AWK/JzKpm7u1dNqltd117RowqORy9jeuxlUZRfeNUZfg98QcUZtnOK+OHsCnjH+r9FfJ5UcLge297/NkThKKuukUfWw==")
 
-  // Initialize SciChartSurface. Don't forget to await!
-  const { sciChartSurface, wasmContext } = await SciChartSurface.create("scichart-brakes", {
+  const { wasmContext, sciChartSurface: surface } = await SciChartSurface.create("scichart-brakes", {
     theme: new SciChartJSDarkTheme(),
     title: "Brake Pressure",
-    titleStyle: { fontSize: 32 }
+    titleStyle: { fontSize: 24 }
   });
+  sciChartSurface = surface;
 
-  // Create an XAxis and YAxis with growBy padding
-  sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { axisTitle: "Time (s)", autoRange: EAutoRange.Always}));
-  sciChartSurface.yAxes.add(new NumericAxis(wasmContext, { axisTitle: "%", autoRange: EAutoRange.Always}));
+  brakeDataSeries = new XyDataSeries(wasmContext);
 
-  // Import the data from our CSV into an array
-  const xValues = [0, 0];
-  const yValues = [0, 0];
-  for (let i = 0; i < Time.value.length; i++) {
-    xValues.push(Time.value[i]);
-    yValues.push(BrakePressure.value[i]);
-  }
-
-  const brakeDataSeries = new XyDataSeries(wasmContext);
-  // Map each point to (x, y) coordinates
-  for (let i = 0; i < Time.value.length; i++) {
-    brakeDataSeries.append(xValues[i], yValues[i]);
-  }
-  // Create a line series with some initial data
   sciChartSurface.renderableSeries.add(new FastLineRenderableSeries(wasmContext, {
     stroke: "red",
     strokeThickness: 3,
@@ -82,12 +60,17 @@ async function initSciChart() {
     dataSeries: brakeDataSeries,
   }));
 
-  // Add some interaction modifiers to show zooming and panning
+  sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { axisTitle: "Time (s)", autoRange: EAutoRange.Always, drawLabels: false}));
+  sciChartSurface.yAxes.add(new NumericAxis(wasmContext, { axisTitle: "%", autoRange: EAutoRange.Always}));
   sciChartSurface.chartModifiers.add(new MouseWheelZoomModifier(), new ZoomPanModifier(), new ZoomExtentsModifier());
 
-  return sciChartSurface;
-}
 
+  updateChart();
+
+  watch([timeData, brakepressureData], () => {
+    updateChart();
+  })
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

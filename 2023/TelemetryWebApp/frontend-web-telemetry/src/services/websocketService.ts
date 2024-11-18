@@ -22,7 +22,6 @@ class WebSocketService {
         });
 
         this.socket.on('telemetry_update', (data: TelemetryData) => {
-            console.log('Telemetry Data:' + data);
 
             this.store.updateCollectedData(
                 [...this.store.LatAcc, data.channels[0]].slice(-100), //Update store data

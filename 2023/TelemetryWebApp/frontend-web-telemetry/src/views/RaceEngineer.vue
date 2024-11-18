@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import ScichartGGPlot from "/src/components/ScichartGGPlot.vue";
+import ScichartGGPlot from "/src/components/GGPlot.vue";
 import TrackMap from "/src/components/TrackMap.vue";
 import Voltage from "@/components/Voltage.vue";
 </script>
