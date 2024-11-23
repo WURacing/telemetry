@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineComponent, onMounted, watch} from "vue";
+import {computed, defineComponent, onMounted, onUnmounted, watch} from "vue";
 import { useFileStoreStore } from "../stores/FileStore.js";
 import {
   SciChartSurface,
@@ -33,10 +33,17 @@ const updateChart = () => {
     return; // Chart hasn't been initialized yet
   }
 
-  throttleDataSeries.append();
+  throttleDataSeries.clear();
 
   for (let i = 0; i < timeData.value.length; i++) {
     throttleDataSeries.append(timeData.value[i], throttleposData.value[i]);
+  }
+
+  if (timeData.value.length > 100000) {
+    throttleDataSeries.delete();
+    for (let i = 0; i < 100; i++) {
+      throttleDataSeries.insertRange(timeData.value[i], throttleposData.value[i])
+    }
   }
 };
 
@@ -71,6 +78,10 @@ onMounted(async () => {
     updateChart();
   })
 });
+
+onUnmounted( async () => {
+  throttleDataSeries.delete();
+})
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

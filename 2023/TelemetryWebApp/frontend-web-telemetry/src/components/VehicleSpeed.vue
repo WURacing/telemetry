@@ -19,6 +19,7 @@ import {
   ZoomPanModifier,
   ZoomExtentsModifier
 } from "scichart";
+import { useDebounceFn } from "@/vueuse/core";
 
 // Retrieve data from store
 const store = useFileStoreStore();
@@ -34,11 +35,17 @@ const updateChart = () => {
   }
 
   // Clear existing data points (or append if you want a continuous scrolling chart)
-  speedDataSeries.append();
+  speedDataSeries.clear();
 
   //Append new data points
   for (let i = 0; i < timeData.value.length; i++) {
     speedDataSeries.append(timeData.value[i], airspeedData.value[i]);
+  }
+
+  if (timeData.value.length > 100000) {
+    for (let i = 0; i < 100; i++) {
+      speedDataSeries.insertRange(timeData.value[i], airspeedData.value[i])
+    }
   }
 };
 
@@ -83,7 +90,9 @@ onMounted(async () => {
 
   watch([timeData, airspeedData], () => {
     updateChart();  // Update the chart when data changes
-  });
+  }, {
+      debounce: 1000  // 1000ms delay
+});
 
 });
 

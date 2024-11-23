@@ -1,7 +1,7 @@
 <template>
   <div
-      class="rounded-lg px-4 py-2 text-white transition-colors duration-300"
-      :class="isConnected ? 'bg-blue-400' : 'bg-blue-800'"
+      class="rounded-lg px-4 py-2 text-white text-xs transition-colors duration-300"
+      :class="isConnected ? 'bg-blue-500' : 'bg-blue-800'"
   >
     Server
   </div>
@@ -17,7 +17,7 @@ const socket = io('http://localhost:4000', { transports: ['websocket'] });
 
 onMounted(() => {
   // Listen for connect/disconnect events
-  socket.on('connect', () => {
+  socket.on('connected', () => {
     isConnected.value = true
   })
 

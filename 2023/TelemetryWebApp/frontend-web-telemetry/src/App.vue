@@ -2,7 +2,7 @@
 
   <div class="flex justify-center w-full">
     <div class="navbar rounded-3xl border-amber-200 w-5/6 m-3 sticky justify-center">
-      <a class="btn btn-ghost text-2xl">WashU Racing Telemetry Display </a>
+      <a class="text-2xl">WashU Racing Telemetry Display </a>
       <FileReader class="inline-block" />
       <StartStreamingButton />
       <ServerStatus />

@@ -17,7 +17,6 @@ import { type Ref, ref } from 'vue';
 import papaparse from 'papaparse';
 import { useFileStoreStore } from '../stores/FileStore';
 
-const url = "https://example.com/data.csv";
 const store = useFileStoreStore();
 const LatAcc:Ref<number[]> = ref([]);
 const LongAcc:Ref<number[]> = ref([]);
@@ -36,17 +35,15 @@ function loadTextFromFile(ev: Event) {
   const file: File = (ev.target as HTMLInputElement).files![0];
   const parser = new FileReader();
 
+  store.updateCollectedData([], [], [], [], [], [], [], [], [], [], [], []);
+
   parser.readAsText(file);
 
   parser.onload = function (ev) {
     const text = ev.target!.result as string;
     const result = papaparse.parse(text, { header: true });
 
-    console.log(
-      "CSV file: " + file.name + "\n",
-      result.data,
-      "\n\n"
-    );
+    console.log("CSV file: " + file.name);
 
     LatAcc.value = result.data.map((column: number[]) => column["GPS LatAcc"]);
     LongAcc.value = result.data.map((column: number[]) => column["GPS LonAcc"]);
