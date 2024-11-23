@@ -42,6 +42,7 @@ class WebSocketService {
 
         this.socket.on('disconnect', () => {
             console.log('Disconnected from WebSocket server');
+            this.store.updateCollectedData([], [], [], [], [], [], [], [], [], [], [], []);
         });
 
         this.socket.on('error', (error: Error) => {

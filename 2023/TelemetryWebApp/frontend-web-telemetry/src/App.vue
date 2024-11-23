@@ -5,6 +5,7 @@
       <a class="btn btn-ghost text-2xl">WashU Racing Telemetry Display </a>
       <FileReader class="inline-block" />
       <StartStreamingButton />
+      <CarStatus />
       <div class="flex-none text-right px-10" id="section-wrapper">
         <router-link class="btn bg-red-900 m-3" to="/">Home</router-link>
         <router-link class="btn bg-orange-700 m-3" to="/suspension">Race Engineer</router-link>
@@ -19,6 +20,7 @@
 <script setup lang="ts">
 import FileReader from "./components/FileReader.vue";
 import StartStreamingButton from "./components/StartStreamingButton.vue";
+import CarStatus from "./components/CarStatus.vue";
 </script>
 
 <style>
