@@ -4,7 +4,7 @@
       class="rounded-lg px-4 py-2 text-white transition-colors duration-300"
       :class="isCarConnected ? 'bg-green-400' : 'bg-green-800'"
   >
-    Connected to car
+    Car
   </div>
 </template>
 
