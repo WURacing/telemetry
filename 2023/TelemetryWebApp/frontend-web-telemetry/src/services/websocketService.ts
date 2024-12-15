@@ -6,12 +6,14 @@ class WebSocketService {
     private store: ReturnType<typeof useFileStoreStore>;
     private socket: Socket | null = null;
 
+
     constructor() {
         this.store = useFileStoreStore(); // Instantiate now
     }
 
     connect() {
         this.socket = io('http://localhost:4000', { transports: ['websocket'] });
+        let buffer = new ArrayBuffer(0);
 
         this.socket.on('connect', () => {
             console.log('Connected to WebSocket server');
@@ -41,8 +43,10 @@ class WebSocketService {
         });
 
         this.socket.on('disconnect', () => {
+            this.socket.removeAllListeners();
             console.log('Disconnected from WebSocket server');
             this.store.updateCollectedData([], [], [], [], [], [], [], [], [], [], [], []);
+            buffer = new ArrayBuffer(0);
         });
 
         this.socket.on('error', (error: Error) => {

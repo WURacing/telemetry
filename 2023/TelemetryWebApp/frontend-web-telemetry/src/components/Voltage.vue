@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineComponent } from "vue";
+import {computed, defineComponent, onMounted, onUnmounted} from "vue";
 import { type Ref, ref, watch } from "vue";
 import { useFileStoreStore } from "../stores/FileStore.js";
 import {
@@ -28,54 +28,37 @@ const store = useFileStoreStore();
 const Time = ref([] as number[]);
 const ExternalVoltage = ref([] as number[]);
 
-// Setup variables for realtime chart updates
-const numberOfPointsPerTimerTick = 10; // 10 points every timer tick
-const timerInterval = 50; // timer tick every 50 milliseconds
+let sciChartSurface: SciChartSurface | null = null;
+let voltageDataSeries: XyDataSeries | null = null;
+const timeData = computed(() => store.Time);
+const voltageData = computed(() => store.ExternalVoltage);
 
-// Watch for changes in the GPSXPos and GPSYPos variables of the Pinia store
-watch([() => store.Time, () => store.ExternalVoltage], ([newTime, newExternalVoltage]) => {
-  // Update the local GPSXPos and GPSYPos variables with the new values
-  Time.value = newTime;
-  ExternalVoltage.value = newExternalVoltage;
+const updateChart = () => {
+  if (!sciChartSurface || !voltageDataSeries) {
+    return; // Chart hasn't been initialized yet
+  }
 
-  // Call the initSciChart function to update the chart
-  initSciChart();
-});
+  voltageDataSeries.clear();
 
-async function initSciChart() {
-  // LICENSING
-  // Commercial licenses set your license code here
-  // Purchased license keys can be viewed at https://www.scichart.com/profile
-  // How-to steps at https://www.scichart.com/licensing-scichart-js/
-  SciChartSurface.setRuntimeLicenseKey("DA4krJsExAXg9FNs3eHwUpq8XW9UIAeptO/vi/CXnZpU1jo8vuiihT8lC0OGtNRI6SZ+TMWoKlvxlhE4OuIj+N+G+l4iNfYqO2OLFvdv9Ut7W3Mcd0L80FCYY3E4dIhYK5gSypAjBu4yUSty5rtvhBvn35eEEVVSRX7DmtJvFOH+qzKuPoIXAIvYX38ilAVoii6ZRgVl/ep/XH3XaPBAllYY3kQpHDTdVUazfipUwaMlqeJMYDEdY9Nu7qLhjQfikInf7WIZ3bwPATyxIJApxEG1eRUeCGo0m+CHoowRxZMKiFwhHaYPeOC7tfhqmTvNGyoKdNJk1wJ5WTy2Ek1WyE3oTsdqN6zWWJhwqZS9V9x/EdjoFnOP1x7UMDw6Fz+liJ5ZSphiHLXF7SqAibtd6okS/CUcLGkENnSBQ6gq2lW4iAKDTMxNWdyib4o4i8Cy+lE/YbB2K+txH1W829K0BqB+GGzBYreeXzhmxTefmtK0P6qrofODUuRpQv7czj86C813Bbe8qzQ+v1mS7k6m+z+dS0jkwuHELv7hvUiyPRuZnjr5iHQjwNZSvCa6BglCPDOKRTuUae1Lw69rF0lmmObuUL/oaRCm98zI86eiZv5cXpOeFRXnKvBZRlw16AwHpDupkNYwswdh53YFGlzVUQ==");
+  for (let i = 0; i < timeData.value.length; i++) {
+    voltageDataSeries.append(timeData.value[i], voltageData.value[i]);
+  }
+
+};
+
+onMounted(async () => {
   SciChartSurface.useWasmFromCDN();
+  SciChartSurface.setRuntimeLicenseKey("BDF7cXttucLnCaaYIAS54uSgBWzs487JMNwSckfExL1EP3xIsI4RElNwQLBZwn5trxtZ3IsQ8fRT5vz7K/eXslQKwlqyltc7sFCeuQJlbTngfgVUgFKKkL/ocK6+aE0zvnCLdBcmKp12xyCIMc/S25Nh50woR7K1ORF4wWXCBOGe6twlLm4UVBbsRrOpZI057eSH8jmk7GEM40WPQvGd+osy3cehnEezJ8QFg4TFYr67SRwAMDIRWh7z6XTWwS+ilrt8QTo1t6DDqXpQiz2lC/ajwAlxc90PXVKbXNAAxcvdPp4yIapUH/cMuoqNWL229ctFZc6wCe2+n0/deGgsYc8PXtHTzdrdcY+YP+TlQzwEKilPzLxtswLlPkggV9k+8sd4JiCy6Ok3WQ2nkbRaR0aUnZi3CEWMqHM7qORAxQsgcS6jwfc4zsmgnSq3zW4VRwU3DXf2BLAiW9/H3brDXEN+RaW8bJovXH2Y2gxmiMTN3t4Hlzjl9aFceNBRuehv1tuS7o4rQCmXX5YqUYJC7CWd8h4XtiW5n7q8vlxClLNH+4EYia2SvHLzhI/AWK/JzKpm7u1dNqltd117RowqORy9jeuxlUZRfeNUZfg98QcUZtnOK+OHsCnjH+r9FfJ5UcLge297/NkThKKuukUfWw==")
 
-  // Initialize SciChartSurface. Don't forget to await!
-  const { sciChartSurface, wasmContext } = await SciChartSurface.create("scichart-voltage", {
+  const { wasmContext, sciChartSurface: surface } = await SciChartSurface.create("scichart-voltage", {
     theme: new SciChartJSDarkTheme(),
     title: "Voltage",
-    titleStyle: { fontSize: 32 }
+    titleStyle: { fontSize: 24 }
   });
-  SciChartSurface.UseCommunityLicense();
+  sciChartSurface = surface;
 
-  // Create an XAxis and YAxis with growBy padding
-  sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { axisTitle: "Time (s)", autoRange: EAutoRange.Always}));
-  sciChartSurface.yAxes.add(new NumericAxis(wasmContext, { axisTitle: "Volts", visibleRange: new NumberRange(7, 13)}));
+  voltageDataSeries = new XyDataSeries(wasmContext);
 
-  // Import the data from our CSV into an array
-  const xValues = [0, 0];
-  const yValues = [0, 0];
-  for (let i = 0; i < Time.value.length; i++) {
-    xValues.push(Time.value[i]);
-    yValues.push(ExternalVoltage.value[i]);
-  }
-
-  const voltageDataSeries = new XyDataSeries(wasmContext);
-  // Map each point to (x, y) coordinates
-  for (let i = 0; i < Time.value.length; i++) {
-    voltageDataSeries.append(xValues[i], yValues[i]);
-  }
-  // Create a line series with some initial data
   sciChartSurface.renderableSeries.add(new FastLineRenderableSeries(wasmContext, {
     stroke: "yellow",
     strokeThickness: 3,
@@ -83,11 +66,22 @@ async function initSciChart() {
     dataSeries: voltageDataSeries,
   }));
 
-  // Add some interaction modifiers to show zooming and panning
+  sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { axisTitle: "Time (s)", autoRange: EAutoRange.Always, drawLabels: false}));
+  sciChartSurface.yAxes.add(new NumericAxis(wasmContext, { axisTitle: "V", autoRange: EAutoRange.Always}));
   sciChartSurface.chartModifiers.add(new MouseWheelZoomModifier(), new ZoomPanModifier(), new ZoomExtentsModifier());
 
-  return sciChartSurface;
-}
+  for (let i = 0; i < Time.value.length; i++) {
+    voltageDataSeries.append(timeData.value[i], voltageData.value[i]);
+  }
+
+  watch([timeData, voltageData], () => {
+    updateChart();
+  })
+});
+
+onUnmounted(async () => {
+  sciChartSurface.delete();
+})
 
 </script>
 

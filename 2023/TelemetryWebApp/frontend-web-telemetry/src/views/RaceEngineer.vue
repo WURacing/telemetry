@@ -5,16 +5,21 @@
 
     <div class="grid-cols-5 w-full" id="section-wrapper">
       <TrackMap class="w-96" msg="Track Map" />
+<!--      <GGPlot class="w-96" msg="GG Plot" />-->
+      <BrakePos msg="Brake Position" />
+      <ThrottlePos msg="Throttle Position" />
       <ScichartGGPlot class="w-96" msg="GG Plot" />
-      <BrakePressure class="w-96" msg="Brake Pressure" />
       <Voltage class="w-96" msg="Voltage" />
   </div>
 </template>
 
 <script setup>
-import ScichartGGPlot from "/src/components/GGPlot.vue";
-import TrackMap from "/src/components/TrackMap.vue";
+import ScichartGGPlot from "@/components/GGPlot.vue";
+import TrackMap from "@/components/TrackMap.vue";
 import Voltage from "@/components/Voltage.vue";
+import BrakePos from "@/components/BrakePos.vue";
+import ThrottlePos from "@/components/ThrottlePos.vue";
+import GGPlot from "@/components/GGPlot.vue";
 </script>
 
 <style scoped>

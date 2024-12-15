@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, watch} from "vue";
+import {computed, onMounted, onUnmounted, watch} from "vue";
 import { useFileStoreStore } from "../stores/FileStore.js";
 import {
   SciChartSurface,
@@ -13,7 +13,6 @@ import {
   EAutoRange,
   FastLineRenderableSeries,
   XyDataSeries,
-  SweepAnimation,
   SciChartJSDarkTheme,
   MouseWheelZoomModifier,
   ZoomPanModifier,
@@ -28,12 +27,13 @@ let brakeDataSeries: XyDataSeries | null = null;
 const timeData = computed(() => store.Time);
 const brakepressureData = computed(() => store.BrakePressure);
 
+// When new data is added, this is run
 const updateChart = () => {
   if (!sciChartSurface || !brakeDataSeries) {
     return; // Chart hasn't been initialized yet
   }
 
-  brakeDataSeries.append();
+  brakeDataSeries.clear();
 
   for (let i = 0; i < timeData.value.length; i++) {
     brakeDataSeries.append(timeData.value[i], brakepressureData.value[i]);
@@ -71,6 +71,11 @@ onMounted(async () => {
     updateChart();
   })
 });
+
+onUnmounted(async () => {
+  sciChartSurface.delete();
+  brakeDataSeries.delete();
+  })
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

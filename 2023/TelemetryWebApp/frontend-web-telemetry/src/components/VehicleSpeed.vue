@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, watch} from "vue";
+import {computed, onMounted, onUnmounted, watch} from "vue";
 import { useFileStoreStore } from "../stores/FileStore.js";
 import {
   SciChartSurface,
@@ -19,7 +19,6 @@ import {
   ZoomPanModifier,
   ZoomExtentsModifier
 } from "scichart";
-import { useDebounceFn } from "@/vueuse/core";
 
 // Retrieve data from store
 const store = useFileStoreStore();
@@ -48,7 +47,6 @@ const updateChart = () => {
     }
   }
 };
-
 
 onMounted(async () => {
   SciChartSurface.useWasmFromCDN();
@@ -90,10 +88,13 @@ onMounted(async () => {
 
   watch([timeData, airspeedData], () => {
     updateChart();  // Update the chart when data changes
-  }, {
-      debounce: 1000  // 1000ms delay
+  });
+
 });
 
+onUnmounted(async () => {
+  sciChartSurface.delete();
+  speedDataSeries.delete();
 });
 
 </script>

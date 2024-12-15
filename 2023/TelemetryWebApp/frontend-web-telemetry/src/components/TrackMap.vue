@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, watch} from "vue";
+import {computed, onMounted, onUnmounted, watch} from "vue";
 import {useFileStoreStore} from "../stores/FileStore.js";
 import {
   SciChartSurface,
@@ -23,22 +23,22 @@ import {
 // Retrieve data from store
 const store = useFileStoreStore();
 let sciChartSurface: SciChartSurface | null = null; // To hold the chart surface instance
-let ggDataSeries: XyDataSeries | null = null; // To hold the data series
+let trackDataSeries: XyDataSeries | null = null; // To hold the data series
 
 const gpsXData = computed(() => store.GPSXPos);  // Make reactive
 const gpsYData = computed(() => store.GPSYPos); // Make reactive
 
 const updateChart = () => {
-  if (!sciChartSurface || !ggDataSeries) {
+  if (!sciChartSurface || !trackDataSeries) {
     return; // Chart hasn't been initialized yet
   }
 
-  // Clear existing data points (or append if you want a continuous scrolling chart)
-  ggDataSeries.append();
+  // Clear existing data points (or append if you want a continuous chart)
+  trackDataSeries.append();
 
   //Append new data points
   for (let i = 0; i < gpsXData.value.length; i++) {
-    ggDataSeries.append(gpsXData.value[i], gpsYData.value[i]);
+    trackDataSeries.append(gpsXData.value[i], gpsYData.value[i]);
   }
 };
 
@@ -54,9 +54,8 @@ onMounted(async () => {
   });
   sciChartSurface = surface;
 
-
   // Create the data series *once*
-  ggDataSeries = new XyDataSeries(wasmContext);
+  trackDataSeries = new XyDataSeries(wasmContext);
 
   // ... (add axes, renderable series, etc., as before, but *outside* the watch)
   // Renderable series
@@ -69,7 +68,7 @@ onMounted(async () => {
           fill: "#ca982c",
           opacity: 0.7
         }),
-    dataSeries: ggDataSeries
+    dataSeries: trackDataSeries
       }));
 
   // Modifiers
@@ -97,6 +96,10 @@ onMounted(async () => {
 
 });
 
+onUnmounted(async () => {
+  sciChartSurface.delete();
+  trackDataSeries.delete();
+})
   </script>
 
   <!-- Add "scoped" attribute to limit CSS to this component only -->

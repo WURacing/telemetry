@@ -5,7 +5,7 @@
       <a class="text-2xl">WashU Racing Telemetry Display </a>
       <FileReader class="inline-block" />
       <StartStreamingButton />
-      <ServerStatus />
+<!--      <ServerStatus />-->
       <CarStatus />
       <div class="flex-none text-right px-10" id="section-wrapper">
         <router-link class="btn bg-red-900 m-3" to="/">Home</router-link>
@@ -23,6 +23,9 @@ import FileReader from "./components/FileReader.vue";
 import StartStreamingButton from "./components/StartStreamingButton.vue";
 import CarStatus from "./components/CarStatus.vue";
 import ServerStatus from "./components/ServerStatus.vue";
+import { MemoryUsageHelper } from "scichart";
+
+MemoryUsageHelper.isMemoryUsageDebugEnabled = true;
 </script>
 
 <style>

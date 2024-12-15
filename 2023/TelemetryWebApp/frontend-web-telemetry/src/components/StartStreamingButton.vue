@@ -26,6 +26,8 @@ const connectionError = ref<string | null>(null);
 
 const wsService = new WebSocketService();
 
+const chartRef = ref<{ cleanupChart: () => void } | null>(null);
+
 const connect = async () => {
   if (isConnected.value) return; // Already connected
 
@@ -50,6 +52,7 @@ const disconnect = () => {
   wsService.disconnect();
   isConnected.value = false;
   connectionError.value = null;
+  chartRef.value?.cleanupChart();
 
   // Clear store data (if needed – clearing on disconnect is often appropriate)
   store.updateCollectedData([], [], [], [], [], [], [], [], [], [], [], []);
