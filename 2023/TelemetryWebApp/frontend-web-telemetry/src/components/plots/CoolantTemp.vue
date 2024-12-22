@@ -32,7 +32,7 @@ const updateChart = () => {
   }
 
   // Clear existing data points (or append if you want a continuous scrolling chart)
-  coolanttempDataSeries.clear();
+  coolanttempDataSeries.append();
 
   //Append new data points
   for (let i = 0; i < timeData.value.length; i++) {
