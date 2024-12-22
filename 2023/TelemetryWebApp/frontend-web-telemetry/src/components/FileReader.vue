@@ -47,7 +47,7 @@ function loadTextFromFile(ev: Event) {
 
     LatAcc.value = result.data.map((column: number[]) => column["GPS LatAcc"]);
     LongAcc.value = result.data.map((column: number[]) => column["GPS LonAcc"]);
-    EngineRPM.value = result.data.map((column: number[]) => column["Engine RPM"]);
+    EngineRPM.value = result.data.map((column: number[]) => column["EngineSpeed"]);
     Time.value = result.data.map((column: number[]) => column["Time"]);
     GPSXPos.value = result.data.map((column: number[]) => column["GPS Latitude"]);
     GPSYPos.value = result.data.map((column: number[]) => column["GPS Longitude"]);

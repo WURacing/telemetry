@@ -25,9 +25,6 @@ import {
 
 // Retrieve data from store
 const store = useFileStoreStore();
-const Time = ref([] as number[]);
-const ExternalVoltage = ref([] as number[]);
-
 let sciChartSurface: SciChartSurface | null = null;
 let voltageDataSeries: XyDataSeries | null = null;
 const timeData = computed(() => store.Time);
@@ -37,13 +34,11 @@ const updateChart = () => {
   if (!sciChartSurface || !voltageDataSeries) {
     return; // Chart hasn't been initialized yet
   }
-
-  voltageDataSeries.clear();
+  voltageDataSeries.append();
 
   for (let i = 0; i < timeData.value.length; i++) {
     voltageDataSeries.append(timeData.value[i], voltageData.value[i]);
   }
-
 };
 
 onMounted(async () => {
@@ -70,9 +65,7 @@ onMounted(async () => {
   sciChartSurface.yAxes.add(new NumericAxis(wasmContext, { axisTitle: "V", autoRange: EAutoRange.Always}));
   sciChartSurface.chartModifiers.add(new MouseWheelZoomModifier(), new ZoomPanModifier(), new ZoomExtentsModifier());
 
-  for (let i = 0; i < Time.value.length; i++) {
-    voltageDataSeries.append(timeData.value[i], voltageData.value[i]);
-  }
+  updateChart();
 
   watch([timeData, voltageData], () => {
     updateChart();
@@ -81,7 +74,7 @@ onMounted(async () => {
 
 onUnmounted(async () => {
   sciChartSurface.delete();
-})
+});
 
 </script>
 

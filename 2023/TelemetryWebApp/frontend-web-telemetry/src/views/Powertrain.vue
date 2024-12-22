@@ -40,7 +40,8 @@
     </div>
     <div class="w-full h-16 mr-4" >
       <Voltage />
-      </div>
+      <EngineSpeed />
+    </div>
   </div>
 </div>
 
@@ -61,6 +62,7 @@ import GGPlot from "@/components/GGPlot.vue";
 import TrackMap from "@/components/TrackMap.vue";
 import ThrottlePos from "@/components/ThrottlePos.vue";
 import Voltage from "@/components/Voltage.vue";
+import EngineSpeed from "@/components/EngineSpeed.vue";
 </script>
 
 <style scoped>

@@ -22,7 +22,6 @@ import {
   MemoryUsageHelper
 } from "scichart";
 
-// SciChartSurface.autoDisposeWasmContext = true; // default false
 SciChartSurface.wasmContextDisposeTimeout = 100; // default 0 mlliseconds
 // Retrieve data from store
 const store = useFileStoreStore();
@@ -42,7 +41,6 @@ const updateChart = () => {
   for (let i = 0; i < timeData.value.length; i++) {
     throttleDataSeries.append(timeData.value[i], throttleposData.value[i]);
   }
-
 };
 
 onMounted(async () => {
