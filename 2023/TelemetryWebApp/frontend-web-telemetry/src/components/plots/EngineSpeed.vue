@@ -32,7 +32,7 @@ const updateChart = () => {
   }
 
   // Clear existing data points (or append if you want a continuous scrolling chart)
-  rpmDataSeries.clear();
+  rpmDataSeries.append();
 
   //Append new data points
   for (let i = 0; i < timeData.value.length; i++) {
@@ -71,8 +71,8 @@ onMounted(async () => {
   );
 
    // Axes
-  sciChartSurface.yAxes.add(new NumericAxis(wasmContext, { axisTitle: "RPM", autoRange: EAutoRange.Always}));
-  sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { axisTitle: "Time (s)", autoRange: EAutoRange.Always, drawLabels: false}));
+  sciChartSurface.yAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always}));
+  sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always, drawLabels: false}));
 
 
   updateChart();// Initial chart setup

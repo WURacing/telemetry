@@ -32,7 +32,7 @@ const updateChart = () => {
     return; // Chart hasn't been initialized yet
   }
 
-  brakeDataSeries.clear();
+  brakeDataSeries.append();
 
   for (let i = 0; i < timeData.value.length; i++) {
     brakeDataSeries.append(timeData.value[i], brakepressureData.value[i]);
