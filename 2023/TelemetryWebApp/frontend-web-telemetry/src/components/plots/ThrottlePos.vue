@@ -64,7 +64,7 @@ onMounted(async () => {
     dataSeries: throttleDataSeries,
   }));
 
-  sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { axisTitle: "Time (s)", autoRange: EAutoRange.Always, drawLabels: false}));
+  sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always, drawLabels: false}));
   sciChartSurface.yAxes.add(new NumericAxis(wasmContext, { axisTitle: "%", autoRange: EAutoRange.Always}));
   sciChartSurface.chartModifiers.add(new ZoomPanModifier(), new ZoomExtentsModifier());
 

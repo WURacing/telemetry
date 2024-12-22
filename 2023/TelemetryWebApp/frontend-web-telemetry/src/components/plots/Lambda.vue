@@ -71,8 +71,8 @@ onMounted(async () => {
   );
 
    // Axes
-  sciChartSurface.yAxes.add(new NumericAxis(wasmContext, { axisTitle: " ", autoRange: EAutoRange.Always}));
-  sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { axisTitle: "Time (s)", autoRange: EAutoRange.Always, drawLabels: false}));
+  sciChartSurface.yAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always}));
+  sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always, drawLabels: false}));
 
 
   updateChart();// Initial chart setup

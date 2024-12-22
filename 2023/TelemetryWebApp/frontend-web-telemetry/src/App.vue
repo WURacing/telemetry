@@ -8,10 +8,10 @@
 <!--      <ServerStatus />-->
       <CarStatus />
       <div class="flex-wrap lg:flex-none text-right px-10" id="section-wrapper">
-        <router-link class="btn bg-red-900 m-3" to="/">Home</router-link>
-        <router-link class="btn bg-orange-700 m-3" to="/suspension">Race Engineer</router-link>
-        <router-link class="btn bg-blue-700 m-3" to="/suspension">Aero</router-link>
-        <router-link class="btn bg-green-700 m-3" to="/">Powertrain</router-link>
+        <router-link class="btn bg-yellow-600 m-2" to="/">Driver Inputs</router-link>
+        <router-link class="btn bg-red-900 m-2" to="/powertrain">Powertrain</router-link>
+        <router-link class="btn bg-blue-700 m-2" to="/aero">Aero</router-link>
+        <router-link class="btn bg-green-700 m-2" to="/ergo">Ergo</router-link>
       </div>
     </div>
 </div>

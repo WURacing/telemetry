@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, watch} from "vue";
-import { useFileStoreStore } from "../stores/FileStore.js";
+import { useFileStoreStore } from "@/stores/FileStore";
 import {
   SciChartSurface,
   NumericAxis,
@@ -14,7 +14,6 @@ import {
   FastLineRenderableSeries,
   XyDataSeries,
   SciChartJSDarkTheme,
-  MouseWheelZoomModifier,
   ZoomPanModifier,
   ZoomExtentsModifier
 } from "scichart";
@@ -67,7 +66,6 @@ onMounted(async () => {
 
     // Modifiers
   sciChartSurface.chartModifiers.add(
-      new MouseWheelZoomModifier(),
       new ZoomPanModifier(),
       new ZoomExtentsModifier()
   );
