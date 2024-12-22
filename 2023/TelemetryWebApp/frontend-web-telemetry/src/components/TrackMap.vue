@@ -98,7 +98,6 @@ onMounted(async () => {
 
 onUnmounted(async () => {
   sciChartSurface.delete();
-  trackDataSeries.delete();
 })
   </script>
 
