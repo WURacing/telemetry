@@ -81,7 +81,6 @@ onMounted(async () => {
 onUnmounted( async () => {
   sciChartSurface.delete();
   SciChartSurface.disposeSharedWasmContext();
-  MemoryUsageHelper.objectRegistry.log();
 })
 </script>
 

@@ -34,7 +34,7 @@ const updateChart = () => {
   if (!sciChartSurface || !voltageDataSeries) {
     return; // Chart hasn't been initialized yet
   }
-  voltageDataSeries.append();
+  voltageDataSeries.clear();
 
   for (let i = 0; i < timeData.value.length; i++) {
     voltageDataSeries.append(timeData.value[i], voltageData.value[i]);

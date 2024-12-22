@@ -26,7 +26,7 @@ let sciChartSurface: SciChartSurface | null = null; // To hold the chart surface
 let speedDataSeries: XyDataSeries | null = null; // To hold the data series
 
 const timeData = computed(() => store.Time);  // Make reactive
-const airspeedData = computed(() => store.AirSpeed); // Make reactive
+const gpsspeedData = computed(() => store.GPSSpeed); // Make reactive
 
 const updateChart = () => {
   if (!sciChartSurface || !speedDataSeries) {
@@ -38,7 +38,7 @@ const updateChart = () => {
 
   //Append new data points
   for (let i = 0; i < timeData.value.length; i++) {
-    speedDataSeries.append(timeData.value[i], airspeedData.value[i]);
+    speedDataSeries.append(timeData.value[i], gpsspeedData.value[i]);
   }
 };
 
@@ -79,7 +79,7 @@ onMounted(async () => {
 
   updateChart();// Initial chart setup
 
-  watch([timeData, airspeedData], () => {
+  watch([timeData, gpsspeedData], () => {
     updateChart();  // Update the chart when data changes
   });
 

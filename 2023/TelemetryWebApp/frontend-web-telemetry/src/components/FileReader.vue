@@ -24,18 +24,30 @@ const EngineRPM:Ref<number[]> = ref([]);
 const Time:Ref<number[]> = ref([]);
 const GPSXPos:Ref<number[]> = ref([]);
 const GPSYPos:Ref<number[]> = ref([]);
-const AirSpeed:Ref<number[]> = ref([]);
-const BrakePressure:Ref<number[]> = ref([]);
+const GPSSpeed:Ref<number[]> = ref([]);
+const FrBrakePressure:Ref<number[]> = ref([]);
+const ReBrakePressure:Ref<number[]> = ref([]);
 const ThrottlePosition:Ref<number[]> = ref([]);
 const OilPressure:Ref<number[]> = ref([]);
 const OilTemp:Ref<number[]> = ref([]);
 const ExternalVoltage:Ref<number[]> = ref([]);
+const MAP:Ref<number[]> = ref([]);
+const MAT:Ref<number[]> = ref([]);
+const SteeringAngle:Ref<number[]> = ref([]);
+const FuelPressure:Ref<number[]> = ref([]);
+const GearPosition:Ref<number[]> = ref([]);
+const Lambda:Ref<number[]> = ref([]);
+const FrBrakeTemp:Ref<number[]> = ref([]);
+const FLBrakeTemp:Ref<number[]> = ref([]);
+const RRBrakeTemp:Ref<number[]> = ref([]);
+const RLBrakeTemp:Ref<number[]> = ref([]);
+
 
 function loadTextFromFile(ev: Event) {
   const file: File = (ev.target as HTMLInputElement).files![0];
   const parser = new FileReader();
 
-  store.updateCollectedData([], [], [], [], [], [], [], [], [], [], [], []);
+  store.updateCollectedData([], [],[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []);
 
   parser.readAsText(file);
 
@@ -51,12 +63,24 @@ function loadTextFromFile(ev: Event) {
     Time.value = result.data.map((column: number[]) => column["Time"]);
     GPSXPos.value = result.data.map((column: number[]) => column["GPS Latitude"]);
     GPSYPos.value = result.data.map((column: number[]) => column["GPS Longitude"]);
-    AirSpeed.value = result.data.map((column: number[]) => column["GPS Speed"]);
-    BrakePressure.value = result.data.map((column: number[]) => column["FBrkPrs"]);
+    GPSSpeed.value = result.data.map((column: number[]) => column["GPS Speed"]);
+    FrBrakePressure.value = result.data.map((column: number[]) => column["FBrkPrs"]);
+    ReBrakePressure.value = result.data.map((column: number[]) => column["RBrkPrs"]);
     ThrottlePosition.value = result.data.map((column: number[]) => column["ThrottlePosition"]);
     OilPressure.value = result.data.map((column: number[]) => column["OilPressure"]);
     OilTemp.value = result.data.map((column: number[]) => column["Oil Temp"]);
     ExternalVoltage.value = result.data.map((column: number[]) => column["External Voltage"]);
+    MAP.value = result.data.map((column: number[]) => column["MAP"]);
+    MAT.value = result.data.map((column: number[]) => column["FuelCompAirTemp"]);
+    SteeringAngle.value = result.data.map((column: number[]) => column["SteeringPot"]);
+    FuelPressure.value = result.data.map((column: number[]) => column["Fuel Press"]);
+    GearPosition.value = result.data.map((column: number[]) => column["GearPosition"]);
+    Lambda.value = result.data.map((column: number[]) => column["Lambda"]);
+    FrBrakeTemp.value = result.data.map((column: number[]) => column["FRTemp"]);
+    FLBrakeTemp.value = result.data.map((column: number[]) => column["FLTemp"]);
+    RRBrakeTemp.value = result.data.map((column: number[]) => column["RTemp"]);
+    RLBrakeTemp.value = result.data.map((column: number[]) => column["RLBrakeTemp"]);
+
 
     store.updateCollectedData(
       LatAcc.value,
@@ -65,13 +89,23 @@ function loadTextFromFile(ev: Event) {
       Time.value,
       GPSXPos.value,
       GPSYPos.value,
-      AirSpeed.value,
-      BrakePressure.value,
+      GPSSpeed.value,
+      FrBrakePressure.value,
+      ReBrakePressure.value,
       ThrottlePosition.value,
       OilPressure.value,
       OilTemp.value,
-      ExternalVoltage.value);
-
+      ExternalVoltage.value,
+      MAP.value,
+      MAT.value,
+      SteeringAngle.value,
+      FuelPressure.value,
+      GearPosition.value,
+      Lambda.value,
+      FrBrakeTemp.value,
+      FLBrakeTemp.value,
+      RRBrakeTemp.value,
+      RLBrakeTemp.value);
       }
 }
 

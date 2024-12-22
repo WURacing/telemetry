@@ -25,7 +25,7 @@ let sciChartSurface: SciChartSurface | null = null;
 let brakeDataSeries: XyDataSeries | null = null;
 
 const timeData = computed(() => store.Time);
-const brakepressureData = computed(() => store.BrakePressure);
+const brakepressureData = computed(() => store.FrBrakePressure);
 
 // When new data is added, this is run
 const updateChart = () => {
