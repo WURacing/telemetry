@@ -21,6 +21,7 @@ export const useFileStoreStore = defineStore('fileStore', () => {
     const FuelPressure:Ref<number[]> = ref([])
     const GearPos:Ref<number[]> = ref([])
     const Lambda:Ref<number[]> = ref([])
+    const CoolantTemp:Ref<number[]> = ref([])
     const FRBrakeTemp:Ref<number[]> = ref([])
     const FLBrakeTemp:Ref<number[]> = ref([])
     const RRBrakeTemp:Ref<number[]> = ref([])
@@ -45,6 +46,7 @@ export const useFileStoreStore = defineStore('fileStore', () => {
     const getFuelPressure = computed(() => FuelPressure.value)
     const getGearPos = computed(() => GearPos.value)
     const getLambda = computed(() => Lambda.value)
+    const getCoolantTemp = computed(() => CoolantTemp.value)
     const getFRBrakeTemp = computed(() => FRBrakeTemp.value)
     const getFLBrakeTemp = computed(() => FLBrakeTemp.value)
     const getRRBrakeTemp = computed(() => RRBrakeTemp.value)
@@ -70,6 +72,7 @@ export const useFileStoreStore = defineStore('fileStore', () => {
         FuelPressureIn: number[],
         GearPosIn: number[],
         LambdaIn: number[],
+        CoolantTempIn: number[],
         FRBrakeTempIn: number[],
         FLBrakeTempIn: number[],
         RRBrakeTempIn: number[],
@@ -94,6 +97,7 @@ export const useFileStoreStore = defineStore('fileStore', () => {
         FuelPressure.value = FuelPressureIn
         GearPos.value = GearPosIn
         Lambda.value = LambdaIn
+        CoolantTemp.value = CoolantTempIn
         FRBrakeTemp.value = FRBrakeTempIn
         FLBrakeTemp.value = FLBrakeTempIn
         RRBrakeTemp.value = RRBrakeTempIn
@@ -121,6 +125,7 @@ export const useFileStoreStore = defineStore('fileStore', () => {
             FuelPressureIn: number[],
             GearPosIn: number[],
             LambdaIn: number[],
+            CoolantTempIn: number[],
             FRBrakeTempIn: number[],
             FLBrakeTempIn: number[],
             RRBrakeTempIn: number[],
@@ -145,6 +150,7 @@ export const useFileStoreStore = defineStore('fileStore', () => {
                 FuelPressure.value,
                 GearPos.value,
                 Lambda.value,
+                CoolantTemp.value,
                 FRBrakeTemp.value,
                 FLBrakeTemp.value,
                 RRBrakeTemp.value,
@@ -174,6 +180,7 @@ export const useFileStoreStore = defineStore('fileStore', () => {
         FuelPressure,
         GearPos,
         Lambda,
+        CoolantTemp,
         FRBrakeTemp,
         FLBrakeTemp,
         RRBrakeTemp,
@@ -198,6 +205,7 @@ export const useFileStoreStore = defineStore('fileStore', () => {
         getFuelPressure,
         getGearPos,
         getLambda,
+        getCoolantTemp,
         getFRBrakeTemp,
         getFLBrakeTemp,
         getRRBrakeTemp,

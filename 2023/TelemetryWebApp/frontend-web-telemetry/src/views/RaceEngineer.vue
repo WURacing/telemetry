@@ -14,12 +14,12 @@
 </template>
 
 <script setup>
-import ScichartGGPlot from "@/components/GGPlot.vue";
+import ScichartGGPlot from "@/components/plots/GGPlot.vue";
 import TrackMap from "@/components/TrackMap.vue";
-import Voltage from "@/components/Voltage.vue";
-import BrakePos from "@/components/BrakePos.vue";
-import ThrottlePos from "@/components/ThrottlePos.vue";
-import GGPlot from "@/components/GGPlot.vue";
+import Voltage from "@/components/plots/Voltage.vue";
+import BrakePos from "@/components/plots/BrakePos.vue";
+import ThrottlePos from "@/components/plots/ThrottlePos.vue";
+import GGPlot from "@/components/plots/GGPlot.vue";
 </script>
 
 <style scoped>

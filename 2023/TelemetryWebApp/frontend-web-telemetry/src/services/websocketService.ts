@@ -45,10 +45,11 @@ class WebSocketService {
                 [...this.store.FuelPressure, data.channels[15]].slice(-100),
                 [...this.store.GearPos, data.channels[16]].slice(-100),
                 [...this.store.Lambda, data.channels[17]].slice(-100),
-                [...this.store.FRBrakeTemp, data.channels[18]].slice(-100),
-                [...this.store.FLBrakeTemp, data.channels[19]].slice(-100),
-                [...this.store.RRBrakeTemp, data.channels[20]].slice(-100),
-                [...this.store.RLBrakeTemp, data.channels[21]].slice(-100),
+                [...this.store.CoolantTemp, data.channels[18]].slice(-100),
+                [...this.store.FRBrakeTemp, data.channels[19]].slice(-100),
+                [...this.store.FLBrakeTemp, data.channels[20]].slice(-100),
+                [...this.store.RRBrakeTemp, data.channels[21]].slice(-100),
+                [...this.store.RLBrakeTemp, data.channels[22]].slice(-100),
                 // ... other channels
             );
         });
@@ -56,7 +57,7 @@ class WebSocketService {
         this.socket.on('disconnect', () => {
             this.socket.removeAllListeners();
             console.log('Disconnected from WebSocket server');
-            this.store.updateCollectedData([], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []);
+            this.store.updateCollectedData([], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []);
             buffer = new ArrayBuffer(0);
         });
 

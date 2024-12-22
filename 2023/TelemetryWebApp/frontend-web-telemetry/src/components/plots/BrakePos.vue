@@ -5,8 +5,8 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, onUnmounted, watch} from "vue";
-import { useFileStoreStore } from "../stores/FileStore.js";
+import {computed, onMounted, watch} from "vue";
+import { useFileStoreStore } from "@/stores/FileStore";
 import {
   SciChartSurface,
   NumericAxis,
@@ -14,7 +14,6 @@ import {
   FastLineRenderableSeries,
   XyDataSeries,
   SciChartJSDarkTheme,
-  MouseWheelZoomModifier,
   ZoomPanModifier,
   ZoomExtentsModifier
 } from "scichart";
@@ -62,7 +61,7 @@ onMounted(async () => {
 
   sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { axisTitle: "Time (s)", autoRange: EAutoRange.Always, drawLabels: false}));
   sciChartSurface.yAxes.add(new NumericAxis(wasmContext, { axisTitle: "%", autoRange: EAutoRange.Always}));
-  sciChartSurface.chartModifiers.add(new MouseWheelZoomModifier(), new ZoomPanModifier(), new ZoomExtentsModifier());
+  sciChartSurface.chartModifiers.add(new ZoomPanModifier(), new ZoomExtentsModifier());
 
 
   updateChart();

@@ -37,6 +37,7 @@ const SteeringAngle:Ref<number[]> = ref([]);
 const FuelPressure:Ref<number[]> = ref([]);
 const GearPosition:Ref<number[]> = ref([]);
 const Lambda:Ref<number[]> = ref([]);
+const CoolantTemp:Ref<number[]> = ref([]);
 const FrBrakeTemp:Ref<number[]> = ref([]);
 const FLBrakeTemp:Ref<number[]> = ref([]);
 const RRBrakeTemp:Ref<number[]> = ref([]);
@@ -47,7 +48,7 @@ function loadTextFromFile(ev: Event) {
   const file: File = (ev.target as HTMLInputElement).files![0];
   const parser = new FileReader();
 
-  store.updateCollectedData([], [],[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []);
+  store.updateCollectedData([], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []);
 
   parser.readAsText(file);
 
@@ -76,6 +77,7 @@ function loadTextFromFile(ev: Event) {
     FuelPressure.value = result.data.map((column: number[]) => column["Fuel Press"]);
     GearPosition.value = result.data.map((column: number[]) => column["GearPosition"]);
     Lambda.value = result.data.map((column: number[]) => column["Lambda"]);
+    CoolantTemp.value = result.data.map((column: number[]) => column["Coolant Temp"]);
     FrBrakeTemp.value = result.data.map((column: number[]) => column["FRTemp"]);
     FLBrakeTemp.value = result.data.map((column: number[]) => column["FLTemp"]);
     RRBrakeTemp.value = result.data.map((column: number[]) => column["RTemp"]);
@@ -101,6 +103,7 @@ function loadTextFromFile(ev: Event) {
       SteeringAngle.value,
       FuelPressure.value,
       GearPosition.value,
+      CoolantTemp.value,
       Lambda.value,
       FrBrakeTemp.value,
       FLBrakeTemp.value,

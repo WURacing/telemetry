@@ -41,6 +41,7 @@
     <div class="w-full h-16 mr-4" >
       <Voltage />
       <EngineSpeed />
+      <SteeringAngle />
     </div>
   </div>
 </div>
@@ -56,13 +57,14 @@
 </template>
 
 <script setup>
-import BrakePos from "@/components/BrakePos.vue";
-import VehicleSpeed from "@/components/VehicleSpeed.vue";
-import GGPlot from "@/components/GGPlot.vue";
+import BrakePos from "@/components/plots/BrakePos.vue";
+import VehicleSpeed from "@/components/plots/VehicleSpeed.vue";
+import GGPlot from "@/components/plots/GGPlot.vue";
 import TrackMap from "@/components/TrackMap.vue";
-import ThrottlePos from "@/components/ThrottlePos.vue";
-import Voltage from "@/components/Voltage.vue";
-import EngineSpeed from "@/components/EngineSpeed.vue";
+import ThrottlePos from "@/components/plots/ThrottlePos.vue";
+import Voltage from "@/components/plots/Voltage.vue";
+import EngineSpeed from "@/components/plots/EngineSpeed.vue";
+import SteeringAngle from "@/components/plots/SteeringAngle.vue"
 </script>
 
 <style scoped>
