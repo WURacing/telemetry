@@ -1,3 +1,16 @@
+# telemetry
+
+Author: Hayden Schroeder
+Date: 09/29/23
+
+## Code History
+
+## Standards
+
+- All code should follow the [Google style guide](https://google.github.io/styleguide/)
+- Repository should follow gitflow branching strategy
+- More info can be found [here](https://docs.google.com/document/d/1ARGR6GPORXKE09iwE0viAhfVXgTAP3NhcMlSWubIhwk/edit?usp=sharing)
+
 # WashU Racing Telemetry System
 Welcome to the WashU Racing live telemetry website. 
 Inside you'll find the different telemetry views, as well as the graphs within them.
@@ -28,3 +41,10 @@ You may have noticed that there is an option to upload a file into the telemetry
 has the ability to analyze old .csv files from Race Studio (found in Box).
 
 Before Uploading a .csv file, make sure to remove every line above the headers (Time, LatAcc, etc.)
+
+
+## Standards
+
+- All code should follow the [Google style guide](https://google.github.io/styleguide/)
+- Repository should follow gitflow branching strategy
+- More info can be found [here](https://docs.google.com/document/d/1ARGR6GPORXKE09iwE0viAhfVXgTAP3NhcMlSWubIhwk/edit?usp=sharing)
