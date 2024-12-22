@@ -15,7 +15,6 @@ import {
   XyScatterRenderableSeries,
   EllipsePointMarker,
   SciChartJSDarkTheme,
-  NumberRange,
   ZoomPanModifier,
   ZoomExtentsModifier,
 } from "scichart";
@@ -62,11 +61,11 @@ onMounted(async () => {
   sciChartSurface.renderableSeries.add(new XyScatterRenderableSeries(wasmContext, {
         strokeThickness: 2,
         pointMarker: new EllipsePointMarker(wasmContext, {
-          width: 4,
-          height: 4,
+          width: 3,
+          height: 3,
           strokeThickness: 0,
           fill: "#ca982c",
-          opacity: 0.7
+          opacity: 1
         }),
     dataSeries: trackDataSeries
       }));

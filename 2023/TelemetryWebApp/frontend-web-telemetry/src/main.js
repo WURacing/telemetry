@@ -9,9 +9,11 @@ const pinia = createPinia()
 const router = createRouter({
     history: createWebHistory(),
     routes: [
-        { path: '/', component: () => import('./views/Powertrain.vue') },
-        { path: '/suspension', component: () => import('./views/RaceEngineer.vue') },
-        ],
+        { path: '/', component: () => import('./views/DriverInputs.vue') },
+        { path: '/powertrain', component: () => import('./views/Powertrain.vue') },
+        { path: '/aero', component: () => import('./views/Aero.vue') },
+        { path: '/ergo', component: () => import('./views/Ergo.vue') },
+    ],
     })
     export default router
 app.use(pinia)

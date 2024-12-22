@@ -56,8 +56,8 @@ onMounted(async () => {
     dataSeries: voltageDataSeries,
   }));
 
-  sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { axisTitle: "Time (s)", autoRange: EAutoRange.Always, drawLabels: false}));
-  sciChartSurface.yAxes.add(new NumericAxis(wasmContext, { axisTitle: "V", autoRange: EAutoRange.Always}));
+  sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always, drawLabels: false}));
+  sciChartSurface.yAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always}));
   sciChartSurface.chartModifiers.add(new ZoomPanModifier(), new ZoomExtentsModifier());
 
   updateChart();
@@ -91,6 +91,5 @@ a {
 }
 #scichart-voltage {
   width: 100%;
-  height: 240px;
 }
 </style>
