@@ -22,7 +22,7 @@ import {
   MemoryUsageHelper
 } from "scichart";
 
-SciChartSurface.autoDisposeWasmContext = true; // default false
+// SciChartSurface.autoDisposeWasmContext = true; // default false
 SciChartSurface.wasmContextDisposeTimeout = 100; // default 0 mlliseconds
 // Retrieve data from store
 const store = useFileStoreStore();

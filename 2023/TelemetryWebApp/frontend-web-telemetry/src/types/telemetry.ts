@@ -4,11 +4,6 @@ export interface TelemetryData {
     channels: number[];
 }
 
-export interface ChartDataPoint {
-    time: number;
-    value: number;
-}
-
 // Add channel mapping type for type safety
 export interface ChannelMap {
     latAcc: number;

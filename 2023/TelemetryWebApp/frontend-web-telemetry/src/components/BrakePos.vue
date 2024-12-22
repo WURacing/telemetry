@@ -71,11 +71,6 @@ onMounted(async () => {
     updateChart();
   })
 });
-
-onUnmounted(async () => {
-  sciChartSurface.delete();
-  brakeDataSeries.delete();
-  })
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

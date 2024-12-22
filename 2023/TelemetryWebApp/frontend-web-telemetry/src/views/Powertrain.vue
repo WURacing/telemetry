@@ -26,7 +26,7 @@
 <div class="flex flex-col">
   <div class="flex items-center justify-between text-white p-4">
     <div class="w-72 h-240 bg-red-900 mr-4">
-<!--  Something will go in here    -->
+<!--  Square plot here    -->
     </div>
     <div class="w-full h-1/2" >
       <BrakePos msg="Brake Position" />
@@ -38,10 +38,9 @@
     <div class="w-16 h-16 mr-4">
       <ThrottlePos msg="Throttle Position" />
     </div>
-<!--    <div class="w-full h-1/4" >-->
-<!--      <OilPressure msg="Oil Pressure" />-->
-<!--      <OilTemp msg="Oil Temp" />-->
-<!--      </div>-->
+    <div class="w-full h-16 mr-4" >
+      <Voltage />
+      </div>
   </div>
 </div>
 
@@ -61,8 +60,7 @@ import VehicleSpeed from "@/components/VehicleSpeed.vue";
 import GGPlot from "@/components/GGPlot.vue";
 import TrackMap from "@/components/TrackMap.vue";
 import ThrottlePos from "@/components/ThrottlePos.vue";
-import OilPressure from "@/components/OilPressure.vue";
-import OilTemp from "@/components/OilTemp.vue";
+import Voltage from "@/components/Voltage.vue";
 </script>
 
 <style scoped>

@@ -40,12 +40,6 @@ const updateChart = () => {
   for (let i = 0; i < timeData.value.length; i++) {
     speedDataSeries.append(timeData.value[i], airspeedData.value[i]);
   }
-
-  if (timeData.value.length > 100000) {
-    for (let i = 0; i < 100; i++) {
-      speedDataSeries.insertRange(timeData.value[i], airspeedData.value[i])
-    }
-  }
 };
 
 onMounted(async () => {
@@ -94,7 +88,6 @@ onMounted(async () => {
 
 onUnmounted(async () => {
   sciChartSurface.delete();
-  speedDataSeries.delete();
 });
 
 </script>
