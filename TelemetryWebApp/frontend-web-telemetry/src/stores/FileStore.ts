@@ -4,7 +4,7 @@ import { ref, computed, type Ref } from 'vue'
 export const useFileStoreStore = defineStore('fileStore', () => {
     const LatAcc:Ref<number[]> = ref([])
     const LongAcc:Ref<number[]> = ref([])
-    const EngineRPM:Ref<number[]> = ref([])
+    const EngineRPM:Ref<number[]> = ref([]\
     const Time:Ref<number[]> = ref([])
     const GPSXPos:Ref<number[]> = ref([])
     const GPSYPos:Ref<number[]> = ref([])
