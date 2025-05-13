@@ -12,6 +12,7 @@
     "aws-amplify": "^6.13.0",
     "pinia": "^2.1.7",
     "plotly.js-dist": "^2.29.1",
+    "socket.io-client": "^4.7.2",
     "vue": "^3.3.4",
     "vue-plotly": "^1.1.0",
     "vue-router": "^4.3.0"

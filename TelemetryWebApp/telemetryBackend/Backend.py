@@ -34,7 +34,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-@app.on_event("startup")
+@app.on_event("startup") 
 async def startup_event():
     global redis_client  # Access the global variable
     redis_client = Redis(host=REDIS_HOST, port=REDIS_PORT, password=REDIS_PASSWORD, decode_responses=True)
