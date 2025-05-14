@@ -48,7 +48,7 @@ class TelemetryData(BaseModel):
 async def process_line(line: str) -> Optional[List[float]]:
     if "Shorts: " in line:
         try:
-            data_str = line.split("Shorts: ")[1].strip()
+            data_str = line.split("Values: ")[1].strip()
             values = [float(x.strip()) for x in data_str.split(",") if x.strip()]
             return values[:36]
         except (ValueError, IndexError) as e:
