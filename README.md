@@ -24,6 +24,8 @@ Congrats! Telemetry should now be running on your local computer. Now, all you h
 link, plug in the RF receiver 
 and hit "Begin Streaming Session".
 
+Note: For live data transfer, ensure that _both_ Backend.py and GetDataFromCar.py are running. When analyzing old data, this isn't necessary.
+
 ## Analyzing Old Data
 (As of 12/22/2024)
 You may have noticed that there is an option to upload a file into the telemetry interface. This website
