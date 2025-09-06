@@ -1,6 +1,6 @@
 <template id="home">
-<Analytics />
-  <div class="flex justify-center w-full">
+
+<div class="flex justify-center w-full">
     <div class="navbar rounded-3xl border-amber-200 w-5/6 m-3 sticky justify-center">
       <a class="text-sm lg:text-2xl">WashU Racing Telemetry Display </a>
       <FileReader class="inline-block" />
@@ -23,7 +23,6 @@ import FileReader from "./components/FileReader.vue";
 import StartStreamingButton from "./components/StartStreamingButton.vue";
 import CarStatus from "./components/CarStatus.vue";
 import { MemoryUsageHelper } from "scichart";
-import { Analytics } from "@vercel/analytics/next";
 
 // Useful for debugging Memory Leaks (set to false in prod)!
 MemoryUsageHelper.isMemoryUsageDebugEnabled = false;
