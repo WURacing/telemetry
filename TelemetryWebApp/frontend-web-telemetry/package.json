@@ -1,6 +1,6 @@
 {
   "name": "telemetry",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "vite",
@@ -8,22 +8,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "apexcharts": "^3.46.0",
-    "aws-amplify": "^6.13.0",
     "pinia": "^2.1.7",
     "plotly.js-dist": "^2.29.1",
+    "scichart": "^4.0.833",
     "socket.io-client": "^4.7.2",
     "vue": "^3.3.4",
     "vue-plotly": "^1.1.0",
     "vue-router": "^4.3.0"
   },
   "devDependencies": {
-    "@aws-amplify/backend": "^1.14.1",
-    "@aws-amplify/backend-cli": "^1.4.10",
     "@vitejs/plugin-vue": "^4.4.0",
     "autoprefixer": "^10.4.16",
-    "aws-cdk": "^2.178.2",
-    "aws-cdk-lib": "^2.178.2",
     "constructs": "^10.4.2",
     "daisyui": "^4.12.10",
     "esbuild": "^0.25.0",
