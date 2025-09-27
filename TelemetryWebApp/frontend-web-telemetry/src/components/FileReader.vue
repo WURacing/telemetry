@@ -13,107 +13,166 @@
 </template>
 
 <script setup lang="ts">
-import { type Ref, ref } from 'vue';
-import papaparse from 'papaparse';
-import { useFileStoreStore } from '../stores/FileStore';
+import papaparse, { type ParseResult } from 'papaparse';
+import { useFileStoreStore, type TelemetryField } from '../stores/FileStore';
+
+type CsvRow = Record<string, unknown>;
 
 const store = useFileStoreStore();
-const LatAcc:Ref<number[]> = ref([]);
-const LongAcc:Ref<number[]> = ref([]);
-const EngineRPM:Ref<number[]> = ref([]);
-const Time:Ref<number[]> = ref([]);
-const GPSXPos:Ref<number[]> = ref([]);
-const GPSYPos:Ref<number[]> = ref([]);
-const GPSSpeed:Ref<number[]> = ref([]);
-const FrBrakePressure:Ref<number[]> = ref([]);
-const ReBrakePressure:Ref<number[]> = ref([]);
-const ThrottlePosition:Ref<number[]> = ref([]);
-const OilPressure:Ref<number[]> = ref([]);
-const OilTemp:Ref<number[]> = ref([]);
-const ExternalVoltage:Ref<number[]> = ref([]);
-const MAP:Ref<number[]> = ref([]);
-const MAT:Ref<number[]> = ref([]);
-const SteeringAngle:Ref<number[]> = ref([]);
-const FuelPressure:Ref<number[]> = ref([]);
-const GearPosition:Ref<number[]> = ref([]);
-const Lambda:Ref<number[]> = ref([]);
-const CoolantTemp:Ref<number[]> = ref([]);
-const FrBrakeTemp:Ref<number[]> = ref([]);
-const FLBrakeTemp:Ref<number[]> = ref([]);
-const RRBrakeTemp:Ref<number[]> = ref([]);
-const RLBrakeTemp:Ref<number[]> = ref([]);
 
+type StoreField = TelemetryField;
+
+const COLUMN_MAP: Record<StoreField, string[]> = {
+  Time: ['Time'],
+  LatAcc: ['GPS LatAcc'],
+  LongAcc: ['GPS LonAcc'],
+  GPSSpeed: ['GPS Speed'],
+  GPSXPos: ['GPS Latitude'],
+  GPSYPos: ['GPS Longitude'],
+  EngineRPM: ['EngineSpeed'],
+  ThrottlePosition: ['ThrottlePosition'],
+  FrBrakePressure: ['FBrkPrs'],
+  FuelPressure: ['Fuel Press'],
+  OilPressure: ['OilPressure'],
+  OilTemp: ['Oil Temp'],
+  ExternalVoltage: ['External Voltage'],
+  MAP: ['MAP'],
+  MAT: ['FuelCompAirTemp'],
+  SteeringAngle: ['SteeringPot'],
+  GearPos: ['GearPosition'],
+  Lambda: ['Lambda'],
+  CoolantTemp: ['Coolant Temp']
+};
+
+const STORE_FIELDS: StoreField[] = [
+  'Time',
+  'LatAcc',
+  'LongAcc',
+  'GPSSpeed',
+  'GPSXPos',
+  'GPSYPos',
+  'EngineRPM',
+  'ThrottlePosition',
+  'FrBrakePressure',
+  'FuelPressure',
+  'OilPressure',
+  'OilTemp',
+  'ExternalVoltage',
+  'MAP',
+  'MAT',
+  'SteeringAngle',
+  'GearPos',
+  'Lambda',
+  'CoolantTemp'
+];
+
+const clearStoreData = () => {
+  store.clearCollectedData();
+};
+
+const toNumber = (value: unknown): number | null => {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value;
+  }
+
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return null;
+    }
+    const parsed = Number(trimmed);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  return null;
+};
+
+const collectColumn = (rows: CsvRow[], keys: string[]): number[] => {
+  if (!keys.length) {
+    return [];
+  }
+
+  const results: number[] = [];
+
+  for (const row of rows) {
+    if (!row || typeof row !== 'object') {
+      continue;
+    }
+
+    let value: unknown;
+
+    for (const key of keys) {
+      if (key in row) {
+        value = (row as Record<string, unknown>)[key];
+        break;
+      }
+    }
+
+    const numericValue = toNumber(value);
+
+    if (numericValue !== null) {
+      results.push(numericValue);
+    }
+  }
+
+  return results;
+};
+
+const buildPayloadFromRows = (rows: CsvRow[]) => {
+  const payloadEntries = STORE_FIELDS.map((field) => [field, collectColumn(rows, COLUMN_MAP[field])] as const);
+  return Object.fromEntries(payloadEntries) as Record<StoreField, number[]>;
+};
+
+const handleParseResult = (result: ParseResult<CsvRow>) => {
+  const rows = result.data.filter((row) => row && typeof row === 'object' && Object.keys(row).length > 0);
+
+  if (!rows.length) {
+    console.warn('No usable rows found in CSV file.');
+    clearStoreData();
+    return;
+  }
+
+  const payload = buildPayloadFromRows(rows);
+  store.updateCollectedData(payload);
+};
 
 function loadTextFromFile(ev: Event) {
-  const file: File = (ev.target as HTMLInputElement).files![0];
-  const parser = new FileReader();
+  const input = ev.target as HTMLInputElement | null;
+  const file = input?.files?.[0];
 
-  store.updateCollectedData([], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []);
+  if (!file) {
+    return;
+  }
 
-  parser.readAsText(file);
+  clearStoreData();
 
-  parser.onload = function (ev) {
-    const text = ev.target!.result as string;
-    const result = papaparse.parse(text, { header: true });
+  const reader = new FileReader();
 
-    console.log("CSV file: " + file.name);
+  reader.onload = (loadEvent) => {
+    const text = loadEvent.target?.result;
 
-    LatAcc.value = result.data.map((column: number[]) => column["GPS LatAcc"]);
-    LongAcc.value = result.data.map((column: number[]) => column["GPS LonAcc"]);
-    EngineRPM.value = result.data.map((column: number[]) => column["EngineSpeed"]);
-    Time.value = result.data.map((column: number[]) => column["Time"]);
-    GPSXPos.value = result.data.map((column: number[]) => column["GPS Latitude"]);
-    GPSYPos.value = result.data.map((column: number[]) => column["GPS Longitude"]);
-    GPSSpeed.value = result.data.map((column: number[]) => column["GPS Speed"]);
-    FrBrakePressure.value = result.data.map((column: number[]) => column["FBrkPrs"]);
-    ReBrakePressure.value = result.data.map((column: number[]) => column["RBrkPrs"]);
-    ThrottlePosition.value = result.data.map((column: number[]) => column["ThrottlePosition"]);
-    OilPressure.value = result.data.map((column: number[]) => column["OilPressure"]);
-    OilTemp.value = result.data.map((column: number[]) => column["Oil Temp"]);
-    ExternalVoltage.value = result.data.map((column: number[]) => column["External Voltage"]);
-    MAP.value = result.data.map((column: number[]) => column["MAP"]);
-    MAT.value = result.data.map((column: number[]) => column["FuelCompAirTemp"]);
-    SteeringAngle.value = result.data.map((column: number[]) => column["SteeringPot"]);
-    FuelPressure.value = result.data.map((column: number[]) => column["Fuel Press"]);
-    GearPosition.value = result.data.map((column: number[]) => column["GearPosition"]);
-    Lambda.value = result.data.map((column: number[]) => column["Lambda"]);
-    CoolantTemp.value = result.data.map((column: number[]) => column["Coolant Temp"]);
-    FrBrakeTemp.value = result.data.map((column: number[]) => column["FRTemp"]);
-    FLBrakeTemp.value = result.data.map((column: number[]) => column["FLTemp"]);
-    RRBrakeTemp.value = result.data.map((column: number[]) => column["RTemp"]);
-    RLBrakeTemp.value = result.data.map((column: number[]) => column["RLBrakeTemp"]);
+    if (typeof text !== 'string') {
+      console.warn('Unable to read CSV file contents.');
+      clearStoreData();
+      return;
+    }
 
+    const parseResult = papaparse.parse<CsvRow>(text, {
+      header: true,
+      dynamicTyping: true,
+      skipEmptyLines: true,
+    });
 
-    store.updateCollectedData(
-      LatAcc.value,
-      LongAcc.value,
-      EngineRPM.value,
-      Time.value,
-      GPSXPos.value,
-      GPSYPos.value,
-      GPSSpeed.value,
-      FrBrakePressure.value,
-      ReBrakePressure.value,
-      ThrottlePosition.value,
-      OilPressure.value,
-      OilTemp.value,
-      ExternalVoltage.value,
-      MAP.value,
-      MAT.value,
-      SteeringAngle.value,
-      FuelPressure.value,
-      GearPosition.value,
-      CoolantTemp.value,
-      Lambda.value,
-      FrBrakeTemp.value,
-      FLBrakeTemp.value,
-      RRBrakeTemp.value,
-      RLBrakeTemp.value);
-      }
+    if (parseResult.errors.length) {
+      console.warn('CSV parse errors encountered:', parseResult.errors);
+    }
+
+    console.log(`CSV file loaded: ${file.name}`);
+
+    handleParseResult(parseResult);
+  };
+
+  reader.readAsText(file);
 }
 
 </script>
-
-<style scoped>
-/* Your style code here */
-</style>

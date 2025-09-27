@@ -55,7 +55,7 @@ const disconnect = () => {
   chartRef.value?.cleanupChart();
 
   // Clear store data (if needed – clearing on disconnect is often appropriate)
-  store.updateCollectedData([], [], [], [], [], [], [], [], [], [], [], []);
+  store.clearCollectedData();
 };
 
 const toggleConnection = async () => {
