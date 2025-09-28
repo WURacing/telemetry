@@ -7,6 +7,7 @@
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, watch} from "vue";
 import { useFileStoreStore } from "@/stores/FileStore";
+import { chartSyncService } from "@/services/chartSync";
 import {
   SciChartSurface,
   NumericAxis,
@@ -15,7 +16,9 @@ import {
   XyDataSeries,
   SciChartJSDarkTheme,
   ZoomPanModifier,
-  ZoomExtentsModifier
+  ZoomExtentsModifier,
+  MouseWheelZoomModifier,
+  RolloverModifier
 } from "scichart";
 
 // Retrieve data from store
@@ -64,16 +67,19 @@ onMounted(async () => {
     dataSeries: rpmDataSeries,
   }));
 
-    // Modifiers
+  const modifierGroup = chartSyncService.modifierGroupId;
   sciChartSurface.chartModifiers.add(
-      new ZoomPanModifier(),
-      new ZoomExtentsModifier()
+    new ZoomPanModifier({ modifierGroup }),
+    new MouseWheelZoomModifier({ modifierGroup }),
+    new ZoomExtentsModifier({ modifierGroup }),
+    new RolloverModifier({ modifierGroup })
   );
 
    // Axes
   sciChartSurface.yAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always}));
   sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always, drawLabels: false}));
 
+  chartSyncService.register(sciChartSurface);
 
   updateChart();// Initial chart setup
 
@@ -83,8 +89,12 @@ onMounted(async () => {
 
 });
 
-onUnmounted(async () => {
-  sciChartSurface.delete();
+onUnmounted(() => {
+  if (sciChartSurface) {
+    chartSyncService.unregister(sciChartSurface);
+    sciChartSurface.delete();
+    sciChartSurface = null;
+  }
 });
 
 </script>

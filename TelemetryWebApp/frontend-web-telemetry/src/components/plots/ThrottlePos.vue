@@ -7,6 +7,7 @@
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, watch} from "vue";
 import { useFileStoreStore } from "@/stores/FileStore";
+import { chartSyncService } from "@/services/chartSync";
 import {
   SciChartSurface,
   NumericAxis,
@@ -17,7 +18,9 @@ import {
   ZoomPanModifier,
   ZoomExtentsModifier,
   SciChartDefaults,
-  MemoryUsageHelper
+  MemoryUsageHelper,
+  MouseWheelZoomModifier,
+  RolloverModifier
 } from "scichart";
 
 SciChartSurface.wasmContextDisposeTimeout = 100; // default 0 mlliseconds
@@ -66,7 +69,16 @@ onMounted(async () => {
 
   sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always, drawLabels: false}));
   sciChartSurface.yAxes.add(new NumericAxis(wasmContext, { axisTitle: "%", autoRange: EAutoRange.Always}));
-  sciChartSurface.chartModifiers.add(new ZoomPanModifier(), new ZoomExtentsModifier());
+
+  const modifierGroup = chartSyncService.modifierGroupId;
+  sciChartSurface.chartModifiers.add(
+    new ZoomPanModifier({ modifierGroup }),
+    new MouseWheelZoomModifier({ modifierGroup }),
+    new ZoomExtentsModifier({ modifierGroup }),
+    new RolloverModifier({ modifierGroup })
+  );
+
+  chartSyncService.register(sciChartSurface);
 
 
   updateChart();
@@ -76,8 +88,12 @@ onMounted(async () => {
   })
 });
 
-onUnmounted( async () => {
-  sciChartSurface.delete();
+onUnmounted(() => {
+  if (sciChartSurface) {
+    chartSyncService.unregister(sciChartSurface);
+    sciChartSurface.delete();
+    sciChartSurface = null;
+  }
   SciChartSurface.disposeSharedWasmContext();
 })
 </script>
