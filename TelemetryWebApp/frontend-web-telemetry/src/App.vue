@@ -22,6 +22,7 @@
 import FileReader from "./components/FileReader.vue";
 import StartStreamingButton from "./components/StartStreamingButton.vue";
 import CarStatus from "./components/CarStatus.vue";
+import ServerStatus from "./components/ServerStatus.vue";
 import { MemoryUsageHelper } from "scichart";
 
 // Useful for debugging Memory Leaks (set to false in prod)!

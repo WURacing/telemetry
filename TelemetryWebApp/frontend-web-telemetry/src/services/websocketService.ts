@@ -12,7 +12,7 @@ class WebSocketService {
     }
 
     connect() {
-        this.socket = io('http://api.telemetry.washuracing.com', { transports: ['websocket'] });
+        this.socket = io('https://api.telemetry.mooo.com', { transports: ['websocket'] });
 
         this.socket.on('connect', () => {
             console.log('Connected to WebSocket server');
