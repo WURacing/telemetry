@@ -17,7 +17,7 @@ const isCarConnected = ref(false)
 const wsService = WebSocketService
 let timeoutId: any | undefined
 
-const socket = io('http://api.telemetry.washuracing.com', { transports: ['websocket'] });
+const socket = io('https://api.telemetry.washuracing.com', { transports: ['websocket'] });
 
 const resetTimer = () => {
   isCarConnected.value = true
