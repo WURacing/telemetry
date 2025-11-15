@@ -2,63 +2,78 @@ import { io, Socket } from 'socket.io-client';
 import { useFileStoreStore, type TelemetryField } from '../stores/FileStore';
 import type { TelemetryData } from '../types/telemetry';
 
+// Assuming you have the shared socket instance from the previous step
+import { socket } from './socket';
+
 class WebSocketService {
-    private store: ReturnType<typeof useFileStoreStore>;
-    private socket: Socket | null = null;
-
-
-    constructor() {
-        this.store = useFileStoreStore(); // Instantiate now
-    }
+    // REMOVE the store property and the constructor
+    // private store: ReturnType<typeof useFileStoreStore>;
+    // constructor() {
+    //     this.store = useFileStoreStore();
+    // }
 
     connect() {
-        this.socket = io('https://api.telemetry.mooo.com', { transports: ['websocket'] });
+        // This part remains the same, but we will modify the event listeners
+        if (socket.connected) return;
 
-        this.socket.on('connect', () => {
-            console.log('Connected to WebSocket server');
+        // Initialize listeners once upon connection
+        this.initializeEventListeners();
+        socket.connect();
+    }
+
+    disconnect() {
+        if (socket) {
+            socket.disconnect();
+        }
+    }
+
+    private initializeEventListeners() {
+        socket.on('connect', () => {
+            console.log('Connected to WebSocket server with ID:', socket.id);
         });
 
-        this.socket?.on('connected', (data: any) => {
-            console.log('Socket ID:', data.sid); // Log or store the sid if needed
-        });
+        socket.on('telemetry_update', (data: TelemetryData) => {
+            // GET THE STORE INSTANCE *INSIDE* THE EVENT HANDLER
+            const store = useFileStoreStore();
 
-        this.socket.on('telemetry_update', (data: TelemetryData) => {
+            // This helper function now correctly uses the live store
             const rolling = (field: TelemetryField, value: number) => {
-                const current = this.store[field];
-                return [...current.value, value].slice(-100);
+                // Accessing the store property (which is a ref) and then its .value
+                const currentArray = store[field].value;
+                
+                // Safety check to ensure it's an array
+                if (!Array.isArray(currentArray)) {
+                    console.error(`Store field ${field} is not an array!`, currentArray);
+                    return [value]; // Recover by starting a new array
+                }
+                
+                return [...currentArray, value].slice(-100);
             };
 
-            this.store.updateCollectedData({
+            store.updateCollectedData({
                 FrBrakePressure: rolling('FrBrakePressure', data.channels[1]),
                 SteeringAngle: rolling('SteeringAngle', data.channels[3]),
                 LatAcc: rolling('LatAcc', data.channels[28]),
                 LongAcc: rolling('LongAcc', data.channels[29]),
-                Time: rolling('Time', Date.now())
+                // IMPORTANT: You need a Time value for the charts to work
+                Time: rolling('Time', Date.now()) 
             });
         });
 
-        this.socket.on('disconnect', () => {
-            if (this.socket) {
-                this.socket.removeAllListeners();
-            }
+        socket.on('disconnect', () => {
+            const store = useFileStoreStore();
             console.log('Disconnected from WebSocket server');
-            this.store.clearCollectedData();
+            store.clearCollectedData();
         });
 
-        this.socket.on('error', (error: Error) => {
-            console.error('WebSocket error:', error);
-        });
-
-        this.socket.on('connect_error', (err) => {
+        socket.on('connect_error', (err: Error) => {
             console.error(`Connection error: ${err.message}`);
         });
-     }
 
-    disconnect() {
-        if (this.socket) {
-            this.socket.disconnect();
-            this.socket = null;
-        }
+        // Remove all listeners on disconnect to prevent memory leaks if re-connecting
+        socket.on('disconnect', () => {
+            socket.removeAllListeners();
+        });
     }
 }
 

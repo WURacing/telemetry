@@ -154,14 +154,14 @@ async def start_serial_reading():
                     channels=data
                 )
                 # Raw telemetry data logging
-                # logger.info(f"Raw data from serial: {line}")
-                # logger.info(f"Parsed telemetry data: {telemetry_data}")
+                logger.info(f"Raw data from serial: {line}")
+                logger.info(f"Parsed telemetry data: {telemetry_data}")
 
                 # Save to Redis and Emit to Socket.IO
                 await processor.save_to_redis(data)
                 saved_data = await processor.save_to_redis(data)
                 logger.info(f"Data saved to Redis.")
-                # logger.info(f"Data saved to Redis: {saved_data}")
+                logger.info(f"Data saved to Redis: {saved_data}")
                 await asyncio.sleep(0.05)  # Adjust rate as needed
 
     await asyncio.create_task(read_from_serial())

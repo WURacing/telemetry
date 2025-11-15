@@ -31,18 +31,19 @@ const COLUMN_MAP: Record<StoreField, string[]> = {
   GPSYPos: ['GPS Longitude'],
   EngineRPM: ['EngineSpeed'],
   ThrottlePosition: ['ThrottlePosition'],
-  FrBrakePressure: ['FBrkPrs'],
-  FuelPressure: ['Fuel Press'],
+  FrBrakePressure: ['BrkPrsF'],
+  FuelPressure: ['FuelPressure'],
   OilPressure: ['OilPressure'],
-  OilTemp: ['Oil Temp'],
+  OilTemp: ['OilTemperature'],
   ExternalVoltage: ['External Voltage'],
   MAP: ['MAP'],
   MAT: ['FuelCompAirTemp'],
   SteeringAngle: ['SteeringPot'],
   GearPos: ['GearPosition'],
-  Lambda: ['Lambda'],
-  CoolantTemp: ['Coolant Temp']
+  Lambda: ['Lambda 001'],
+  CoolantTemp: ['CoolantTemp']
 };
+
 
 const STORE_FIELDS: StoreField[] = [
   'Time',
@@ -157,7 +158,38 @@ function loadTextFromFile(ev: Event) {
       return;
     }
 
-    const parseResult = papaparse.parse<CsvRow>(text, {
+    // Normalize line endings and split the file into lines
+    const normalizedText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    const lines = normalizedText.split('\n');
+
+    let headerRowIndex = -1;
+
+    // Find the actual header row, which starts with "Time"
+    for (let i = 0; i < lines.length; i++) {
+        if (lines[i].trim().startsWith('"Time"')) {
+            headerRowIndex = i;
+            break;
+        }
+    }
+
+    if (headerRowIndex === -1) {
+        console.warn('Could not find header row in CSV file.');
+        clearStoreData();
+        return;
+    }
+
+    // Find the first row of actual data, skipping the units row and any blank lines
+    let dataStartIndex = headerRowIndex + 1;
+    while (dataStartIndex < lines.length && (lines[dataStartIndex].trim() === '' || !/^\s*"\d/.test(lines[dataStartIndex]))) {
+        dataStartIndex++;
+    }
+
+    // Reconstruct the CSV content with only the header and data rows
+    const headerLine = lines[headerRowIndex];
+    const dataLines = lines.slice(dataStartIndex);
+    const csvContentForParsing = [headerLine, ...dataLines].join('\n');
+
+    const parseResult = papaparse.parse<CsvRow>(csvContentForParsing, {
       header: true,
       dynamicTyping: true,
       skipEmptyLines: true,
