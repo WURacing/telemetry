@@ -13,7 +13,7 @@ import { io } from 'socket.io-client';
 
 const isConnected = ref(false)
 
-const socket = io('http://localhost:4000', { transports: ['websocket'] });
+const socket = io('http://api.telemetry.washuracing.com', { transports: ['websocket'] });
 
 onMounted(() => {
   // Listen for connect/disconnect events

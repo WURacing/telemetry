@@ -5,7 +5,7 @@
       <a class="text-sm lg:text-2xl">WashU Racing Telemetry Display </a>
       <FileReader class="inline-block" />
       <StartStreamingButton />
-<!--      <ServerStatus />-->
+      <ServerStatus />
       <CarStatus />
       <div class="flex-wrap lg:flex-none text-right px-10" id="section-wrapper">
         <router-link class="btn bg-yellow-600 m-2" to="/">Driver Inputs</router-link>
