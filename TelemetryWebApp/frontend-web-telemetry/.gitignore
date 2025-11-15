@@ -14,6 +14,10 @@ dist-ssr
 coverage
 *.local
 
+*.pyc
+*.xml
+*.iml
+
 /cypress/videos/
 /cypress/screenshots/
 23-05-05-Skidpad-ANunez2.csv*
