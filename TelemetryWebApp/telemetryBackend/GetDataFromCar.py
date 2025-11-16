@@ -20,7 +20,7 @@ import logging
 load_dotenv()
 
 SERIAL_CONFIG = {
-    'PORT': '/dev/tty.usbmodem11401',
+    'PORT': '/dev/tty.usbmodem1401',
     'BAUD_RATE': 115200,
     'TIMEOUT': 0.01
 }

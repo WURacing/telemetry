@@ -37,7 +37,7 @@ const COLUMN_MAP: Record<StoreField, string[]> = {
   OilTemp: ['OilTemperature'],
   ExternalVoltage: ['External Voltage'],
   MAP: ['MAP'],
-  MAT: ['FuelCompAirTemp'],
+  MAT: ['AirTemp'],
   SteeringAngle: ['SteeringPot'],
   GearPos: ['GearPosition'],
   Lambda: ['Lambda 001'],
@@ -157,39 +157,18 @@ function loadTextFromFile(ev: Event) {
       clearStoreData();
       return;
     }
+    
+    const lines = text.replace(/\r\n/g, '\n').split('\n');
 
-    // Normalize line endings and split the file into lines
-    const normalizedText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-    const lines = normalizedText.split('\n');
+    // The header is on line 15 (index 14)
+    const headerLine = lines[14];
+    // The data starts on line 18 (index 17)
+    const dataLines = lines.slice(17);
 
-    let headerRowIndex = -1;
+    // Combine the header with the data lines to create a clean CSV string
+    const cleanCsvText = [headerLine, ...dataLines].join('\n');
 
-    // Find the actual header row, which starts with "Time"
-    for (let i = 0; i < lines.length; i++) {
-        if (lines[i].trim().startsWith('"Time"')) {
-            headerRowIndex = i;
-            break;
-        }
-    }
-
-    if (headerRowIndex === -1) {
-        console.warn('Could not find header row in CSV file.');
-        clearStoreData();
-        return;
-    }
-
-    // Find the first row of actual data, skipping the units row and any blank lines
-    let dataStartIndex = headerRowIndex + 1;
-    while (dataStartIndex < lines.length && (lines[dataStartIndex].trim() === '' || !/^\s*"\d/.test(lines[dataStartIndex]))) {
-        dataStartIndex++;
-    }
-
-    // Reconstruct the CSV content with only the header and data rows
-    const headerLine = lines[headerRowIndex];
-    const dataLines = lines.slice(dataStartIndex);
-    const csvContentForParsing = [headerLine, ...dataLines].join('\n');
-
-    const parseResult = papaparse.parse<CsvRow>(csvContentForParsing, {
+    const parseResult = papaparse.parse<CsvRow>(cleanCsvText, {
       header: true,
       dynamicTyping: true,
       skipEmptyLines: true,
