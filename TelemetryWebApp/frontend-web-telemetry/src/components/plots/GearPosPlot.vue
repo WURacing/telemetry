@@ -76,7 +76,7 @@ onMounted(async () => {
 
    // Axes
   sciChartSurface.yAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always, majorDelta: 1}));
-  sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always, drawLabels: false}));
+  sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always}));
 
   chartSyncService.register(sciChartSurface);
 

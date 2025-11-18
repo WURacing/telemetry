@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="hello">
     <div id="scichart-brakes"></div>
   </div>
 </template>
@@ -31,7 +31,7 @@ const brakepressureData = computed(() => store.FrBrakePressure);
 
 // When new data is added, this is run
 const updateChart = () => {
-  if (!sciChartSurface || !brakeDataSeries) {
+  if (!sciChartSurface || !brakepressureData) {
     return; // Chart hasn't been initialized yet
   }
 
@@ -61,8 +61,8 @@ onMounted(async () => {
     dataSeries: brakeDataSeries,
   }));
 
-  sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always, drawLabels: false}));
-  sciChartSurface.yAxes.add(new NumericAxis(wasmContext, { axisTitle: "%", autoRange: EAutoRange.Always}));
+  sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always}));
+  sciChartSurface.yAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always}));
 
   const modifierGroup = chartSyncService.modifierGroupId;
   sciChartSurface.chartModifiers.add(

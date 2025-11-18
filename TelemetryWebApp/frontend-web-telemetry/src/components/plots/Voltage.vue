@@ -58,7 +58,7 @@ onMounted(async () => {
     dataSeries: voltageDataSeries,
   }));
 
-  sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always, drawLabels: false}));
+  sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always}));
   sciChartSurface.yAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always}));
 
   const modifierGroup = chartSyncService.modifierGroupId;

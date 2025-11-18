@@ -15,7 +15,6 @@ const router = createRouter({
         { path: '/ergo', component: () => import('./views/Ergo.vue') },
     ],
     })
-    export default router
 app.use(pinia)
 app.use(router)
 app.mount('#app')

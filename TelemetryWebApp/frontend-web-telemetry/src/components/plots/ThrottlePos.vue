@@ -1,9 +1,8 @@
 <template>
-  <div class="throttle">
+  <div class="hello">
     <div id="scichart-throttle"></div>
   </div>
 </template>
-
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, watch} from "vue";
 import { useFileStoreStore } from "@/stores/FileStore";
@@ -17,38 +16,34 @@ import {
   SciChartJSDarkTheme,
   ZoomPanModifier,
   ZoomExtentsModifier,
-  SciChartDefaults,
-  MemoryUsageHelper,
   MouseWheelZoomModifier,
   RolloverModifier
 } from "scichart";
 
-SciChartSurface.wasmContextDisposeTimeout = 100; // default 0 mlliseconds
 // Retrieve data from store
 const store = useFileStoreStore();
-let sciChartSurface: SciChartSurface | null = null;
-let throttleDataSeries: XyDataSeries | null = null;
+let sciChartSurface: SciChartSurface | null = null; // To hold the chart surface instance
+let throttleDataSeries: XyDataSeries | null = null; // To hold the data series
 
-const timeData = computed(() => store.Time);
-const throttleposData = computed(() => store.ThrottlePosition);
+const timeData = computed(() => store.Time);  // Make reactive
+const throttleData = computed(() => store.ThrottlePosition); // Make reactive
 
 const updateChart = () => {
-  if (!sciChartSurface || !throttleDataSeries) {
+  if (!sciChartSurface || !throttleData) {
     return; // Chart hasn't been initialized yet
   }
 
+  // Clear existing data points (or append if you want a continuous scrolling chart)
   throttleDataSeries.clear();
 
+  //Append new data points
   for (let i = 0; i < timeData.value.length; i++) {
-    throttleDataSeries.append(timeData.value[i], throttleposData.value[i]);
+    throttleDataSeries.append(timeData.value[i], throttleData.value[i]);
   }
 };
 
 onMounted(async () => {
   SciChartSurface.UseCommunityLicense();
-
-  // Enables Data Resampling to conserve memory
-  SciChartDefaults.enableResampling = false;
 
   const { wasmContext, sciChartSurface: surface } = await SciChartSurface.create("scichart-throttle", {
     theme: new SciChartJSDarkTheme(),
@@ -59,15 +54,13 @@ onMounted(async () => {
   sciChartSurface = surface;
   throttleDataSeries = new XyDataSeries(wasmContext);
 
+  // Renderable series
   sciChartSurface.renderableSeries.add(new FastLineRenderableSeries(wasmContext, {
-    stroke: "green",
-    strokeThickness: 3,
-    opacity: 1,
-    dataSeries: throttleDataSeries,
+  stroke: "green",
+  strokeThickness: 3,
+  opacity: 1,
+  dataSeries: throttleDataSeries,
   }));
-
-  sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always, drawLabels: false}));
-  sciChartSurface.yAxes.add(new NumericAxis(wasmContext, { axisTitle: "%", autoRange: EAutoRange.Always}));
 
   const modifierGroup = chartSyncService.modifierGroupId;
   sciChartSurface.chartModifiers.add(
@@ -77,14 +70,18 @@ onMounted(async () => {
     new RolloverModifier({ modifierGroup })
   );
 
+   // Axes
+  sciChartSurface.yAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always}));
+  sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always}));
+
   chartSyncService.register(sciChartSurface);
 
+  updateChart();// Initial chart setup
 
-  updateChart();
+  watch([timeData, throttleData], () => {
+    updateChart();  // Update the chart when data changes
+  });
 
-  watch([timeData, throttleposData], () => {
-    updateChart();
-  })
 });
 
 onUnmounted(() => {
@@ -93,26 +90,11 @@ onUnmounted(() => {
     sciChartSurface.delete();
     sciChartSurface = null;
   }
-  SciChartSurface.disposeSharedWasmContext();
-})
+});
+
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
 #scichart-throttle {
   width: 100%;
   height: 240px;

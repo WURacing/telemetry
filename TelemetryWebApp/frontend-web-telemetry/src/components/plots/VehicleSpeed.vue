@@ -76,7 +76,7 @@ onMounted(async () => {
 
    // Axes
   sciChartSurface.yAxes.add(new NumericAxis(wasmContext, { axisTitle: "mph", autoRange: EAutoRange.Always}));
-  sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always, drawLabels: false}));
+  sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always}));
 
 
   updateChart();// Initial chart setup

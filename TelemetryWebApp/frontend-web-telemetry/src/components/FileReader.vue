@@ -31,7 +31,7 @@ const COLUMN_MAP: Record<StoreField, string[]> = {
   GPSYPos: ['GPS Longitude'],
   EngineRPM: ['EngineSpeed'],
   ThrottlePosition: ['ThrottlePosition'],
-  FrBrakePressure: ['BrkPrsF'],
+  FrBrakePressure: ['BrkPrsR'],
   FuelPressure: ['FuelPressure'],
   OilPressure: ['OilPressure'],
   OilTemp: ['OilTemperature'],

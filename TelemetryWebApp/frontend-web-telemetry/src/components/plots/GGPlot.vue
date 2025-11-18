@@ -33,7 +33,7 @@ const updateChart = () => {
   }
 
   // Clear existing data points (or append if you want a continuous chart)
-  ggDataSeries.append();
+  ggDataSeries.clear();
 
   //Append new data points
   for (let i = 0; i < xValues.value.length; i++) {
@@ -71,15 +71,15 @@ onMounted(async () => {
   sciChartSurface.chartModifiers.add(new ZoomPanModifier(), new ZoomExtentsModifier());
   // Axes
   sciChartSurface.yAxes.add(new NumericAxis(wasmContext, { isInnerAxis: true,
-    drawMajorGridLines: false,
+    drawMajorGridLines: true,
     drawMinorGridLines: false,
-    drawLabels: false,
+    drawLabels: true,
     autoRange: EAutoRange.Always
   }));
   sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { isInnerAxis: true,
-    drawMajorGridLines: false,
+    drawMajorGridLines: true,
     drawMinorGridLines: false,
-    drawLabels: false,
+    drawLabels: true,
     autoRange: EAutoRange.Always
   }));
 
