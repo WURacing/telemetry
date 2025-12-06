@@ -8,6 +8,7 @@
 </template>
 
 <script setup lang="ts">
+  // Debugging icon to test server connectivity, should usually be disabled
 import { ref, onMounted, onUnmounted } from 'vue'
 import { io } from 'socket.io-client';
 

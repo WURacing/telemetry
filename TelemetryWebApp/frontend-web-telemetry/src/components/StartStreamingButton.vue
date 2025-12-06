@@ -15,6 +15,8 @@
 </template>
 
 <script setup lang="ts">
+  // Button to begin telemetry live streaming
+
 import { ref, onUnmounted } from 'vue';
 import { useFileStoreStore } from '../stores/FileStore';
 import { WebSocketService } from '../services/websocketService';
@@ -30,6 +32,7 @@ const chartRef = ref<{ cleanupChart: () => void } | null>(null);
 
 const connect = async () => {
   if (isConnected.value) return; // Already connected
+  store.setLiveMode(true);
 
   try {
     isLoading.value = true;
@@ -53,8 +56,8 @@ const disconnect = () => {
   isConnected.value = false;
   connectionError.value = null;
   chartRef.value?.cleanupChart();
-
-  // Clear store data (if needed – clearing on disconnect is often appropriate)
+  
+  store.setLiveMode(false);
   store.clearCollectedData();
 };
 
@@ -67,5 +70,3 @@ onUnmounted(() => {
   disconnect();
 });
 </script>
-
-<style />

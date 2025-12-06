@@ -9,6 +9,7 @@
 </template>
 
 <script setup lang="ts">
+  // Used as a debugging icon to test car connectivity, can be useful during testing/comp, but should be disabled for prompt.
 import { ref, onMounted, onUnmounted } from 'vue'
 import { WebSocketService} from "../services/websocketService";
 import { io, Socket } from 'socket.io-client';

@@ -54,7 +54,3 @@ import GearPosPlot from "@/components/plots/GearPosPlot.vue";
 import GGPlot from "@/components/plots/GGPlot.vue";
 
 </script>
-
-<style scoped>
-/* Your style code here */
-</style>

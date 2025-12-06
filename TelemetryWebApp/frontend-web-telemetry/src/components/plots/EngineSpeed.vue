@@ -6,8 +6,8 @@
 
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, watch} from "vue";
-import { useFileStoreStore } from "@/stores/FileStore";
-import { chartSyncService } from "@/services/chartSync";
+import { useFileStoreStore } from "../../stores/FileStore";
+import { chartSyncService } from "../../services/chartSync";
 import {
   SciChartSurface,
   NumericAxis,
@@ -35,7 +35,7 @@ const updateChart = () => {
   }
 
   // Clear existing data points (or append if you want a continuous scrolling chart)
-  rpmDataSeries.append();
+  rpmDataSeries.clear();
 
   //Append new data points
   for (let i = 0; i < timeData.value.length; i++) {

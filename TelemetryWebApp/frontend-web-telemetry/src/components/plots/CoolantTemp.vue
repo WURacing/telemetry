@@ -6,8 +6,8 @@
 
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, watch} from "vue";
-import { useFileStoreStore } from "@/stores/FileStore";
-import { chartSyncService } from "@/services/chartSync";
+import { useFileStoreStore } from "../../stores/FileStore";
+import { chartSyncService } from "../../services/chartSync";
 import {
   SciChartSurface,
   NumericAxis,

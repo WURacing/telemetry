@@ -13,6 +13,12 @@
 </template>
 
 <script setup lang="ts">
+  /*
+    File Reader button in the top of our site.
+    Manages the input and distillation of .csv files
+    Unrelated to the "live" aspect of live telemetry, used
+    as a proof of concept to test new plots.
+  */
 import papaparse, { type ParseResult } from 'papaparse';
 import { useFileStoreStore, type TelemetryField } from '../stores/FileStore';
 
@@ -127,6 +133,7 @@ const buildPayloadFromRows = (rows: CsvRow[]) => {
 const handleParseResult = (result: ParseResult<CsvRow>) => {
   const rows = result.data.filter((row) => row && typeof row === 'object' && Object.keys(row).length > 0);
 
+
   if (!rows.length) {
     console.warn('No usable rows found in CSV file.');
     clearStoreData();
@@ -134,6 +141,7 @@ const handleParseResult = (result: ParseResult<CsvRow>) => {
   }
 
   const payload = buildPayloadFromRows(rows);
+  store.setLiveMode(false);
   store.updateCollectedData(payload);
 };
 

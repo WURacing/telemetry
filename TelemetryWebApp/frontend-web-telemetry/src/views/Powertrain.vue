@@ -56,7 +56,3 @@ import OilPressure from "@/components/plots/OilPressure.vue";
 import CoolantTemp from "@/components/plots/CoolantTemp.vue";
 
 </script>
-
-<style scoped>
-/* Your style code here */
-</style>

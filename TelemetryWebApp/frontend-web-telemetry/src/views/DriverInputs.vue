@@ -32,7 +32,3 @@ import GGPlot from "@/components/plots/GGPlot.vue";
 import Voltage from "@/components/plots/Voltage.vue";
 import GearPosPlot from "@/components/plots/GearPosPlot.vue";
 </script>
-
-<style scoped>
-/* Your style code here */
-</style>

@@ -33,7 +33,3 @@ import GearPosPlot from "@/components/plots/GearPosPlot.vue";
 import EngineSpeed from "@/components/plots/EngineSpeed.vue";
 
 </script>
-
-<style scoped>
-/* Your style code here */
-</style>
