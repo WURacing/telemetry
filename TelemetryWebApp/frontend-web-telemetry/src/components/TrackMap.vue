@@ -95,7 +95,7 @@ onMounted(async () => {
 });
 
 onUnmounted(async () => {
-  sciChartSurface.delete();
+  sciChartSurface?.delete();
 })
   </script>
 

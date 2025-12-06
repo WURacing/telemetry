@@ -6,8 +6,8 @@
 
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, watch} from "vue";
-import { useFileStoreStore } from "@/stores/FileStore";
-import { chartSyncService } from "@/services/chartSync";
+import { useFileStoreStore } from "../../stores/FileStore";
+import { chartSyncService } from "../../services/chartSync";
 import {
   SciChartSurface,
   NumericAxis,
@@ -25,6 +25,7 @@ import {
 const store = useFileStoreStore();
 let sciChartSurface: SciChartSurface | null = null;
 let brakeDataSeries: XyDataSeries | null = null;
+let liveStatus = store.isLive;
 
 const timeData = computed(() => store.Time);
 const brakepressureData = computed(() => store.FrBrakePressure);
@@ -35,11 +36,18 @@ const updateChart = () => {
     return; // Chart hasn't been initialized yet
   }
 
-  brakeDataSeries.append();
-
-  for (let i = 0; i < timeData.value.length; i++) {
-    brakeDataSeries.append(timeData.value[i], brakepressureData.value[i]);
+  if (liveStatus) {
+    let lb = brakepressureData.value.length - 1
+    let lt = timeData.value.length - 1
+    brakeDataSeries?.append(timeData.value[lt], brakepressureData.value[lb]);
   }
+
+  if (liveStatus == false) {
+    brakeDataSeries?.clear();
+    brakeDataSeries?.appendRange(timeData.value, brakepressureData.value);
+  }
+
+  
 };
 
 onMounted(async () => {
