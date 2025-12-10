@@ -19,7 +19,12 @@ class ChartSyncService {
 
     const registration: SurfaceRegistration = {};
     this.surfaces.set(surface, registration);
-    this.verticalGroup.addSurfaceToGroup(surface);
+
+    setTimeout(() => {
+      if (!surface.isDeleted) {
+        this.verticalGroup.addSurfaceToGroup(surface);
+      }
+    })
 
     const axis = surface.xAxes.get(0);
     if (!axis) {

@@ -9,7 +9,7 @@
   // TODO: make slightly transparent, and use Google Maps to overlay data points with satellite imagery
 
 import {computed, onMounted, onUnmounted, watch} from "vue";
-import {useFileStoreStore} from "../stores/FileStore.js";
+import {useFileStoreStore} from "../../stores/FileStore.js";
 import {
   SciChartSurface,
   NumericAxis,
@@ -20,6 +20,7 @@ import {
   SciChartJSDarkTheme,
   ZoomPanModifier,
   ZoomExtentsModifier,
+  SciChartDefaults,
 } from "scichart";
 
 // Retrieve data from store
@@ -49,6 +50,7 @@ const updateChart = () => {
 
 onMounted(async () => {
   SciChartSurface.UseCommunityLicense();
+  SciChartDefaults.performanceWarnings = false;
 
   const { wasmContext, sciChartSurface: surface } = await SciChartSurface.create("track-map", {
     theme: new SciChartJSDarkTheme(),
