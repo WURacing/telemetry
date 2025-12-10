@@ -28,18 +28,20 @@ let coolanttempDataSeries: XyDataSeries | null = null; // To hold the data serie
 
 const timeData = computed(() => store.Time);  // Make reactive
 const coolanttempData = computed(() => store.CoolantTemp); // Make reactive
+let liveStatus = store.isLive;
 
 const updateChart = () => {
   if (!sciChartSurface || !coolanttempDataSeries) {
     return; // Chart hasn't been initialized yet
   }
 
-  // Clear existing data points (or append if you want a continuous scrolling chart)
-  coolanttempDataSeries.append();
-
-  //Append new data points
-  for (let i = 0; i < timeData.value.length; i++) {
-    coolanttempDataSeries.append(timeData.value[i], coolanttempData.value[i]);
+  if (liveStatus) {
+    let lb = coolanttempData.value.length - 1
+    let lt = timeData.value.length - 1
+    coolanttempDataSeries?.append(timeData.value[lt], coolanttempData.value[lb]);
+  } else {
+    coolanttempDataSeries?.clear();
+    coolanttempDataSeries?.appendRange(timeData.value, coolanttempData.value);
   }
 };
 

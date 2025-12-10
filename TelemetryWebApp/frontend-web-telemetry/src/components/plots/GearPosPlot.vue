@@ -6,8 +6,8 @@
 
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, watch} from "vue";
-import { useFileStoreStore } from "@/stores/FileStore";
-import { chartSyncService } from "@/services/chartSync";
+import { useFileStoreStore } from "../../stores/FileStore";
+import { chartSyncService } from "../../services/chartSync";
 import {
   SciChartSurface,
   NumericAxis,
@@ -28,18 +28,20 @@ let gearPosDataSeries: XyDataSeries | null = null; // To hold the data series
 
 const timeData = computed(() => store.Time);  // Make reactive
 const gearPosData = computed(() => store.GearPos); // Make reactive
+let liveStatus = store.isLive;
 
 const updateChart = () => {
   if (!sciChartSurface || !gearPosDataSeries) {
     return; // Chart hasn't been initialized yet
   }
 
-  // Clear existing data points (or append if you want a continuous scrolling chart)
-  gearPosDataSeries.append();
-
-  //Append new data points
-  for (let i = 0; i < timeData.value.length; i++) {
-    gearPosDataSeries.append(timeData.value[i], gearPosData.value[i]);
+  if (liveStatus) {
+    let lb = gearPosData.value.length - 1
+    let lt = timeData.value.length - 1
+    gearPosDataSeries?.append(timeData.value[lt], gearPosData.value[lb]);
+  } else {
+    gearPosDataSeries?.clear();
+    gearPosDataSeries?.appendRange(timeData.value, gearPosData.value);
   }
 };
 

@@ -29,18 +29,20 @@ let trackDataSeries: XyDataSeries | null = null; // To hold the data series
 
 const gpsXData = computed(() => store.GPSXPos);  // Make reactive
 const gpsYData = computed(() => store.GPSYPos); // Make reactive
+let liveStatus = store.isLive;
 
 const updateChart = () => {
   if (!sciChartSurface || !trackDataSeries) {
     return; // Chart hasn't been initialized yet
   }
 
-  // Clear existing data points (or append if you want a continuous chart)
-  trackDataSeries.append();
-
-  //Append new data points
-  for (let i = 0; i < gpsXData.value.length; i++) {
-    trackDataSeries.append(gpsXData.value[i], gpsYData.value[i]);
+  if (liveStatus) {
+    let ly = gpsYData.value.length - 1
+    let lx = gpsXData.value.length - 1
+    trackDataSeries?.append(gpsXData.value[lx], gpsYData.value[ly]);
+  } else {
+    trackDataSeries?.clear();
+    trackDataSeries?.appendRange(gpsXData.value, gpsYData.value);
   }
 };
 

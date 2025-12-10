@@ -28,18 +28,20 @@ let rpmDataSeries: XyDataSeries | null = null; // To hold the data series
 
 const timeData = computed(() => store.Time);  // Make reactive
 const rpmData = computed(() => store.EngineRPM); // Make reactive
+let liveStatus = store.isLive;
 
 const updateChart = () => {
   if (!sciChartSurface || !rpmDataSeries) {
     return; // Chart hasn't been initialized yet
   }
 
-  // Clear existing data points (or append if you want a continuous scrolling chart)
-  rpmDataSeries.clear();
-
-  //Append new data points
-  for (let i = 0; i < timeData.value.length; i++) {
-    rpmDataSeries.append(timeData.value[i], rpmData.value[i]);
+  if (liveStatus) {
+    let lb = rpmData.value.length - 1
+    let lt = timeData.value.length - 1
+    rpmDataSeries?.append(timeData.value[lt], rpmData.value[lb]);
+  } else {
+    rpmDataSeries?.clear();
+    rpmDataSeries?.appendRange(timeData.value, rpmData.value);
   }
 };
 

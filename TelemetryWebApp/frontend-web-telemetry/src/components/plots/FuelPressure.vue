@@ -6,8 +6,8 @@
 
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, watch} from "vue";
-import { useFileStoreStore } from "@/stores/FileStore";
-import { chartSyncService } from "@/services/chartSync";
+import { useFileStoreStore } from "../../stores/FileStore";
+import { chartSyncService } from "../../services/chartSync";
 import {
   SciChartSurface,
   NumericAxis,
@@ -28,18 +28,20 @@ let fuelPressureDataSeries: XyDataSeries | null = null; // To hold the data seri
 
 const timeData = computed(() => store.Time);  // Make reactive
 const fuelPressureData = computed(() => store.FuelPressure); // Make reactive
+let liveStatus = store.isLive;
 
 const updateChart = () => {
   if (!sciChartSurface || !fuelPressureDataSeries) {
     return; // Chart hasn't been initialized yet
   }
 
-  // Clear existing data points (or append if you want a continuous scrolling chart)
-  fuelPressureDataSeries.append();
-
-  //Append new data points
-  for (let i = 0; i < timeData.value.length; i++) {
-    fuelPressureDataSeries.append(timeData.value[i], fuelPressureData.value[i]);
+  if (liveStatus) {
+    let lb = fuelPressureData.value.length - 1
+    let lt = timeData.value.length - 1
+    fuelPressureDataSeries?.append(timeData.value[lt], fuelPressureData.value[lb]);
+  } else {
+    fuelPressureDataSeries?.clear();
+    fuelPressureDataSeries?.appendRange(timeData.value, fuelPressureData.value);
   }
 };
 

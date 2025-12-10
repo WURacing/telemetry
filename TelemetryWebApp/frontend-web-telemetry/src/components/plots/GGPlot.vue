@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import {onUnmounted, onMounted, watch, computed} from "vue";
-import {useFileStoreStore} from "@/stores/FileStore";
+import {useFileStoreStore} from "../../stores/FileStore";
 import {
   SciChartSurface,
   NumericAxis,
@@ -26,18 +26,20 @@ let ggDataSeries: XyDataSeries | null = null; // To hold the data series
 
 const xValues = computed(() => store.LatAcc);  // Make reactive
 const yValues = computed(() => store.LongAcc); // Make reactive
+let liveStatus = store.isLive;
 
 const updateChart = () => {
   if (!sciChartSurface || !ggDataSeries) {
     return; // Chart hasn't been initialized yet
   }
 
-  // Clear existing data points (or append if you want a continuous chart)
-  ggDataSeries.clear();
-
-  //Append new data points
-  for (let i = 0; i < xValues.value.length; i++) {
-    ggDataSeries.append(xValues.value[i], yValues.value[i]);
+  if (liveStatus) {
+    let lb = yValues.value.length - 1
+    let lt = xValues.value.length - 1
+    ggDataSeries?.append(xValues.value[lt], yValues.value[lb]);
+  } else {
+    ggDataSeries?.clear();
+    ggDataSeries?.appendRange(xValues.value, yValues.value);
   }
 };
 onMounted(async () => {
@@ -93,7 +95,10 @@ onMounted(async () => {
 });
 
 onUnmounted(async () => {
-  sciChartSurface.delete();
+  if (sciChartSurface) {
+    sciChartSurface.delete();
+    sciChartSurface = null;
+  }
 });
 </script>
 

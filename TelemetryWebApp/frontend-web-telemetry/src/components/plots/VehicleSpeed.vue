@@ -6,8 +6,8 @@
 
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, watch} from "vue";
-import { useFileStoreStore } from "@/stores/FileStore";
-import { chartSyncService } from "@/services/chartSync";
+import { useFileStoreStore } from "../../stores/FileStore";
+import { chartSyncService } from "../../services/chartSync";
 import {
   SciChartSurface,
   NumericAxis,
@@ -28,18 +28,20 @@ let speedDataSeries: XyDataSeries | null = null; // To hold the data series
 
 const timeData = computed(() => store.Time);  // Make reactive
 const gpsspeedData = computed(() => store.GPSSpeed); // Make reactive
+let liveStatus = store.isLive;
 
 const updateChart = () => {
   if (!sciChartSurface || !speedDataSeries) {
     return; // Chart hasn't been initialized yet
   }
 
-  // Clear existing data points (or append if you want a continuous scrolling chart)
-  speedDataSeries.clear();
-
-  //Append new data points
-  for (let i = 0; i < timeData.value.length; i++) {
-    speedDataSeries.append(timeData.value[i], gpsspeedData.value[i]);
+  if (liveStatus) {
+    let lb = gpsspeedData.value.length - 1
+    let lt = timeData.value.length - 1
+    speedDataSeries?.append(timeData.value[lt], gpsspeedData.value[lb]);
+  } else {
+    speedDataSeries?.clear();
+    speedDataSeries?.appendRange(timeData.value, gpsspeedData.value);
   }
 };
 
@@ -104,4 +106,3 @@ onUnmounted(() => {
   height: 240px;
 }
 </style>
-  chartSyncService.register(sciChartSurface);

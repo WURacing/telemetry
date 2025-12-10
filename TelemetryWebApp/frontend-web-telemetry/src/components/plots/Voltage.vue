@@ -6,8 +6,8 @@
 
 <script setup lang="ts">
 import {computed, watch, onMounted, onUnmounted} from "vue";
-import { useFileStoreStore } from "@/stores/FileStore";
-import { chartSyncService } from "@/services/chartSync";
+import { useFileStoreStore } from "../../stores/FileStore";
+import { chartSyncService } from "../../services/chartSync";
 import {
   SciChartSurface,
   NumericAxis,
@@ -27,15 +27,20 @@ let sciChartSurface: SciChartSurface | null = null;
 let voltageDataSeries: XyDataSeries | null = null;
 const timeData = computed(() => store.Time);
 const voltageData = computed(() => store.ExternalVoltage);
+let liveStatus = store.isLive;
 
 const updateChart = () => {
   if (!sciChartSurface || !voltageDataSeries) {
     return; // Chart hasn't been initialized yet
   }
-  voltageDataSeries.clear();
 
-  for (let i = 0; i < timeData.value.length; i++) {
-    voltageDataSeries.append(timeData.value[i], voltageData.value[i]);
+  if (liveStatus) {
+    let lb = voltageData.value.length - 1
+    let lt = timeData.value.length - 1
+    voltageDataSeries?.append(timeData.value[lt], voltageData.value[lb]);
+  } else {
+    voltageDataSeries?.clear();
+    voltageDataSeries?.appendRange(timeData.value, voltageData.value);
   }
 };
 

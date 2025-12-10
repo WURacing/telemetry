@@ -6,8 +6,8 @@
 
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, watch} from "vue";
-import { useFileStoreStore } from "@/stores/FileStore";
-import { chartSyncService } from "@/services/chartSync";
+import { useFileStoreStore } from "../../stores/FileStore";
+import { chartSyncService } from "../../services/chartSync";
 import {
   SciChartSurface,
   NumericAxis,
@@ -28,18 +28,20 @@ let matDataSeries: XyDataSeries | null = null; // To hold the data series
 
 const timeData = computed(() => store.Time);  // Make reactive
 const matData = computed(() => store.MAT); // Make reactive
+let liveStatus = store.isLive;
 
 const updateChart = () => {
   if (!sciChartSurface || !matDataSeries) {
     return; // Chart hasn't been initialized yet
   }
 
-  // Clear existing data points (or append if you want a continuous scrolling chart)
-  matDataSeries.clear();
-
-  //Append new data points
-  for (let i = 0; i < timeData.value.length; i++) {
-    matDataSeries.append(timeData.value[i], matData.value[i]);
+    if (liveStatus) {
+    let lb = matData.value.length - 1
+    let lt = timeData.value.length - 1
+    matDataSeries?.append(timeData.value[lt], matData.value[lb]);
+  } else {
+    matDataSeries?.clear();
+    matDataSeries?.appendRange(timeData.value, matData.value);
   }
 };
 

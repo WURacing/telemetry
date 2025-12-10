@@ -5,8 +5,8 @@
 </template>
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, watch} from "vue";
-import { useFileStoreStore } from "@/stores/FileStore";
-import { chartSyncService } from "@/services/chartSync";
+import { useFileStoreStore } from "../../stores/FileStore";
+import { chartSyncService } from "../../services/chartSync";
 import {
   SciChartSurface,
   NumericAxis,
@@ -27,18 +27,20 @@ let throttleDataSeries: XyDataSeries | null = null; // To hold the data series
 
 const timeData = computed(() => store.Time);  // Make reactive
 const throttleData = computed(() => store.ThrottlePosition); // Make reactive
+let liveStatus = store.isLive;
 
 const updateChart = () => {
   if (!sciChartSurface || !throttleData) {
     return; // Chart hasn't been initialized yet
   }
 
-  // Clear existing data points (or append if you want a continuous scrolling chart)
-  throttleDataSeries.clear();
-
-  //Append new data points
-  for (let i = 0; i < timeData.value.length; i++) {
-    throttleDataSeries.append(timeData.value[i], throttleData.value[i]);
+  if (liveStatus) {
+    let lb = throttleData.value.length - 1
+    let lt = timeData.value.length - 1
+    throttleDataSeries?.append(timeData.value[lt], throttleData.value[lb]);
+  } else {
+    throttleDataSeries?.clear();
+    throttleDataSeries?.appendRange(timeData.value, throttleData.value);
   }
 };
 

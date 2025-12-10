@@ -40,14 +40,10 @@ const updateChart = () => {
     let lb = brakepressureData.value.length - 1
     let lt = timeData.value.length - 1
     brakeDataSeries?.append(timeData.value[lt], brakepressureData.value[lb]);
-  }
-
-  if (liveStatus == false) {
+  } else {
     brakeDataSeries?.clear();
     brakeDataSeries?.appendRange(timeData.value, brakepressureData.value);
   }
-
-  
 };
 
 onMounted(async () => {
@@ -81,7 +77,6 @@ onMounted(async () => {
   );
 
   chartSyncService.register(sciChartSurface);
-
 
   updateChart();
 

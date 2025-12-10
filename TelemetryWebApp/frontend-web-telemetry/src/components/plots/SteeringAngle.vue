@@ -6,8 +6,8 @@
 
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, watch} from "vue";
-import { useFileStoreStore } from "@/stores/FileStore";
-import { chartSyncService } from "@/services/chartSync";
+import { useFileStoreStore } from "../../stores/FileStore";
+import { chartSyncService } from "../../services/chartSync";
 import {
   SciChartSurface,
   NumericAxis,
@@ -28,18 +28,20 @@ let steerDataSeries: XyDataSeries | null = null; // To hold the data series
 
 const timeData = computed(() => store.Time);  // Make reactive
 const steerData = computed(() => store.SteeringAngle); // Make reactive
+let liveStatus = store.isLive;
 
 const updateChart = () => {
   if (!sciChartSurface || !steerDataSeries) {
     return; // Chart hasn't been initialized yet
   }
 
-  // Clear existing data points (or append if you want a continuous scrolling chart)
-  steerDataSeries.clear();
-
-  //Append new data points
-  for (let i = 0; i < timeData.value.length; i++) {
-    steerDataSeries.append(timeData.value[i], steerData.value[i]);
+  if (liveStatus) {
+    let lb = steerData.value.length - 1
+    let lt = timeData.value.length - 1
+    steerDataSeries?.append(timeData.value[lt], steerData.value[lb]);
+  } else {
+    steerDataSeries?.clear();
+    steerDataSeries?.appendRange(timeData.value, steerData.value);
   }
 };
 

@@ -6,8 +6,8 @@
 
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, watch} from "vue";
-import { useFileStoreStore } from "@/stores/FileStore";
-import { chartSyncService } from "@/services/chartSync";
+import { useFileStoreStore } from "../../stores/FileStore";
+import { chartSyncService } from "../../services/chartSync";
 import {
   SciChartSurface,
   NumericAxis,
@@ -26,20 +26,24 @@ const store = useFileStoreStore();
 let sciChartSurface: SciChartSurface | null = null; // To hold the chart surface instance
 let lambdaDataSeries: XyDataSeries | null = null; // To hold the data series
 
-const timeData = computed(() => store.Time);  // Make reactive
-const lambdaData = computed(() => store.Lambda); // Make reactive
+// Make reactive
+const timeData = computed(() => store.Time);
+const lambdaData = computed(() => store.Lambda);
+let liveStatus = store.isLive;
 
+// Func to update chart depending on state
 const updateChart = () => {
   if (!sciChartSurface || !lambdaDataSeries) {
     return; // Chart hasn't been initialized yet
   }
 
-  // Clear existing data points (or append if you want a continuous scrolling chart)
-  lambdaDataSeries.append();
-
-  //Append new data points
-  for (let i = 0; i < timeData.value.length; i++) {
-    lambdaDataSeries.append(timeData.value[i], lambdaData.value[i]);
+  if (liveStatus) {
+    let lb = lambdaData.value.length - 1
+    let lt = timeData.value.length - 1
+    lambdaDataSeries?.append(timeData.value[lt], lambdaData.value[lb]);
+  } else {
+    lambdaDataSeries?.clear();
+    lambdaDataSeries?.appendRange(timeData.value, lambdaData.value);
   }
 };
 

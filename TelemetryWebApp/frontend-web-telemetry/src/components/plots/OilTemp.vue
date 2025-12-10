@@ -6,8 +6,8 @@
 
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, watch} from "vue";
-import { useFileStoreStore } from "@/stores/FileStore";
-import { chartSyncService } from "@/services/chartSync";
+import { useFileStoreStore } from "../../stores/FileStore";
+import { chartSyncService } from "../../services/chartSync";
 import {
   SciChartSurface,
   NumericAxis,
@@ -26,20 +26,22 @@ const store = useFileStoreStore();
 let sciChartSurface: SciChartSurface | null = null; // To hold the chart surface instance
 let oiltempDataSeries: XyDataSeries | null = null; // To hold the data series
 
-const timeData = computed(() => store.Time);  // Make reactive
-const oiltempData = computed(() => store.OilTemp); // Make reactive
+const timeData = computed(() => store.Time);
+const oiltempData = computed(() => store.OilTemp);
+let liveStatus = store.isLive;
 
 const updateChart = () => {
   if (!sciChartSurface || !oiltempDataSeries) {
     return; // Chart hasn't been initialized yet
   }
 
-  // Clear existing data points (or append if you want a continuous scrolling chart)
-  oiltempDataSeries.clear();
-
-  //Append new data points
-  for (let i = 0; i < timeData.value.length; i++) {
-    oiltempDataSeries.append(timeData.value[i], oiltempData.value[i]);
+    if (liveStatus) {
+    let lb = oiltempData.value.length - 1
+    let lt = timeData.value.length - 1
+    oiltempDataSeries?.append(timeData.value[lt], oiltempData.value[lb]);
+  } else {
+    oiltempDataSeries?.clear();
+    oiltempDataSeries?.appendRange(timeData.value, oiltempData.value);
   }
 };
 
