@@ -42,7 +42,7 @@
 </template>
 
 <script setup>
-import TrackMap from "@/components/TrackMap.vue";
+import TrackMap from "@/components/plots/TrackMap.vue";
 import ThrottlePos from "@/components/plots/ThrottlePos.vue";
 import Voltage from "@/components/plots/Voltage.vue";
 import EngineSpeed from "@/components/plots/EngineSpeed.vue";
