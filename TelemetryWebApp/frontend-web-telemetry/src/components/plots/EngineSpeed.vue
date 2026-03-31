@@ -28,14 +28,14 @@ let rpmDataSeries: XyDataSeries | null = null; // To hold the data series
 
 const timeData = computed(() => store.Time);  // Make reactive
 const rpmData = computed(() => store.EngineRPM); // Make reactive
-let liveStatus = store.isLive;
+const liveStatus = computed(() => store.isLive);
 
 const updateChart = () => {
   if (!sciChartSurface || !rpmDataSeries) {
     return; // Chart hasn't been initialized yet
   }
 
-  if (liveStatus) {
+  if (liveStatus.value) {
     let lb = rpmData.value.length - 1
     let lt = timeData.value.length - 1
     rpmDataSeries?.append(timeData.value[lt], rpmData.value[lb]);
