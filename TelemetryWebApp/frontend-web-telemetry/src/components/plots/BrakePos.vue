@@ -25,7 +25,7 @@ import {
 const store = useFileStoreStore();
 let sciChartSurface: SciChartSurface | null = null;
 let brakeDataSeries: XyDataSeries | null = null;
-let liveStatus = store.isLive;
+const liveStatus = computed(() => store.isLive);
 
 const timeData = computed(() => store.Time);
 const brakepressureData = computed(() => store.FrBrakePressure);
@@ -36,7 +36,7 @@ const updateChart = () => {
     return; // Chart hasn't been initialized yet
   }
 
-  if (liveStatus) {
+  if (liveStatus.value) {
     let lb = brakepressureData.value.length - 1
     let lt = timeData.value.length - 1
     brakeDataSeries?.append(timeData.value[lt], brakepressureData.value[lb]);
