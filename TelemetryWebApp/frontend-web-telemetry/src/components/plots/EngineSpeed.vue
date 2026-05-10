@@ -1,6 +1,6 @@
 <template>
   <div class="hello">
-    <div id="scichart-rpm"></div>
+    <div id="scichart-fuelpressure"></div>
   </div>
 </template>
 
@@ -25,38 +25,38 @@ import {
 
 const store = useFileStoreStore();
 let sciChartSurface: SciChartSurface | null = null;
-let rpmDataSeries: XyDataSeries | null = null;
+let fuelPressureDataSeries: XyDataSeries | null = null;
 
 const timeData = computed(() => store.Time);
-const rpmData = computed(() => store.EngineRPM);
+const fuelPressureData = computed(() => store.FuelPressure);
 
 const updateChart = () => {
-  if (!sciChartSurface || !rpmDataSeries) return;
-  const cfg = channelConfig['EngineRPM'];
-  rpmDataSeries.clear();
-  rpmDataSeries.appendRange(
+  if (!sciChartSurface || !fuelPressureDataSeries) return;
+  const cfg = channelConfig['FuelPressure'];
+  fuelPressureDataSeries.clear();
+  fuelPressureDataSeries.appendRange(
     timeData.value.slice(-cfg.windowSamples),
-    rpmData.value.slice(-cfg.windowSamples)
+    fuelPressureData.value.slice(-cfg.windowSamples)
   );
 };
 
 onMounted(async () => {
   SciChartSurface.UseCommunityLicense();
-  const cfg = channelConfig['EngineRPM'];
+  const cfg = channelConfig['FuelPressure'];
 
-  const { wasmContext, sciChartSurface: surface } = await SciChartSurface.create("scichart-rpm", {
+  const { wasmContext, sciChartSurface: surface } = await SciChartSurface.create("scichart-fuelpressure", {
     theme: new SciChartJSDarkTheme(),
-    title: "RPM",
+    title: "Fuel Pressure",
     titleStyle: { fontSize: 24 }
   });
   sciChartSurface = surface;
-  rpmDataSeries = new XyDataSeries(wasmContext);
+  fuelPressureDataSeries = new XyDataSeries(wasmContext);
 
   sciChartSurface.renderableSeries.add(new FastLineRenderableSeries(wasmContext, {
-    stroke: "white",
+    stroke: "orange",
     strokeThickness: 3,
     opacity: 1,
-    dataSeries: rpmDataSeries,
+    dataSeries: fuelPressureDataSeries,
   }));
 
   sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always, drawLabels: false }));
@@ -76,7 +76,7 @@ onMounted(async () => {
 
   chartSyncService.register(sciChartSurface);
   updateChart();
-  watch([timeData, rpmData], updateChart);
+  watch([timeData, fuelPressureData], updateChart);
 });
 
 onUnmounted(() => {
@@ -89,7 +89,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-#scichart-rpm {
+#scichart-fuelpressure {
   width: 100%;
   height: 240px;
 }
