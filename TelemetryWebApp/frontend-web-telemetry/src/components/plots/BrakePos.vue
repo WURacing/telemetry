@@ -5,13 +5,15 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, onUnmounted, watch} from "vue";
+import { computed, onMounted, onUnmounted, watch } from "vue";
 import { useFileStoreStore } from "../../stores/FileStore";
 import { chartSyncService } from "../../services/chartSync";
+import { channelConfig } from "../../services/channelConfig";
 import {
   SciChartSurface,
   NumericAxis,
   EAutoRange,
+  NumberRange,
   FastLineRenderableSeries,
   XyDataSeries,
   SciChartJSDarkTheme,
@@ -21,33 +23,26 @@ import {
   RolloverModifier
 } from "scichart";
 
-// Retrieve data from store
 const store = useFileStoreStore();
 let sciChartSurface: SciChartSurface | null = null;
 let brakeDataSeries: XyDataSeries | null = null;
-const liveStatus = computed(() => store.isLive);
 
 const timeData = computed(() => store.Time);
 const brakepressureData = computed(() => store.FrBrakePressure);
 
-// When new data is added, this is run
 const updateChart = () => {
-  if (!sciChartSurface || !brakepressureData) {
-    return; // Chart hasn't been initialized yet
-  }
-
-  if (liveStatus.value) {
-    let lb = brakepressureData.value.length - 1
-    let lt = timeData.value.length - 1
-    brakeDataSeries?.append(timeData.value[lt], brakepressureData.value[lb]);
-  } else {
-    brakeDataSeries?.clear();
-    brakeDataSeries?.appendRange(timeData.value, brakepressureData.value);
-  }
+  if (!sciChartSurface || !brakeDataSeries) return;
+  const cfg = channelConfig['FrBrakePressure'];
+  brakeDataSeries.clear();
+  brakeDataSeries.appendRange(
+    timeData.value.slice(-cfg.windowSamples),
+    brakepressureData.value.slice(-cfg.windowSamples)
+  );
 };
 
 onMounted(async () => {
   SciChartSurface.UseCommunityLicense();
+  const cfg = channelConfig['FrBrakePressure'];
 
   const { wasmContext, sciChartSurface: surface } = await SciChartSurface.create("scichart-brakes", {
     theme: new SciChartJSDarkTheme(),
@@ -55,7 +50,6 @@ onMounted(async () => {
     titleStyle: { fontSize: 24 }
   });
   sciChartSurface = surface;
-
   brakeDataSeries = new XyDataSeries(wasmContext);
 
   sciChartSurface.renderableSeries.add(new FastLineRenderableSeries(wasmContext, {
@@ -65,8 +59,12 @@ onMounted(async () => {
     dataSeries: brakeDataSeries,
   }));
 
-  sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always}));
-  sciChartSurface.yAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always}));
+  sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always, drawLabels: false }));
+  sciChartSurface.yAxes.add(new NumericAxis(wasmContext, {
+    axisTitle: cfg.yUnit,
+    autoRange: EAutoRange.Never,
+    visibleRange: new NumberRange(cfg.yMin, cfg.yMax),
+  }));
 
   const modifierGroup = chartSyncService.modifierGroupId;
   sciChartSurface.chartModifiers.add(
@@ -77,12 +75,8 @@ onMounted(async () => {
   );
 
   chartSyncService.register(sciChartSurface);
-
   updateChart();
-
-  watch([timeData, brakepressureData], () => {
-    updateChart();
-  })
+  watch([timeData, brakepressureData], updateChart);
 });
 
 onUnmounted(() => {
@@ -94,7 +88,6 @@ onUnmounted(() => {
 });
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 #scichart-brakes {
   width: 100%;
