@@ -1,50 +1,50 @@
 <template>
-    <div class=" max-w-full text-center bg-red-800 text-red-50">
-        Powertrain
-    </div>
+  <div class="max-w-full text-center bg-red-800 text-red-50">
+    Powertrain
+  </div>
 
-    <div class="flex flex-col">
-  <div class="flex items-center justify-between text-white p-4">
-    <div class="w-72 h-240 bg-red-900 mr-4">
-      <TrackMap msg="Track Map" />
-      <MAT />
-    </div>
-    <div class="w-full h-84" >
-      <MAP />
-      <CoolantTemp />
-    </div>
-  </div>
-</div>
-<div class="flex flex-col">
-  <div class="flex items-center justify-between text-white p-4">
-    <div class="w-72 h-240 bg-red-900 mr-4">
-    <Voltage />
-      <OilTemp />
-    </div>
-    <div class="w-full h-1/2" >
-      <FuelPressure />
-      <OilPressure />
+  <div class="flex flex-col">
+    <div class="flex items-center justify-between text-white p-4">
+      <div class="w-72 bg-red-900 mr-4">
+        <TrackMap msg="Track Map" />
+        <MAT />
+      </div>
+      <div class="w-full">
+        <MAP />
+        <CoolantTemp />
+      </div>
     </div>
   </div>
-</div>
-<div class="flex flex-col">
-  <div class="flex items-center justify-between text-white p-4">
-    <div class="w-72 h-240 bg-red-900 mr-4">
-      <GearPosPlot />
-    </div>
-    <div class="w-full h-1/2" >
-      <EngineSpeed />
-      <ThrottlePos msg="Throttle Position" />
-      <Lambda />
+
+  <div class="flex flex-col">
+    <div class="flex items-center justify-between text-white p-4">
+      <div class="w-72 bg-red-900 mr-4">
+        <OilTemp />
+      </div>
+      <div class="w-full">
+        <FuelPressure />
+        <OilPressure />
+      </div>
     </div>
   </div>
-</div>
+
+  <div class="flex flex-col">
+    <div class="flex items-center justify-between text-white p-4">
+      <div class="w-72 bg-red-900 mr-4">
+        <GearPosPlot />
+      </div>
+      <div class="w-full">
+        <EngineSpeed />
+        <ThrottlePos msg="Throttle Position" />
+        <Lambda />
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import TrackMap from "@/components/plots/TrackMap.vue";
 import ThrottlePos from "@/components/plots/ThrottlePos.vue";
-import Voltage from "@/components/plots/Voltage.vue";
 import EngineSpeed from "@/components/plots/EngineSpeed.vue";
 import MAP from "@/components/plots/MAP.vue";
 import MAT from "@/components/plots/MAT.vue";
@@ -54,5 +54,4 @@ import GearPosPlot from "@/components/plots/GearPosPlot.vue";
 import OilTemp from "@/components/plots/OilTemp.vue";
 import OilPressure from "@/components/plots/OilPressure.vue";
 import CoolantTemp from "@/components/plots/CoolantTemp.vue";
-
 </script>
