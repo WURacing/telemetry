@@ -1,14 +1,15 @@
 <template>
   <div class="hello">
-    <div id="scichart-brakes"></div>
+    <div :id="chartId"></div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, watch } from "vue";
-import { useFileStoreStore } from "../../stores/FileStore";
-import { chartSyncService } from "../../services/chartSync";
-import { channelConfig } from "../../services/channelConfig";
+import { computed, onMounted, onUnmounted, watch } from 'vue';
+import { useFileStoreStore } from '../../stores/FileStore';
+import { chartSyncService } from '../../services/chartSync';
+import { channelConfig } from '../../services/channelConfig';
+import type { TelemetryField } from '../../stores/FileStore';
 import {
   SciChartSurface,
   NumericAxis,
@@ -20,43 +21,50 @@ import {
   ZoomPanModifier,
   ZoomExtentsModifier,
   MouseWheelZoomModifier,
-  RolloverModifier
-} from "scichart";
+  RolloverModifier,
+} from 'scichart';
 
+const props = defineProps<{
+  channel: TelemetryField;
+  label: string;
+  color?: string;
+}>();
+
+const chartId = `scichart-${props.channel}`;
 const store = useFileStoreStore();
+
 let sciChartSurface: SciChartSurface | null = null;
-let brakeDataSeries: XyDataSeries | null = null;
+let dataSeries: XyDataSeries | null = null;
 
 const timeData = computed(() => store.Time);
-const brakepressureData = computed(() => store.FrBrakePressure);
+const channelData = computed(() => (store as any)[props.channel] as number[]);
 
 const updateChart = () => {
-  if (!sciChartSurface || !brakeDataSeries) return;
-  const cfg = channelConfig['FrBrakePressure'];
-  brakeDataSeries.clear();
-  brakeDataSeries.appendRange(
+  if (!sciChartSurface || !dataSeries) return;
+  const cfg = channelConfig[props.channel];
+  dataSeries.clear();
+  dataSeries.appendRange(
     timeData.value.slice(-cfg.windowSamples),
-    brakepressureData.value.slice(-cfg.windowSamples)
+    channelData.value.slice(-cfg.windowSamples)
   );
 };
 
 onMounted(async () => {
   SciChartSurface.UseCommunityLicense();
-  const cfg = channelConfig['FrBrakePressure'];
+  const cfg = channelConfig[props.channel];
 
-  const { wasmContext, sciChartSurface: surface } = await SciChartSurface.create("scichart-brakes", {
+  const { wasmContext, sciChartSurface: surface } = await SciChartSurface.create(chartId, {
     theme: new SciChartJSDarkTheme(),
-    title: "Brake Pressure",
-    titleStyle: { fontSize: 24 }
+    title: props.label,
+    titleStyle: { fontSize: 24 },
   });
   sciChartSurface = surface;
-  brakeDataSeries = new XyDataSeries(wasmContext);
+  dataSeries = new XyDataSeries(wasmContext);
 
   sciChartSurface.renderableSeries.add(new FastLineRenderableSeries(wasmContext, {
-    stroke: "red",
+    stroke: props.color ?? '#00bcd4',
     strokeThickness: 3,
-    opacity: 1,
-    dataSeries: brakeDataSeries,
+    dataSeries,
   }));
 
   sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always, drawLabels: false }));
@@ -71,12 +79,12 @@ onMounted(async () => {
     new ZoomPanModifier({ modifierGroup }),
     new MouseWheelZoomModifier({ modifierGroup }),
     new ZoomExtentsModifier({ modifierGroup }),
-    new RolloverModifier({ modifierGroup })
+    new RolloverModifier({ modifierGroup }),
   );
 
   chartSyncService.register(sciChartSurface);
   updateChart();
-  watch([timeData, brakepressureData], updateChart);
+  watch([timeData, channelData], updateChart);
 });
 
 onUnmounted(() => {
@@ -89,8 +97,8 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-#scichart-brakes {
+div > div {
   width: 100%;
-  height: 240px;
+  height: 220px;
 }
 </style>

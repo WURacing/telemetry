@@ -16,7 +16,7 @@ load_dotenv()
 # Get Redis credentials from the OS
 REDIS_HOST = os.environ.get("REDIS_HOST")
 REDIS_PORT = int(os.environ.get("REDIS_PORT"))
-REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD")
+REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD") or None
 
 
 class TelemetryData(BaseModel):
@@ -25,7 +25,7 @@ class TelemetryData(BaseModel):
     channels: list[float]
 
 
-redis_client: Optional[Redis] = Redis(host=REDIS_HOST, port=REDIS_PORT, password=REDIS_PASSWORD)
+redis_client: Optional[Redis] = None
 sio = socketio.AsyncServer(async_mode='asgi', cors_allowed_origins='*')
 app = FastAPI()
 sio_app = socketio.ASGIApp(sio, app)
@@ -42,20 +42,23 @@ async def startup_event():
 
 async def redis_streamer():
     pubsub = redis_client.pubsub()
-    await pubsub.subscribe("telemetry_channel")  # Subscribe to the Redis channel
+    await pubsub.subscribe("telemetry_channel")
+    logger.info("Redis streamer subscribed to telemetry_channel")
 
     async for message in pubsub.listen():
         if message["type"] == "message":
+            logger.info("Redis message received — emitting to frontend")
             data = json.loads(message["data"])
-            telemetry_data = TelemetryData(**data)  # Create TelemetryData instance
-            await sio.emit("telemetry_update", telemetry_data.dict())  # Emit the dictionary
+            telemetry_data = TelemetryData(**data)
+            await sio.emit("telemetry_update", telemetry_data.dict())
+            logger.info("Emitted telemetry_update to clients")
 
 
 @sio.event
 async def connect(sid, environ):
-    print(f"Client connected: {sid}")
-    await sio.emit("connected", data={'sid': sid}, to=sid)  # Send SID to client
-    asyncio.create_task(redis_streamer())  # Start the streaming task
+    logger.info(f"Client connected: {sid}")
+    await sio.emit("connected", data={'sid': sid}, to=sid)
+    asyncio.create_task(redis_streamer())
 
 
 @sio.event

@@ -12,6 +12,7 @@ export type TelemetryField =
   | 'EngineRPM'
   | 'ThrottlePosition'
   | 'FrBrakePressure'
+  | 'RrBrakePressure'
   | 'FuelPressure'
   | 'OilPressure'
   | 'OilTemp'
@@ -22,6 +23,10 @@ export type TelemetryField =
   | 'GearPos'
   | 'Lambda'
   | 'CoolantTemp'
+  | 'ShockPotFL'
+  | 'ShockPotFR'
+  | 'ShockPotRL'
+  | 'ShockPotRR'
 
 // Using hash maps for something that isn't leetcode
 type TelemetryState = Record<TelemetryField, Ref<number[]>>
@@ -38,6 +43,7 @@ const telemetryFields: TelemetryField[] = [
   'EngineRPM',
   'ThrottlePosition',
   'FrBrakePressure',
+  'RrBrakePressure',
   'FuelPressure',
   'OilPressure',
   'OilTemp',
@@ -47,7 +53,11 @@ const telemetryFields: TelemetryField[] = [
   'SteeringAngle',
   'GearPos',
   'Lambda',
-  'CoolantTemp'
+  'CoolantTemp',
+  'ShockPotFL',
+  'ShockPotFR',
+  'ShockPotRL',
+  'ShockPotRR',
 ]
 
 // For every field in telemetryFields, init that field as an empty array

@@ -27,27 +27,50 @@ class WebSocketService {
         });
 
         socket.on('telemetry_update', (data: TelemetryData) => {
+            console.log('[telemetry] update received, channels:', data?.channels?.length, data?.channels);
             const store = useFileStoreStore();
+            const ch = data.channels;
 
-            // --- REFACTORED ROLLING LOGIC ---
-            // This helper function now takes the array directly
-            const rolling = (currentArray: number[], newValue: number): number[] => {
-                if (!Array.isArray(currentArray)) {
-                    // This safety check should no longer be needed, but it's good practice.
-                    console.error("Invalid array passed to rolling function:", currentArray);
-                    return [newValue];
-                }
-                const newArray = [...currentArray, newValue];
-                return newArray.slice(-100); // Keep the last 100 data points
+            // Require a full 20-channel packet before updating.
+            if (!ch || ch.length < 20) {
+                console.warn('[telemetry] packet rejected — only', ch?.length, 'channels');
+                return;
+            }
+
+            const rolling = (currentArray: unknown, newValue: number): number[] => {
+                const arr = Array.isArray(currentArray) ? currentArray : [];
+                return [...arr, newValue].slice(-300);
             };
 
-            // Now we call rolling with the actual reactive array's value
+            // Channel indices match FRAME_IDS order in Telemetry_Sender.ino.
+            // Factors/offsets are applied in GetDataFromCar.py — values here are physical.
             store.updateCollectedData({
-                FrBrakePressure: rolling(store.FrBrakePressure.value, data.channels[1]),
-                SteeringAngle:   rolling(store.SteeringAngle.value, data.channels[3]),
-                LatAcc:          rolling(store.LatAcc.value, data.channels[28]),
-                LongAcc:         rolling(store.LongAcc.value, data.channels[29]),
-                Time:            rolling(store.Time.value, Date.now())
+                // AIM_Suspension (frame 0x69)
+                ShockPotFL:       rolling(store.ShockPotFL,       ch[0]),
+                ShockPotFR:       rolling(store.ShockPotFR,       ch[1]),
+                ShockPotRL:       rolling(store.ShockPotRL,       ch[2]),
+                ShockPotRR:       rolling(store.ShockPotRR,       ch[3]),
+                // AIM_Chassis (frame 0x6A)
+                SteeringAngle:    rolling(store.SteeringAngle,    ch[4]),
+                FrBrakePressure:  rolling(store.FrBrakePressure,  ch[5]),
+                RrBrakePressure:  rolling(store.RrBrakePressure,  ch[6]),
+                EngineRPM:        rolling(store.EngineRPM,        ch[7]),
+                // AIM_Engine1 (frame 0x6B)
+                ThrottlePosition: rolling(store.ThrottlePosition, ch[8]),
+                MAP:              rolling(store.MAP,               ch[9]),
+                CoolantTemp:      rolling(store.CoolantTemp,      ch[10]),
+                OilPressure:      rolling(store.OilPressure,      ch[11]),
+                // AIM_Engine2 (frame 0x6C)
+                OilTemp:          rolling(store.OilTemp,          ch[12]),
+                FuelPressure:     rolling(store.FuelPressure,     ch[13]),
+                Lambda:           rolling(store.Lambda,            ch[14]),
+                GearPos:          rolling(store.GearPos,          ch[15]),
+                // AIM_Sensors (frame 0x6D)
+                MAT:              rolling(store.MAT,              ch[16]),
+                GPSSpeed:         rolling(store.GPSSpeed,         ch[17]),
+                GPSXPos:          rolling(store.GPSXPos,          ch[18]),
+                GPSYPos:          rolling(store.GPSYPos,          ch[19]),
+                Time:             rolling(store.Time,             Date.now()),
             });
         });
 

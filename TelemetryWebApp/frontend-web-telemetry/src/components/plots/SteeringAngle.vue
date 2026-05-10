@@ -5,13 +5,15 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, onUnmounted, watch} from "vue";
+import { computed, onMounted, onUnmounted, watch } from "vue";
 import { useFileStoreStore } from "../../stores/FileStore";
 import { chartSyncService } from "../../services/chartSync";
+import { channelConfig } from "../../services/channelConfig";
 import {
   SciChartSurface,
   NumericAxis,
   EAutoRange,
+  NumberRange,
   FastLineRenderableSeries,
   XyDataSeries,
   SciChartJSDarkTheme,
@@ -21,32 +23,26 @@ import {
   RolloverModifier
 } from "scichart";
 
-// Retrieve data from store
 const store = useFileStoreStore();
-let sciChartSurface: SciChartSurface | null = null; // To hold the chart surface instance
-let steerDataSeries: XyDataSeries | null = null; // To hold the data series
+let sciChartSurface: SciChartSurface | null = null;
+let steerDataSeries: XyDataSeries | null = null;
 
-const timeData = computed(() => store.Time);  // Make reactive
-const steerData = computed(() => store.SteeringAngle); // Make reactive
-let liveStatus = store.isLive;
+const timeData = computed(() => store.Time);
+const steerData = computed(() => store.SteeringAngle);
 
 const updateChart = () => {
-  if (!sciChartSurface || !steerDataSeries) {
-    return; // Chart hasn't been initialized yet
-  }
-
-  if (liveStatus) {
-    let lb = steerData.value.length - 1
-    let lt = timeData.value.length - 1
-    steerDataSeries?.append(timeData.value[lt], steerData.value[lb]);
-  } else {
-    steerDataSeries?.clear();
-    steerDataSeries?.appendRange(timeData.value, steerData.value);
-  }
+  if (!sciChartSurface || !steerDataSeries) return;
+  const cfg = channelConfig['SteeringAngle'];
+  steerDataSeries.clear();
+  steerDataSeries.appendRange(
+    timeData.value.slice(-cfg.windowSamples),
+    steerData.value.slice(-cfg.windowSamples)
+  );
 };
 
 onMounted(async () => {
   SciChartSurface.UseCommunityLicense();
+  const cfg = channelConfig['SteeringAngle'];
 
   const { wasmContext, sciChartSurface: surface } = await SciChartSurface.create("scichart-steering", {
     theme: new SciChartJSDarkTheme(),
@@ -54,18 +50,20 @@ onMounted(async () => {
     titleStyle: { fontSize: 24 }
   });
   sciChartSurface = surface;
-
-
-  // Create the data series *once*
   steerDataSeries = new XyDataSeries(wasmContext);
 
-  // ... (add axes, renderable series, etc., as before, but *outside* the watch)
-    // Renderable series
-    sciChartSurface.renderableSeries.add(new FastLineRenderableSeries(wasmContext, {
+  sciChartSurface.renderableSeries.add(new FastLineRenderableSeries(wasmContext, {
     stroke: "orange",
     strokeThickness: 3,
     opacity: 1,
     dataSeries: steerDataSeries,
+  }));
+
+  sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always, drawLabels: false }));
+  sciChartSurface.yAxes.add(new NumericAxis(wasmContext, {
+    axisTitle: cfg.yUnit,
+    autoRange: EAutoRange.Never,
+    visibleRange: new NumberRange(cfg.yMin, cfg.yMax),
   }));
 
   const modifierGroup = chartSyncService.modifierGroupId;
@@ -76,18 +74,9 @@ onMounted(async () => {
     new RolloverModifier({ modifierGroup })
   );
 
-   // Axes
-  sciChartSurface.yAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always}));
-  sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always, drawLabels: false}));
-
   chartSyncService.register(sciChartSurface);
-
-  updateChart();// Initial chart setup
-
-  watch([timeData, steerData], () => {
-    updateChart();  // Update the chart when data changes
-  });
-
+  updateChart();
+  watch([timeData, steerData], updateChart);
 });
 
 onUnmounted(() => {
@@ -97,7 +86,6 @@ onUnmounted(() => {
     sciChartSurface = null;
   }
 });
-
 </script>
 
 <style scoped>

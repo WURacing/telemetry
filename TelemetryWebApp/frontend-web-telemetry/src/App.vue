@@ -10,8 +10,7 @@
       <div class="flex-wrap lg:flex-none text-right px-10" id="section-wrapper">
         <router-link class="btn bg-yellow-600 m-2" to="/">Driver Inputs</router-link>
         <router-link class="btn bg-red-900 m-2" to="/powertrain">Powertrain</router-link>
-        <router-link class="btn bg-blue-700 m-2" to="/aero">Aero</router-link>
-        <router-link class="btn bg-green-700 m-2" to="/ergo">Ergo</router-link>
+        <router-link class="btn bg-blue-700 m-2" to="/suspension">Suspension</router-link>
       </div>
     </div>
 </div>

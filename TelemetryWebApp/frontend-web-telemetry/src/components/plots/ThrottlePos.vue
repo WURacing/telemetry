@@ -3,14 +3,17 @@
     <div id="scichart-throttle"></div>
   </div>
 </template>
+
 <script setup lang="ts">
-import {computed, onMounted, onUnmounted, watch} from "vue";
+import { computed, onMounted, onUnmounted, watch } from "vue";
 import { useFileStoreStore } from "../../stores/FileStore";
 import { chartSyncService } from "../../services/chartSync";
+import { channelConfig } from "../../services/channelConfig";
 import {
   SciChartSurface,
   NumericAxis,
   EAutoRange,
+  NumberRange,
   FastLineRenderableSeries,
   XyDataSeries,
   SciChartJSDarkTheme,
@@ -20,48 +23,47 @@ import {
   RolloverModifier
 } from "scichart";
 
-// Retrieve data from store
 const store = useFileStoreStore();
-let sciChartSurface: SciChartSurface | null = null; // To hold the chart surface instance
-let throttleDataSeries: XyDataSeries | null = null; // To hold the data series
+let sciChartSurface: SciChartSurface | null = null;
+let throttleDataSeries: XyDataSeries | null = null;
 
-const timeData = computed(() => store.Time);  // Make reactive
-const throttleData = computed(() => store.ThrottlePosition); // Make reactive
-let liveStatus = store.isLive;
+const timeData = computed(() => store.Time);
+const throttleData = computed(() => store.ThrottlePosition);
 
 const updateChart = () => {
-  if (!sciChartSurface || !throttleData) {
-    return; // Chart hasn't been initialized yet
-  }
-
-  if (liveStatus) {
-    let lb = throttleData.value.length - 1
-    let lt = timeData.value.length - 1
-    throttleDataSeries?.append(timeData.value[lt], throttleData.value[lb]);
-  } else {
-    throttleDataSeries?.clear();
-    throttleDataSeries?.appendRange(timeData.value, throttleData.value);
-  }
+  if (!sciChartSurface || !throttleDataSeries) return;
+  const cfg = channelConfig['ThrottlePosition'];
+  throttleDataSeries.clear();
+  throttleDataSeries.appendRange(
+    timeData.value.slice(-cfg.windowSamples),
+    throttleData.value.slice(-cfg.windowSamples)
+  );
 };
 
 onMounted(async () => {
   SciChartSurface.UseCommunityLicense();
+  const cfg = channelConfig['ThrottlePosition'];
 
   const { wasmContext, sciChartSurface: surface } = await SciChartSurface.create("scichart-throttle", {
     theme: new SciChartJSDarkTheme(),
     title: "Throttle Position",
     titleStyle: { fontSize: 24 }
   });
-
   sciChartSurface = surface;
   throttleDataSeries = new XyDataSeries(wasmContext);
 
-  // Renderable series
   sciChartSurface.renderableSeries.add(new FastLineRenderableSeries(wasmContext, {
-  stroke: "green",
-  strokeThickness: 3,
-  opacity: 1,
-  dataSeries: throttleDataSeries,
+    stroke: "green",
+    strokeThickness: 3,
+    opacity: 1,
+    dataSeries: throttleDataSeries,
+  }));
+
+  sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always, drawLabels: false }));
+  sciChartSurface.yAxes.add(new NumericAxis(wasmContext, {
+    axisTitle: cfg.yUnit,
+    autoRange: EAutoRange.Never,
+    visibleRange: new NumberRange(cfg.yMin, cfg.yMax),
   }));
 
   const modifierGroup = chartSyncService.modifierGroupId;
@@ -72,18 +74,9 @@ onMounted(async () => {
     new RolloverModifier({ modifierGroup })
   );
 
-   // Axes
-  sciChartSurface.yAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always}));
-  sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always}));
-
   chartSyncService.register(sciChartSurface);
-
-  updateChart();// Initial chart setup
-
-  watch([timeData, throttleData], () => {
-    updateChart();  // Update the chart when data changes
-  });
-
+  updateChart();
+  watch([timeData, throttleData], updateChart);
 });
 
 onUnmounted(() => {
@@ -93,7 +86,6 @@ onUnmounted(() => {
     sciChartSurface = null;
   }
 });
-
 </script>
 
 <style scoped>

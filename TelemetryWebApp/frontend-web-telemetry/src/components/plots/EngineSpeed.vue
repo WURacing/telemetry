@@ -1,17 +1,19 @@
 <template>
   <div class="hello">
-    <div id="scichart-rpm"></div>
+    <div id="scichart-fuelpressure"></div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, onUnmounted, watch} from "vue";
+import { computed, onMounted, onUnmounted, watch } from "vue";
 import { useFileStoreStore } from "../../stores/FileStore";
 import { chartSyncService } from "../../services/chartSync";
+import { channelConfig } from "../../services/channelConfig";
 import {
   SciChartSurface,
   NumericAxis,
   EAutoRange,
+  NumberRange,
   FastLineRenderableSeries,
   XyDataSeries,
   SciChartJSDarkTheme,
@@ -21,51 +23,47 @@ import {
   RolloverModifier
 } from "scichart";
 
-// Retrieve data from store
 const store = useFileStoreStore();
-let sciChartSurface: SciChartSurface | null = null; // To hold the chart surface instance
-let rpmDataSeries: XyDataSeries | null = null; // To hold the data series
+let sciChartSurface: SciChartSurface | null = null;
+let fuelPressureDataSeries: XyDataSeries | null = null;
 
-const timeData = computed(() => store.Time);  // Make reactive
-const rpmData = computed(() => store.EngineRPM); // Make reactive
-const liveStatus = computed(() => store.isLive);
+const timeData = computed(() => store.Time);
+const fuelPressureData = computed(() => store.FuelPressure);
 
 const updateChart = () => {
-  if (!sciChartSurface || !rpmDataSeries) {
-    return; // Chart hasn't been initialized yet
-  }
-
-  if (liveStatus.value) {
-    let lb = rpmData.value.length - 1
-    let lt = timeData.value.length - 1
-    rpmDataSeries?.append(timeData.value[lt], rpmData.value[lb]);
-  } else {
-    rpmDataSeries?.clear();
-    rpmDataSeries?.appendRange(timeData.value, rpmData.value);
-  }
+  if (!sciChartSurface || !fuelPressureDataSeries) return;
+  const cfg = channelConfig['FuelPressure'];
+  fuelPressureDataSeries.clear();
+  fuelPressureDataSeries.appendRange(
+    timeData.value.slice(-cfg.windowSamples),
+    fuelPressureData.value.slice(-cfg.windowSamples)
+  );
 };
 
 onMounted(async () => {
   SciChartSurface.UseCommunityLicense();
+  const cfg = channelConfig['FuelPressure'];
 
-  const { wasmContext, sciChartSurface: surface } = await SciChartSurface.create("scichart-rpm", {
+  const { wasmContext, sciChartSurface: surface } = await SciChartSurface.create("scichart-fuelpressure", {
     theme: new SciChartJSDarkTheme(),
-    title: "RPM",
+    title: "Fuel Pressure",
     titleStyle: { fontSize: 24 }
   });
   sciChartSurface = surface;
+  fuelPressureDataSeries = new XyDataSeries(wasmContext);
 
-
-  // Create the data series *once*
-  rpmDataSeries = new XyDataSeries(wasmContext);
-
-  // ... (add axes, renderable series, etc., as before, but *outside* the watch)
-    // Renderable series
-    sciChartSurface.renderableSeries.add(new FastLineRenderableSeries(wasmContext, {
-    stroke: "white",
+  sciChartSurface.renderableSeries.add(new FastLineRenderableSeries(wasmContext, {
+    stroke: "orange",
     strokeThickness: 3,
     opacity: 1,
-    dataSeries: rpmDataSeries,
+    dataSeries: fuelPressureDataSeries,
+  }));
+
+  sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always, drawLabels: false }));
+  sciChartSurface.yAxes.add(new NumericAxis(wasmContext, {
+    axisTitle: cfg.yUnit,
+    autoRange: EAutoRange.Never,
+    visibleRange: new NumberRange(cfg.yMin, cfg.yMax),
   }));
 
   const modifierGroup = chartSyncService.modifierGroupId;
@@ -76,18 +74,9 @@ onMounted(async () => {
     new RolloverModifier({ modifierGroup })
   );
 
-   // Axes
-  sciChartSurface.yAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always}));
-  sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always}));
-
   chartSyncService.register(sciChartSurface);
-
-  updateChart();// Initial chart setup
-
-  watch([timeData, rpmData], () => {
-    updateChart();  // Update the chart when data changes
-  });
-
+  updateChart();
+  watch([timeData, fuelPressureData], updateChart);
 });
 
 onUnmounted(() => {
@@ -97,11 +86,10 @@ onUnmounted(() => {
     sciChartSurface = null;
   }
 });
-
 </script>
 
 <style scoped>
-#scichart-rpm {
+#scichart-fuelpressure {
   width: 100%;
   height: 240px;
 }
