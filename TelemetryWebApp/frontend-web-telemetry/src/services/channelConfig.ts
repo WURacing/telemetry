@@ -1,104 +1,25 @@
-<template>
-  <div class="hello">
-    <div :id="chartId"></div>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { computed, onMounted, onUnmounted, watch } from 'vue';
-import { useFileStoreStore } from '../../stores/FileStore';
-import { chartSyncService } from '../../services/chartSync';
-import { channelConfig } from '../../services/channelConfig';
-import type { TelemetryField } from '../../stores/FileStore';
-import {
-  SciChartSurface,
-  NumericAxis,
-  EAutoRange,
-  NumberRange,
-  FastLineRenderableSeries,
-  XyDataSeries,
-  SciChartJSDarkTheme,
-  ZoomPanModifier,
-  ZoomExtentsModifier,
-  MouseWheelZoomModifier,
-  RolloverModifier,
-} from 'scichart';
-
-const props = defineProps<{
-  channel: TelemetryField;
-  label: string;
-  color?: string;
-}>();
-
-const chartId = `scichart-${props.channel}`;
-const store = useFileStoreStore();
-
-let sciChartSurface: SciChartSurface | null = null;
-let dataSeries: XyDataSeries | null = null;
-
-const timeData = computed(() => store.Time);
-const channelData = computed(() => (store as any)[props.channel] as number[]);
-
-const updateChart = () => {
-  if (!sciChartSurface || !dataSeries) return;
-  const cfg = channelConfig[props.channel];
-  dataSeries.clear();
-  dataSeries.appendRange(
-    timeData.value.slice(-cfg.windowSamples),
-    channelData.value.slice(-cfg.windowSamples)
-  );
-};
-
-onMounted(async () => {
-  SciChartSurface.UseCommunityLicense();
-  const cfg = channelConfig[props.channel];
-
-  const { wasmContext, sciChartSurface: surface } = await SciChartSurface.create(chartId, {
-    theme: new SciChartJSDarkTheme(),
-    title: props.label,
-    titleStyle: { fontSize: 24 },
-  });
-  sciChartSurface = surface;
-  dataSeries = new XyDataSeries(wasmContext);
-
-  sciChartSurface.renderableSeries.add(new FastLineRenderableSeries(wasmContext, {
-    stroke: props.color ?? '#00bcd4',
-    strokeThickness: 3,
-    dataSeries,
-  }));
-
-  sciChartSurface.xAxes.add(new NumericAxis(wasmContext, { autoRange: EAutoRange.Always, drawLabels: false }));
-  sciChartSurface.yAxes.add(new NumericAxis(wasmContext, {
-    axisTitle: cfg.yUnit,
-    autoRange: EAutoRange.Never,
-    visibleRange: new NumberRange(cfg.yMin, cfg.yMax),
-  }));
-
-  const modifierGroup = chartSyncService.modifierGroupId;
-  sciChartSurface.chartModifiers.add(
-    new ZoomPanModifier({ modifierGroup }),
-    new MouseWheelZoomModifier({ modifierGroup }),
-    new ZoomExtentsModifier({ modifierGroup }),
-    new RolloverModifier({ modifierGroup }),
-  );
-
-  chartSyncService.register(sciChartSurface);
-  updateChart();
-  watch([timeData, channelData], updateChart);
-});
-
-onUnmounted(() => {
-  if (sciChartSurface) {
-    chartSyncService.unregister(sciChartSurface);
-    sciChartSurface.delete();
-    sciChartSurface = null;
-  }
-});
-</script>
-
-<style scoped>
-div > div {
-  width: 100%;
-  height: 220px;
+export interface ChannelConfig {
+  yMin: number;
+  yMax: number;
+  yUnit: string;
+  windowSamples: number;  // how many store samples to display (at 5 Hz: 75=15s, 150=30s, 300=60s)
 }
-</style>
+
+export const channelConfig: Record<string, ChannelConfig> = {
+  FrBrakePressure:  { yMin: 0,    yMax: 900,   yUnit: 'psi', windowSamples: 75  },
+  RrBrakePressure:  { yMin: 0,    yMax: 900,   yUnit: 'psi', windowSamples: 75  },
+  EngineRPM:        { yMin: 0,    yMax: 15000, yUnit: 'rpm', windowSamples: 150 },
+  ThrottlePosition: { yMin: 0,    yMax: 100,   yUnit: '%',   windowSamples: 75  },
+  SteeringAngle:    { yMin: -110, yMax: 110,   yUnit: 'deg', windowSamples: 75  },
+  MAP:              { yMin: 0,    yMax: 300,   yUnit: 'kPa', windowSamples: 150 },
+  CoolantTemp:      { yMin: 0,    yMax: 130,   yUnit: '°C',  windowSamples: 300 },
+  OilPressure:      { yMin: 0,    yMax: 150,   yUnit: 'psi', windowSamples: 150 },
+  OilTemp:          { yMin: 0,    yMax: 150,   yUnit: '°C',  windowSamples: 300 },
+  FuelPressure:     { yMin: 0,    yMax: 100,   yUnit: 'psi', windowSamples: 150 },
+  Lambda:           { yMin: 0.6,  yMax: 1.4,   yUnit: 'λ',   windowSamples: 150 },
+  MAT:              { yMin: -10,  yMax: 80,    yUnit: '°C',  windowSamples: 300 },
+  ShockPotFL:       { yMin: -30,  yMax: 30,    yUnit: 'mm',  windowSamples: 100 },
+  ShockPotFR:       { yMin: -30,  yMax: 30,    yUnit: 'mm',  windowSamples: 100 },
+  ShockPotRL:       { yMin: -30,  yMax: 30,    yUnit: 'mm',  windowSamples: 100 },
+  ShockPotRR:       { yMin: -30,  yMax: 30,    yUnit: 'mm',  windowSamples: 100 },
+};
