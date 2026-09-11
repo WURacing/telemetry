@@ -2,7 +2,7 @@
 import { io } from 'socket.io-client';
 
 // The secure URL for your backend
-const URL = 'https://api.telemetry.apt.joshkevil.com';
+const URL = 'https://api.telemetry.mooo.com';
 
 export const socket = io(URL, {
     transports: ['websocket'],
