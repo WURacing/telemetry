@@ -62,3 +62,6 @@ This site also allows you to analyze old .csv files from Race Studio 3. After cr
 - All code should follow the [Google style guide](https://google.github.io/styleguide/)
 - Repository should follow gitflow branching strategy
 - More info can be found [here](https://docs.google.com/document/d/1ARGR6GPORXKE09iwE0viAhfVXgTAP3NhcMlSWubIhwk/edit?usp=sharing)
+
+## Windows cmds for team laptop
+ssh -p 2223 -N -o ExitOnForwardFailure=yes -o ServerAliveInterval=30 -L 127.0.0.1:16379:127.0.0.1:6379 henry@apt.joshkevil.com
