@@ -4,7 +4,7 @@
 export const fuelConfig = {
   TANK_LITERS: 6.0,
   YELLOW_LITERS: 3.0,    // gauge turns yellow at or below this much fuel left
-  RED_LITERS: 1.5,      // gauge turns red at or below this much fuel left
+  RED_LITERS: 1.0,      // gauge turns red at or below this much fuel left
   RATE_AVG_SAMPLES: 150, // burn-rate average window for "minutes left" (150 samples = 30 s at 5 Hz)
 };
 
