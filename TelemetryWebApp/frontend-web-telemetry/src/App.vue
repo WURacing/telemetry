@@ -1,16 +1,17 @@
 <template id="home">
 
 <div class="flex justify-center w-full">
-    <div class="navbar flex-wrap gap-x-2 gap-y-0 rounded-3xl border-amber-200 w-full md:w-5/6 m-3 sticky justify-center lg:justify-between">
-      <a class="text-sm lg:text-2xl lg:pl-4 lg:shrink-0">WashU Racing Telemetry Display </a>
+    <!-- Unprefixed classes = phone layout; md: classes restore the original desktop navbar -->
+    <div class="navbar flex-wrap gap-x-2 gap-y-0 md:flex-nowrap md:gap-0 rounded-3xl border-amber-200 w-full md:w-5/6 m-3 sticky justify-center">
+      <a class="text-sm lg:text-2xl">WashU Racing Telemetry Display </a>
       <FileReader class="inline-block" />
       <StartStreamingButton />
       <!-- <ServerStatus /> -->
       <CarStatus />
-      <div class="flex flex-nowrap md:flex-wrap justify-center w-full" id="section-wrapper" :class="{ 'tab-clicked': tabClicked }">
-        <router-link class="btn btn-sm md:btn-md text-xs md:text-sm bg-yellow-600 mx-1 md:mx-2 mb-1" to="/" @click="tabClicked = true">Driver Inputs</router-link>
-        <router-link class="btn btn-sm md:btn-md text-xs md:text-sm bg-red-900 mx-1 md:mx-2 mb-1" to="/powertrain" @click="tabClicked = true">Powertrain</router-link>
-        <router-link class="btn btn-sm md:btn-md text-xs md:text-sm bg-blue-700 mx-1 md:mx-2 mb-1" to="/suspension" @click="tabClicked = true">Suspension</router-link>
+      <div class="flex flex-nowrap justify-center w-full md:block md:w-auto md:text-right md:px-10 lg:flex-none" id="section-wrapper" :class="{ 'tab-clicked': tabClicked }">
+        <router-link class="btn btn-sm md:btn-md text-xs md:text-sm bg-yellow-600 mx-1 mb-1 md:m-2" to="/" @click="tabClicked = true">Driver Inputs</router-link>
+        <router-link class="btn btn-sm md:btn-md text-xs md:text-sm bg-red-900 mx-1 mb-1 md:m-2" to="/powertrain" @click="tabClicked = true">Powertrain</router-link>
+        <router-link class="btn btn-sm md:btn-md text-xs md:text-sm bg-blue-700 mx-1 mb-1 md:m-2" to="/suspension" @click="tabClicked = true">Suspension</router-link>
       </div>
     </div>
 </div>
