@@ -73,19 +73,18 @@ class TelemetryData(BaseModel):
 # ── Packet decoder ────────────────────────────────────────────────────────────
 # Packet format lives in packet_parser.py (main block + fuel block).
 
-def read_packet(reader: PacketReader):
+def read_packet(reader: PacketReader) -> Optional[List[float]]:
     """
     Block until a valid packet arrives (or the serial read times out).
-    Returns (channels, fuel) where channels is 20 scaled floats and fuel is a
-    dict {rate_lph, used_l, valid} or None. Returns None on timeout.
+    Returns 23 channel values (see CHANNEL_NAMES): the 20 scaled CAN channels
+    followed by FuelRate, FuelUsed, FuelValid. Returns None on timeout.
     """
     packet = reader.read_packet()
     if packet is None:
         return None
-    channels = [packet.raw_channels[i] * CHANNEL_FACTORS[i] + CHANNEL_OFFSETS[i]
-                for i in range(NUM_CHANNELS)]
-    fuel = packet.fuel.to_dict() if packet.fuel else None
-    return channels, fuel
+    raw, fuel = packet
+    channels = [raw[i] * CHANNEL_FACTORS[i] + CHANNEL_OFFSETS[i] for i in range(NUM_CHANNELS)]
+    return channels + fuel
 
 
 # ── Redis helper ──────────────────────────────────────────────────────────────
@@ -95,13 +94,12 @@ class SerialProcessor:
         self.redis = redis_client
         self.current_session = "FSAE Telemetry"
 
-    async def save_to_redis(self, channels: List[float], fuel: Optional[dict] = None):
+    async def save_to_redis(self, channels: List[float]):
         timestamp = datetime.utcnow().isoformat()
         telemetry_data = {
             'timestamp':    timestamp,
             'session_name': self.current_session,
             'channels':     channels,
-            'fuel':         fuel,
         }
         key = "telemetry_at_" + timestamp
         await self.redis.set(key, json.dumps(telemetry_data), ex=3600)
@@ -146,6 +144,8 @@ CHANNEL_NAMES = [
     'TPS',        'MAP',        'CoolantTemp',  'OilPressure',
     'OilTemp',    'FuelPressure','Lambda',       'Gear',
     'MAT',        'GPS_Speed',  'GPS_X',        'GPS_Y',
+    # Fuel meter block (FuelStorage / Telemetry_Sender). -1 = not available.
+    'FuelRate',   'FuelUsed',   'FuelValid',    # L/h, L since last reset, 1=fresh 0=stale
 ]
 
 async def _serial_loop(processor: SerialProcessor):
@@ -153,13 +153,11 @@ async def _serial_loop(processor: SerialProcessor):
     logger.info("Serial loop started — waiting for packets")
     reader = PacketReader(ser)
     while True:
-        result = await loop.run_in_executor(executor, read_packet, reader)
-        if result:
-            channels, fuel = result
-            logger.info("  ".join(f"{CHANNEL_NAMES[i]}={channels[i]:.3f}" for i in range(NUM_CHANNELS)))
-            logger.info(f"Fuel: {fuel}")
+        channels = await loop.run_in_executor(executor, read_packet, reader)
+        if channels:
+            logger.info("  ".join(f"{name}={value:.3f}" for name, value in zip(CHANNEL_NAMES, channels)))
             try:
-                await processor.save_to_redis(channels, fuel)
+                await processor.save_to_redis(channels)
                 logger.info("Published to Redis OK")
             except Exception as e:
                 logger.error(f"Redis publish failed: {e}")

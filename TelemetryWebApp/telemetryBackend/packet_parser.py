@@ -15,14 +15,18 @@ Each transmission (every 200 ms) is 67 bytes:
     USED  = fuel used since last reset in L x 1,000,000 (0xFFFFFFFF = missing)
     STALE = 0 when RPM and injector pulse are fresh, 1 otherwise
 
+Fuel is returned as three extra channel values (appended after the 20 CAN channels):
+    FuelRate  (L/h)   -1 if missing
+    FuelUsed  (L)     -1 if missing
+    FuelValid         1 = fresh, 0 = stale or no fuel block
+
 The parser works on any object with a pyserial-style read(n) method, so it can
 be tested with io.BytesIO instead of real hardware.
 """
 
 import logging
 import struct
-from dataclasses import dataclass
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +40,8 @@ FUEL_TYPE = 3
 FUEL_PAYLOAD_LEN = 10
 FUEL_LEN = 15
 MISSING_U32 = 0xFFFFFFFF
+MISSING = -1.0                           # sent in place of a fuel value that isn't available
+NO_FUEL = [MISSING, MISSING, 0.0]        # [FuelRate, FuelUsed, FuelValid] when the block is absent
 
 
 def crc8(data: bytes) -> int:
@@ -47,22 +53,6 @@ def crc8(data: bytes) -> int:
             crc = ((crc << 1) ^ 0x07) if crc & 0x80 else (crc << 1)
             crc &= 0xFF
     return crc
-
-
-@dataclass
-class FuelReading:
-    rate_lph: Optional[float]   # litres per hour, None if missing
-    used_l: Optional[float]     # litres used since last meter reset, None if missing
-    valid: bool                 # False when the car flags its inputs as stale
-
-    def to_dict(self) -> dict:
-        return {"rate_lph": self.rate_lph, "used_l": self.used_l, "valid": self.valid}
-
-
-@dataclass
-class Packet:
-    raw_channels: List[int]           # 20 unscaled int16 values
-    fuel: Optional[FuelReading]       # None if the fuel block was missing or corrupt
 
 
 class PacketReader:
@@ -79,9 +69,10 @@ class PacketReader:
             self.buf.extend(chunk)
         return True
 
-    def read_packet(self) -> Optional[Packet]:
-        """Return the next valid packet, or None if the stream timed out first.
-        Partial data is kept in the buffer for the next call."""
+    def read_packet(self) -> Optional[Tuple[List[int], List[float]]]:
+        """Return (raw_channels, fuel) for the next valid packet, or None if the
+        stream timed out first. raw_channels is 20 unscaled int16 values; fuel is
+        [FuelRate, FuelUsed, FuelValid]. Partial data is kept for the next call."""
         while True:
             start = self.buf.find(MAIN_SYNC)
             if start < 0:
@@ -104,25 +95,25 @@ class PacketReader:
             del self.buf[:MAIN_LEN]
 
             raw = list(struct.unpack_from("<20h", data))
-            return Packet(raw_channels=raw, fuel=self._read_fuel())
+            return raw, self._read_fuel()
 
-    def _read_fuel(self) -> Optional[FuelReading]:
+    def _read_fuel(self) -> List[float]:
         if not self._ensure(2) or bytes(self.buf[:2]) != FUEL_SYNC:
-            return None               # leave the bytes for the next sync search
+            return list(NO_FUEL)      # leave the bytes for the next sync search
         if not self._ensure(FUEL_LEN):
-            return None
+            return list(NO_FUEL)
 
         block = bytes(self.buf[:FUEL_LEN])
         if (block[2] != FUEL_TYPE or block[3] != FUEL_PAYLOAD_LEN
                 or crc8(block[2:14]) != block[14]):
             logger.warning("Fuel block failed header/CRC check — ignoring fuel for this packet")
             del self.buf[:2]
-            return None
+            return list(NO_FUEL)
         del self.buf[:FUEL_LEN]
 
         rate_raw, used_raw = struct.unpack_from("<II", block, 5)
-        return FuelReading(
-            rate_lph=None if rate_raw == MISSING_U32 else rate_raw / 1000.0,
-            used_l=None if used_raw == MISSING_U32 else used_raw / 1_000_000.0,
-            valid=block[13] == 0,
-        )
+        return [
+            MISSING if rate_raw == MISSING_U32 else rate_raw / 1000.0,       # FuelRate, L/h
+            MISSING if used_raw == MISSING_U32 else used_raw / 1_000_000.0,  # FuelUsed, L
+            1.0 if block[13] == 0 else 0.0,                                  # FuelValid
+        ]

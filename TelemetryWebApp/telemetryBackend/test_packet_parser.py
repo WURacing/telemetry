@@ -3,7 +3,7 @@
 import io
 import struct
 
-from packet_parser import PacketReader, crc8
+from packet_parser import NO_FUEL, PacketReader, crc8
 
 
 def build_main(channels, seq=0, frame_6e=b"\x00" * 8):
@@ -22,43 +22,44 @@ def build_fuel(rate_lph, used_l, stale=False, seq=0):
 CH = list(range(20))
 
 
+def read(stream):
+    return PacketReader(io.BytesIO(stream)).read_packet()
+
+
 def test_main_and_fuel():
-    r = PacketReader(io.BytesIO(build_main(CH) + build_fuel(12.5, 2.345678)))
-    p = r.read_packet()
-    assert p.raw_channels == CH
-    assert p.fuel.rate_lph == 12.5
-    assert abs(p.fuel.used_l - 2.345678) < 1e-9
-    assert p.fuel.valid is True
+    raw, fuel = read(build_main(CH) + build_fuel(12.5, 2.345678))
+    assert raw == CH
+    rate, used, valid = fuel
+    assert rate == 12.5
+    assert abs(used - 2.345678) < 1e-9
+    assert valid == 1.0
 
 
 def test_stale_flag_and_missing_total():
-    p = PacketReader(io.BytesIO(build_main(CH) + build_fuel(0, None, stale=True))).read_packet()
-    assert p.fuel.valid is False
-    assert p.fuel.used_l is None
+    _, fuel = read(build_main(CH) + build_fuel(0, None, stale=True))
+    assert fuel == [0.0, -1.0, 0.0]
 
 
 def test_main_without_fuel_block():
-    stream = build_main(CH, seq=1) + build_main(CH, seq=2)
-    r = PacketReader(io.BytesIO(stream))
-    assert r.read_packet().fuel is None
-    assert r.read_packet().raw_channels == CH   # second packet not lost
+    r = PacketReader(io.BytesIO(build_main(CH, seq=1) + build_main(CH, seq=2)))
+    assert r.read_packet()[1] == NO_FUEL
+    assert r.read_packet()[0] == CH   # second packet not lost
 
 
 def test_corrupt_fuel_keeps_main_data():
     fuel = bytearray(build_fuel(10, 1))
     fuel[7] ^= 0xFF
-    p = PacketReader(io.BytesIO(build_main(CH) + bytes(fuel))).read_packet()
-    assert p.raw_channels == CH
-    assert p.fuel is None
+    raw, f = read(build_main(CH) + bytes(fuel))
+    assert raw == CH
+    assert f == NO_FUEL
 
 
 def test_corrupt_main_skipped_then_resyncs():
     bad = bytearray(build_main(CH))
     bad[10] ^= 0xFF
-    stream = b"\x12\x55" + bytes(bad) + build_fuel(1, 1) + build_main([5] * 20) + build_fuel(3, 4)
-    p = PacketReader(io.BytesIO(stream)).read_packet()
-    assert p.raw_channels == [5] * 20
-    assert p.fuel.used_l == 4
+    raw, fuel = read(b"\x12\x55" + bytes(bad) + build_fuel(1, 1) + build_main([5] * 20) + build_fuel(3, 4))
+    assert raw == [5] * 20
+    assert fuel[1] == 4
 
 
 def test_packet_split_across_timeouts():
@@ -68,13 +69,12 @@ def test_packet_split_across_timeouts():
         def __init__(self, parts): self.parts = list(parts)
         def read(self, n): return self.parts.pop(0) if self.parts else b""
 
-    stream = Chunked([full[:20], b"", full[20:60], full[60:]])
-    r = PacketReader(stream)
+    r = PacketReader(Chunked([full[:20], b"", full[20:60], full[60:]]))
     assert r.read_packet() is None            # timed out mid-packet
-    p = r.read_packet()
-    assert p.raw_channels == CH and p.fuel.used_l == 0.5
+    raw, fuel = r.read_packet()
+    assert raw == CH and fuel[1] == 0.5
 
 
 def test_negative_channels():
     ch = [-1, -32768, 32767] + [0] * 17
-    assert PacketReader(io.BytesIO(build_main(ch))).read_packet().raw_channels == ch
+    assert read(build_main(ch))[0] == ch

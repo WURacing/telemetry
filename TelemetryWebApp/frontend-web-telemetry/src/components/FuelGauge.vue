@@ -3,11 +3,12 @@
   <div v-if="compact" class="flex shrink-0 items-center gap-2 whitespace-nowrap px-3 text-xs text-white" :title="tooltip">
     <span class="font-semibold uppercase tracking-wide text-gray-300">Fuel</span>
     <div class="relative h-3 w-28 overflow-hidden rounded-full bg-gray-700">
-      <div class="h-full transition-all duration-500" :class="barClass" :style="{ width: pct + '%' }"></div>
+      <div class="h-full transition-colors duration-300" :class="barClass" :style="{ width: pct + '%' }"></div>
       <div class="marker" :style="{ left: yellowPct + '%' }"></div>
       <div class="marker" :style="{ left: redPct + '%' }"></div>
     </div>
-    <span class="w-16 font-bold tabular-nums" :class="textClass">{{ leftText }}</span>
+    <span class="font-bold tabular-nums" :class="textClass">{{ leftText }}</span>
+    <span v-if="left !== null" class="-ml-1 tabular-nums text-gray-300">({{ pct.toFixed(0) }}%)</span>
     <span v-if="badge" class="rounded px-1 text-[10px] font-bold" :class="badgeClass">{{ overTank ? 'RESET?' : badge }}</span>
   </div>
 
@@ -24,7 +25,7 @@
     </div>
 
     <div class="relative mt-3 h-6 overflow-hidden rounded-full bg-gray-700">
-      <div class="h-full transition-all duration-500" :class="barClass" :style="{ width: pct + '%' }"></div>
+      <div class="h-full transition-colors duration-300" :class="barClass" :style="{ width: pct + '%' }"></div>
       <div class="marker" :style="{ left: yellowPct + '%' }"></div>
       <div class="marker" :style="{ left: redPct + '%' }"></div>
       <span class="absolute inset-0 flex items-center justify-center text-sm font-bold drop-shadow">
