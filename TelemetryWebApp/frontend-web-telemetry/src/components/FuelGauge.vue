@@ -9,7 +9,7 @@
     </div>
     <span class="font-bold tabular-nums" :class="textClass">{{ leftText }}</span>
     <span v-if="left !== null" class="-ml-1 tabular-nums text-gray-300">({{ pct.toFixed(0) }}%)</span>
-    <span v-if="badge" class="rounded px-1 text-[10px] font-bold" :class="badgeClass">{{ overTank ? 'RESET?' : badge }}</span>
+    <span v-if="badge" class="rounded px-1 text-[10px] font-bold" :class="badgeClass">RESET?</span>
   </div>
 
   <!-- Full version for the Powertrain view -->
@@ -33,18 +33,14 @@
       </span>
     </div>
 
-    <div class="mt-3 grid grid-cols-3 gap-2 whitespace-nowrap text-center">
+    <div class="mt-3 grid grid-cols-2 gap-2 whitespace-nowrap text-center">
       <div>
         <div class="text-[11px] uppercase text-gray-400">Used</div>
         <div class="text-base font-semibold tabular-nums">{{ used === null ? '—' : used.toFixed(2) + ' L' }}</div>
       </div>
-      <div>
-        <div class="text-[11px] uppercase text-gray-400">Burn Rate</div>
-        <div class="text-base font-semibold tabular-nums">{{ avgRate === null ? '—' : avgRate.toFixed(1) + ' L/h' }}</div>
-      </div>
-      <div>
-        <div class="text-[11px] uppercase text-gray-400">Time Left</div>
-        <div class="text-base font-semibold tabular-nums">{{ minutesLeft === null ? '—' : minutesLeft.toFixed(0) + ' min' }}</div>
+      <div title="Calculated by the backend from how fast FuelUsed has risen over the last 30 s">
+        <div class="text-[11px] uppercase text-gray-400">Est. Time Left</div>
+        <div class="text-base font-semibold tabular-nums">{{ minutesLeft === null ? '—' : '~' + minutesLeft.toFixed(0) + ' min' }}</div>
       </div>
     </div>
   </div>
@@ -71,27 +67,16 @@ const zone = computed(() => fuelZone(left.value));
 
 // More used than the tank holds: the meter almost certainly wasn't reset at the last fill-up.
 const overTank = computed(() => used.value !== null && used.value > tank + 0.05);
-const stale = computed(() => store.fuelValid === false);
 
-// Average burn rate over the last RATE_AVG_SAMPLES samples, ignoring missing ones.
-const avgRate = computed(() => {
-  const recent = (store.FuelRate ?? []).slice(-fuelConfig.RATE_AVG_SAMPLES).filter(Number.isFinite);
-  if (!recent.length) return null;
-  return recent.reduce((a, b) => a + b, 0) / recent.length;
-});
-
+// Estimated time left comes from the backend (GetDataFromCar.py); NaN = not enough data yet.
 const minutesLeft = computed(() => {
-  if (left.value === null || avgRate.value === null || avgRate.value < 0.1) return null;
-  return (left.value / avgRate.value) * 60;
+  const latest = store.EstTimeLeft[store.EstTimeLeft.length - 1];
+  return Number.isFinite(latest) ? latest : null;
 });
 
 const leftText = computed(() => (left.value === null ? '—' : left.value.toFixed(2) + ' L'));
 
-const badge = computed(() => {
-  if (overTank.value) return 'RESET METER?';
-  if (stale.value) return 'STALE';
-  return '';
-});
+const badge = computed(() => (overTank.value ? 'RESET METER?' : ''));
 
 const barClass = computed(() => ({
   'bg-green-500': zone.value === 'green',
@@ -106,11 +91,10 @@ const textClass = computed(() => ({
   'text-red-500': zone.value === 'red',
 }));
 
-const badgeClass = computed(() => (overTank.value ? 'bg-red-700 text-white' : 'bg-gray-600 text-gray-100'));
+const badgeClass = 'bg-red-700 text-white';
 
 const tooltip = computed(() => {
   if (overTank.value) return `Meter shows ${used.value?.toFixed(2)} L used — more than the ${tank} L tank. Was it reset at the last fill-up?`;
-  if (stale.value) return 'Car reports stale RPM/injector data — fuel total is held at the last good value.';
   if (left.value === null) return 'No fuel data received yet.';
   return `Yellow at ${fuelConfig.YELLOW_LITERS} L, red at ${fuelConfig.RED_LITERS} L left.`;
 });

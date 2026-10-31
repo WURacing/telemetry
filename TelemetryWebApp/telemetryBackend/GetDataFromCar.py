@@ -6,7 +6,10 @@ from pydantic import BaseModel
 from datetime import datetime
 from dotenv import load_dotenv
 from concurrent.futures import ThreadPoolExecutor
+from collections import deque
 import asyncio
+import time
+import struct
 import os
 import serial
 import uvicorn
@@ -14,8 +17,6 @@ import socketio
 import redis.asyncio as redis
 import json
 import logging
-
-from packet_parser import PacketReader, NUM_CHANNELS
 
 load_dotenv()
 
@@ -26,13 +27,31 @@ load_dotenv()
 SERIAL_CONFIG = {
     'PORT':      os.environ.get('SERIAL_PORT', '/dev/tty.usbserial-0001'),
     'BAUD_RATE': 19200,   # must match Trimble serial port setting
-    'TIMEOUT':   0.5,     # seconds — long enough to receive a full 67-byte packet
+    'TIMEOUT':   0.5,     # seconds — long enough to receive a full 51-byte packet
 }
 
 # ── Redis ─────────────────────────────────────────────────────────────────────
 REDIS_HOST     = os.environ.get("REDIS_HOST")
 REDIS_PORT     = int(os.environ.get("REDIS_PORT"))
 REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD")
+
+# ── Binary packet constants ───────────────────────────────────────────────────
+PACKET_DATA_LEN = 48          # 6 frames × 8 bytes (5 sensor frames + fuel frame)
+NUM_CHANNELS    = 20          # 5 sensor frames × 4 int16 signals each
+
+# FuelUsed (litres since the meter was last reset) from the fuel frame, 6th frame in the packet.
+# TODO: confirm byte position/scale against the FuelUsed SG_ line in WUFR25.dbc.
+# Currently matches canFuelBytes() in Telemetry_Sender.ino: bytes 2-4, unsigned 24-bit LE, mL.
+FUEL_USED_OFFSET = 40 + 2     # byte offset within DATA
+FUEL_USED_LEN    = 3          # bytes
+FUEL_USED_FACTOR = 0.001      # mL -> L
+
+# Estimated time left = fuel left / burn rate, burn rate taken from how much FuelUsed rose
+# over the last EST_WINDOW_S seconds. Sent as minutes; -1 when there isn't enough data.
+TANK_LITERS       = 6.0       # keep in sync with TANK_LITERS in frontend fuelConfig.ts
+EST_WINDOW_S      = 30.0      # seconds of FuelUsed history used for the burn rate
+EST_MIN_HISTORY_S = 10.0      # wait for this much history before estimating
+EST_MIN_BURN_LPH  = 0.1       # below this (engine off) the estimate is meaningless
 
 # Scale factors applied to each raw int16 channel before publishing.
 # Indices match the FRAME_IDS order in Telemetry_Sender.ino:
@@ -71,20 +90,78 @@ class TelemetryData(BaseModel):
 
 
 # ── Packet decoder ────────────────────────────────────────────────────────────
-# Packet format lives in packet_parser.py (main block + fuel block).
 
-def read_packet(reader: PacketReader) -> Optional[List[float]]:
+def _crc8(data: bytes) -> int:
+    crc = 0
+    for b in data:
+        crc ^= b
+        for _ in range(8):
+            crc = ((crc << 1) ^ 0x07) if crc & 0x80 else (crc << 1)
+            crc &= 0xFF
+    return crc
+
+
+def read_packet(ser: serial.Serial) -> Optional[List[float]]:
     """
-    Block until a valid packet arrives (or the serial read times out).
-    Returns 23 channel values (see CHANNEL_NAMES): the 20 scaled CAN channels
-    followed by FuelRate, FuelUsed, FuelValid. Returns None on timeout.
+    Block until a valid 51-byte packet arrives on the serial port.
+    Packet format: [0x55][0xAA][SEQ:1][DATA:48][CRC8:1]
+    Returns 21 scaled float channel values (20 sensor channels + FuelUsed), or None on error.
     """
-    packet = reader.read_packet()
-    if packet is None:
+    # Seek to sync bytes 0x55 0xAA
+    prev = 0x00
+    while True:
+        b = ser.read(1)
+        if not b:
+            return None
+        cur = b[0]
+        if prev == 0x55 and cur == 0xAA:
+            break
+        prev = cur
+
+    # Read seq(1) + data(48) + crc(1)
+    rest = ser.read(1 + PACKET_DATA_LEN + 1)
+    if len(rest) != 1 + PACKET_DATA_LEN + 1:
         return None
-    raw, fuel = packet
+
+    data_bytes   = rest[1:1 + PACKET_DATA_LEN]
+    received_crc = rest[-1]
+
+    computed = _crc8(data_bytes)
+    if computed != received_crc:
+        logger.warning(f"CRC mismatch — got 0x{received_crc:02X}, expected 0x{computed:02X} — dropping packet")
+        return None
+
+    logger.info("Packet decoded OK")
+    raw = struct.unpack_from('<20h', data_bytes)
     channels = [raw[i] * CHANNEL_FACTORS[i] + CHANNEL_OFFSETS[i] for i in range(NUM_CHANNELS)]
-    return channels + fuel
+
+    fuel_raw = int.from_bytes(data_bytes[FUEL_USED_OFFSET:FUEL_USED_OFFSET + FUEL_USED_LEN], 'little')
+    channels.append(fuel_raw * FUEL_USED_FACTOR)
+    return channels
+
+
+# ── Fuel time-left estimate ──────────────────────────────────────────────────
+
+_fuel_history: deque = deque()   # (time in s, FuelUsed in L)
+
+
+def estimate_minutes_left(fuel_used: float, now: Optional[float] = None) -> float:
+    """Estimated minutes of fuel left at the recent burn rate, or -1 if unknown."""
+    now = time.monotonic() if now is None else now
+    if _fuel_history and fuel_used < _fuel_history[-1][1] - 0.01:
+        _fuel_history.clear()        # meter was reset (refuel), start over
+    _fuel_history.append((now, fuel_used))
+    while now - _fuel_history[0][0] > EST_WINDOW_S:
+        _fuel_history.popleft()
+
+    start_time, start_used = _fuel_history[0]
+    elapsed_s = now - start_time
+    if elapsed_s < EST_MIN_HISTORY_S:
+        return -1.0
+    burn_lph = (fuel_used - start_used) / (elapsed_s / 3600.0)
+    if burn_lph < EST_MIN_BURN_LPH:
+        return -1.0
+    return max(0.0, TANK_LITERS - fuel_used) / burn_lph * 60.0
 
 
 # ── Redis helper ──────────────────────────────────────────────────────────────
@@ -144,17 +221,17 @@ CHANNEL_NAMES = [
     'TPS',        'MAP',        'CoolantTemp',  'OilPressure',
     'OilTemp',    'FuelPressure','Lambda',       'Gear',
     'MAT',        'GPS_Speed',  'GPS_X',        'GPS_Y',
-    # Fuel meter block (FuelStorage / Telemetry_Sender). -1 = not available.
-    'FuelRate',   'FuelUsed',   'FuelValid',    # L/h, L since last reset, 1=fresh 0=stale
+    'FuelUsed',                 # L since the meter was last reset
+    'EstTimeLeft',              # minutes, calculated here; -1 = not enough data yet
 ]
 
 async def _serial_loop(processor: SerialProcessor):
     loop = asyncio.get_event_loop()
     logger.info("Serial loop started — waiting for packets")
-    reader = PacketReader(ser)
     while True:
-        channels = await loop.run_in_executor(executor, read_packet, reader)
+        channels = await loop.run_in_executor(executor, read_packet, ser)
         if channels:
+            channels.append(estimate_minutes_left(channels[NUM_CHANNELS]))
             logger.info("  ".join(f"{name}={value:.3f}" for name, value in zip(CHANNEL_NAMES, channels)))
             try:
                 await processor.save_to_redis(channels)

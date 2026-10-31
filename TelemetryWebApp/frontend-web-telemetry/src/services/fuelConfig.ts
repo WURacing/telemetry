@@ -1,11 +1,11 @@
 // Fuel tank and warning thresholds. Keep these in sync with the dash config.
 // "Fuel left" = TANK_LITERS - fuel used since the meter was last reset,
 // so the meter must be reset (hold the reset button 3 s, engine off) at every fill-up.
+// TANK_LITERS must match TANK_LITERS in telemetryBackend/GetDataFromCar.py (used for the time-left estimate).
 export const fuelConfig = {
   TANK_LITERS: 6.0,
   YELLOW_LITERS: 3.0,    // gauge turns yellow at or below this much fuel left
   RED_LITERS: 1.0,      // gauge turns red at or below this much fuel left
-  RATE_AVG_SAMPLES: 150, // burn-rate average window for "minutes left" (150 samples = 30 s at 5 Hz)
 };
 
 export type FuelZone = 'none' | 'green' | 'yellow' | 'red';

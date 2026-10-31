@@ -38,7 +38,6 @@ const values = computed(() => [
   { label: 'Lambda',    display: smooth(store.Lambda, 3),      unit: 'λ'   },
   { label: 'Gear',      display: smooth(store.GearPos, 0),     unit: ''    },
   { label: 'Fuel Left', display: fuelLeft(),                   unit: 'L'   },
-  { label: 'Fuel Rate', display: smooth(store.FuelRate),       unit: 'L/h' },
 ]);
 </script>
 

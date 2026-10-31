@@ -37,12 +37,6 @@ class WebSocketService {
                 return;
             }
 
-            // Fuel channels: [20] FuelRate L/h, [21] FuelUsed L, [22] FuelValid (1/0).
-            const fuelValue = (v: number | undefined): number =>
-                v === undefined || v < 0 ? NaN : v;
-            const fuelRate = fuelValue(ch[20]);
-            const fuelUsed = fuelValue(ch[21]);
-
             const rolling = (currentArray: unknown, newValue: number): number[] => {
                 const arr = Array.isArray(currentArray) ? currentArray : [];
                 return [...arr, newValue].slice(-300);
@@ -76,12 +70,11 @@ class WebSocketService {
                 GPSSpeed:         rolling(store.GPSSpeed,         ch[17]),
                 GPSXPos:          rolling(store.GPSXPos,          ch[18]),
                 GPSYPos:          rolling(store.GPSYPos,          ch[19]),
-                // Fuel meter (channels 20-22). -1 = not available, stored as NaN.
-                FuelRate:         rolling(store.FuelRate,         fuelRate),
-                FuelUsed:         rolling(store.FuelUsed,         fuelUsed),
+                // Fuel frame + backend estimate (-1 = not enough data yet, stored as NaN)
+                FuelUsed:         rolling(store.FuelUsed,         ch[20] ?? NaN),
+                EstTimeLeft:      rolling(store.EstTimeLeft,      ch[21] >= 0 ? ch[21] : NaN),
                 Time:             rolling(store.Time,             Date.now()),
             });
-            store.setFuelValid(Number.isNaN(fuelUsed) ? null : ch[22] === 1);
         });
 
         socket.on('disconnect', () => {

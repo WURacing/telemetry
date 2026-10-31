@@ -28,7 +28,7 @@ export type TelemetryField =
   | 'ShockPotRL'
   | 'ShockPotRR'
   | 'FuelUsed'
-  | 'FuelRate'
+  | 'EstTimeLeft'
 
 // Using hash maps for something that isn't leetcode
 type TelemetryState = Record<TelemetryField, Ref<number[]>>
@@ -61,7 +61,7 @@ const telemetryFields: TelemetryField[] = [
   'ShockPotRL',
   'ShockPotRR',
   'FuelUsed',
-  'FuelRate',
+  'EstTimeLeft',
 ]
 
 // For every field in telemetryFields, init that field as an empty array
@@ -73,8 +73,6 @@ const createTelemetryState = (): TelemetryState => telemetryFields.reduce((acc, 
 
 export const useFileStoreStore = defineStore('fileStore', () => {
   const isLive = ref(false)
-  // Car's fuel validity flag from the latest packet: null = no fuel data received
-  const fuelValid = ref<boolean | null>(null)
   const state = createTelemetryState()
 
   const applyPayload = (payload: TelemetryPayload) => {
@@ -93,11 +91,6 @@ export const useFileStoreStore = defineStore('fileStore', () => {
       return acc
     }, {})
     applyPayload(emptyPayload)
-    fuelValid.value = null
-  }
-
-  const setFuelValid = (valid: boolean | null) => {
-    fuelValid.value = valid
   }
 
   const setLiveMode = (active: boolean) => {
@@ -107,8 +100,6 @@ export const useFileStoreStore = defineStore('fileStore', () => {
   return {
     ...state,
     isLive,
-    fuelValid,
-    setFuelValid,
     setLiveMode,
     updateCollectedData,
     clearCollectedData
