@@ -19,10 +19,17 @@ REDIS_PORT = int(os.environ.get("REDIS_PORT"))
 REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD") or None
 
 
+class FuelData(BaseModel):
+    rate_lph: Optional[float] = None   # fuel flow, litres per hour
+    used_l: Optional[float] = None     # litres used since the meter was last reset
+    valid: bool = False                # False when the car reports stale inputs
+
+
 class TelemetryData(BaseModel):
     timestamp: str
     session_name: str
     channels: list[float]
+    fuel: Optional[FuelData] = None    # None when the fuel block was missing/corrupt
 
 
 redis_client: Optional[Redis] = None

@@ -5,6 +5,17 @@
 
   <div class="flex flex-col">
     <div class="flex items-center justify-between text-white p-4">
+      <div class="w-72 mr-4">
+        <FuelGauge />
+      </div>
+      <div class="w-full">
+        <FuelRemaining />
+      </div>
+    </div>
+  </div>
+
+  <div class="flex flex-col">
+    <div class="flex items-center justify-between text-white p-4">
       <div class="w-72 bg-red-900 mr-4">
         <TrackMap msg="Track Map" />
         <MAT />
@@ -54,4 +65,6 @@ import GearPosPlot from "@/components/plots/GearPosPlot.vue";
 import OilTemp from "@/components/plots/OilTemp.vue";
 import OilPressure from "@/components/plots/OilPressure.vue";
 import CoolantTemp from "@/components/plots/CoolantTemp.vue";
+import FuelGauge from "@/components/FuelGauge.vue";
+import FuelRemaining from "@/components/plots/FuelRemaining.vue";
 </script>

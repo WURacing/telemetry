@@ -7,6 +7,7 @@
       <StartStreamingButton />
       <!-- <ServerStatus /> -->
       <CarStatus />
+      <FuelGauge compact />
       <div class="flex-wrap lg:flex-none text-right px-10" id="section-wrapper">
         <router-link class="btn bg-yellow-600 m-2" to="/">Driver Inputs</router-link>
         <router-link class="btn bg-red-900 m-2" to="/powertrain">Powertrain</router-link>
@@ -21,6 +22,7 @@
 import FileReader from "./components/FileReader.vue";
 import StartStreamingButton from "./components/StartStreamingButton.vue";
 import CarStatus from "./components/CarStatus.vue";
+import FuelGauge from "./components/FuelGauge.vue";
 import { MemoryUsageHelper } from "scichart";
 
 // Useful for debugging Memory Leaks (set to false in prod)!

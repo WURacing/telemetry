@@ -7,7 +7,6 @@ from datetime import datetime
 from dotenv import load_dotenv
 from concurrent.futures import ThreadPoolExecutor
 import asyncio
-import struct
 import os
 import serial
 import uvicorn
@@ -15,6 +14,8 @@ import socketio
 import redis.asyncio as redis
 import json
 import logging
+
+from packet_parser import PacketReader, NUM_CHANNELS
 
 load_dotenv()
 
@@ -25,17 +26,13 @@ load_dotenv()
 SERIAL_CONFIG = {
     'PORT':      os.environ.get('SERIAL_PORT', '/dev/tty.usbserial-0001'),
     'BAUD_RATE': 19200,   # must match Trimble serial port setting
-    'TIMEOUT':   0.5,     # seconds — long enough to receive a full 43-byte packet
+    'TIMEOUT':   0.5,     # seconds — long enough to receive a full 67-byte packet
 }
 
 # ── Redis ─────────────────────────────────────────────────────────────────────
 REDIS_HOST     = os.environ.get("REDIS_HOST")
 REDIS_PORT     = int(os.environ.get("REDIS_PORT"))
 REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD")
-
-# ── Binary packet constants ───────────────────────────────────────────────────
-PACKET_DATA_LEN = 40          # 5 frames × 8 bytes
-NUM_CHANNELS    = 20          # 5 frames × 4 int16 signals each
 
 # Scale factors applied to each raw int16 channel before publishing.
 # Indices match the FRAME_IDS order in Telemetry_Sender.ino:
@@ -74,50 +71,21 @@ class TelemetryData(BaseModel):
 
 
 # ── Packet decoder ────────────────────────────────────────────────────────────
+# Packet format lives in packet_parser.py (main block + fuel block).
 
-def _crc8(data: bytes) -> int:
-    crc = 0
-    for b in data:
-        crc ^= b
-        for _ in range(8):
-            crc = ((crc << 1) ^ 0x07) if crc & 0x80 else (crc << 1)
-            crc &= 0xFF
-    return crc
-
-
-def read_packet(ser: serial.Serial) -> Optional[List[float]]:
+def read_packet(reader: PacketReader):
     """
-    Block until a valid 68-byte packet arrives on the serial port.
-    Packet format: [0x55][0xAA][SEQ:1][DATA:32][CRC8:1]
-    Returns 16 scaled float channel values, or None on error.
+    Block until a valid packet arrives (or the serial read times out).
+    Returns (channels, fuel) where channels is 20 scaled floats and fuel is a
+    dict {rate_lph, used_l, valid} or None. Returns None on timeout.
     """
-    # Seek to sync bytes 0x55 0xAA
-    prev = 0x00
-    while True:
-        b = ser.read(1)
-        if not b:
-            return None
-        cur = b[0]
-        if prev == 0x55 and cur == 0xAA:
-            break
-        prev = cur
-
-    # Read seq(1) + data(64) + crc(1)
-    rest = ser.read(1 + PACKET_DATA_LEN + 1)
-    if len(rest) != 1 + PACKET_DATA_LEN + 1:
+    packet = reader.read_packet()
+    if packet is None:
         return None
-
-    data_bytes   = rest[1:1 + PACKET_DATA_LEN]
-    received_crc = rest[-1]
-
-    computed = _crc8(data_bytes)
-    if computed != received_crc:
-        logger.warning(f"CRC mismatch — got 0x{received_crc:02X}, expected 0x{computed:02X} — dropping packet")
-        return None
-
-    logger.info("Packet decoded OK")
-    raw = struct.unpack_from('<20h', data_bytes)
-    return [raw[i] * CHANNEL_FACTORS[i] + CHANNEL_OFFSETS[i] for i in range(NUM_CHANNELS)]
+    channels = [packet.raw_channels[i] * CHANNEL_FACTORS[i] + CHANNEL_OFFSETS[i]
+                for i in range(NUM_CHANNELS)]
+    fuel = packet.fuel.to_dict() if packet.fuel else None
+    return channels, fuel
 
 
 # ── Redis helper ──────────────────────────────────────────────────────────────
@@ -127,12 +95,13 @@ class SerialProcessor:
         self.redis = redis_client
         self.current_session = "FSAE Telemetry"
 
-    async def save_to_redis(self, channels: List[float]):
+    async def save_to_redis(self, channels: List[float], fuel: Optional[dict] = None):
         timestamp = datetime.utcnow().isoformat()
         telemetry_data = {
             'timestamp':    timestamp,
             'session_name': self.current_session,
             'channels':     channels,
+            'fuel':         fuel,
         }
         key = "telemetry_at_" + timestamp
         await self.redis.set(key, json.dumps(telemetry_data), ex=3600)
@@ -182,12 +151,15 @@ CHANNEL_NAMES = [
 async def _serial_loop(processor: SerialProcessor):
     loop = asyncio.get_event_loop()
     logger.info("Serial loop started — waiting for packets")
+    reader = PacketReader(ser)
     while True:
-        channels = await loop.run_in_executor(executor, read_packet, ser)
-        if channels:
+        result = await loop.run_in_executor(executor, read_packet, reader)
+        if result:
+            channels, fuel = result
             logger.info("  ".join(f"{CHANNEL_NAMES[i]}={channels[i]:.3f}" for i in range(NUM_CHANNELS)))
+            logger.info(f"Fuel: {fuel}")
             try:
-                await processor.save_to_redis(channels)
+                await processor.save_to_redis(channels, fuel)
                 logger.info("Published to Redis OK")
             except Exception as e:
                 logger.error(f"Redis publish failed: {e}")

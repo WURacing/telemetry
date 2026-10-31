@@ -70,8 +70,12 @@ class WebSocketService {
                 GPSSpeed:         rolling(store.GPSSpeed,         ch[17]),
                 GPSXPos:          rolling(store.GPSXPos,          ch[18]),
                 GPSYPos:          rolling(store.GPSYPos,          ch[19]),
+                // Fuel meter block (NaN when the packet had no fuel data)
+                FuelUsed:         rolling(store.FuelUsed,         data.fuel?.used_l ?? NaN),
+                FuelRate:         rolling(store.FuelRate,         data.fuel?.rate_lph ?? NaN),
                 Time:             rolling(store.Time,             Date.now()),
             });
+            store.setFuelValid(data.fuel ? data.fuel.valid : null);
         });
 
         socket.on('disconnect', () => {
