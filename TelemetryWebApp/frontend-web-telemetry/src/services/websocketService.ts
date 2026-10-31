@@ -70,6 +70,9 @@ class WebSocketService {
                 GPSSpeed:         rolling(store.GPSSpeed,         ch[17]),
                 GPSXPos:          rolling(store.GPSXPos,          ch[18]),
                 GPSYPos:          rolling(store.GPSYPos,          ch[19]),
+                // Fuel frame + backend estimate (-1 = not enough data yet, stored as NaN)
+                FuelUsed:         rolling(store.FuelUsed,         ch[20] ?? NaN),
+                EstTimeLeft:      rolling(store.EstTimeLeft,      ch[21] >= 0 ? ch[21] : NaN),
                 Time:             rolling(store.Time,             Date.now()),
             });
         });

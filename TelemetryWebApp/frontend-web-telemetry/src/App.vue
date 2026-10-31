@@ -7,6 +7,7 @@
       <StartStreamingButton />
       <!-- <ServerStatus /> -->
       <CarStatus />
+      <FuelGauge compact />
       <div class="flex flex-nowrap md:flex-wrap justify-center w-full" id="section-wrapper" :class="{ 'tab-clicked': tabClicked }">
         <router-link class="btn btn-sm md:btn-md text-xs md:text-sm bg-yellow-600 mx-1 md:mx-2 mb-1" to="/" @click="tabClicked = true">Driver Inputs</router-link>
         <router-link class="btn btn-sm md:btn-md text-xs md:text-sm bg-red-900 mx-1 md:mx-2 mb-1" to="/powertrain" @click="tabClicked = true">Powertrain</router-link>
@@ -21,6 +22,7 @@
 import FileReader from "./components/FileReader.vue";
 import StartStreamingButton from "./components/StartStreamingButton.vue";
 import CarStatus from "./components/CarStatus.vue";
+import FuelGauge from "./components/FuelGauge.vue";
 import { MemoryUsageHelper } from "scichart";
 import { ref } from "vue";
 
