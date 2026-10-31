@@ -1,6 +1,6 @@
 <template>
-  <div class="left-5 text-red-400 w-1/5 justify-start">
-    <label class="text-red-100 p-4">
+  <div class="left-5 text-red-400 w-auto md:w-1/5 justify-start">
+    <label class="text-red-100 px-4 py-2">
       <button id="input" @click="toggleConnection" class="block w-full text-sm
       mr-4 py-2 px-2
       rounded-full border-0

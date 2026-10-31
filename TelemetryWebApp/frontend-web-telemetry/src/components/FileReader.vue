@@ -1,6 +1,6 @@
 <template>
-  <div class="left-5 text-red-400 w-1/5 justify-start">
-    <label class="text-red-100 p-4">
+  <div class="left-5 text-red-400 w-full md:w-1/5 justify-start">
+    <label class="text-red-100 px-4 py-2">
       <input type="file" id="input" name="input" accept=".csv" @change="loadTextFromFile" class="block w-full text-sm text-slate-500
       file:mr-4 file:py-2 file:px-4
       file:rounded-full file:border-0

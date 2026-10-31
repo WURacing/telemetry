@@ -3,10 +3,10 @@
     Race Engineer
   </div>
 
-  <div class="flex justify-evenly w-full items-start p-4 gap-4">
-    <TrackMap class="w-96 shrink-0" />
-    <GearPosPlot class="shrink-0" />
-    <LiveValues class="flex-1 min-w-0" />
+  <div class="flex flex-col md:flex-row justify-evenly w-full items-start p-4 gap-4">
+    <TrackMap class="w-full md:w-96 md:shrink-0" />
+    <GearPosPlot class="w-full md:w-auto md:shrink-0" />
+    <LiveValues class="w-full md:flex-1 min-w-0" />
   </div>
 
   <div class="flex flex-col">
