@@ -81,4 +81,14 @@ const values = computed(() => [
   font-size: 11px;
   margin-top: 2px;
 }
+
+@media (max-width: 640px) {
+  .live-values {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .value-number {
+    font-size: 34px;
+  }
+}
 </style>

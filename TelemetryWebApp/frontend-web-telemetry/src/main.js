@@ -3,6 +3,9 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { createRouter, createWebHistory } from 'vue-router'
 import App from './App.vue'
+import { installTwoFingerCharts } from './services/twoFingerCharts'
+
+installTwoFingerCharts()
 
 const app = createApp(App)
 const pinia = createPinia()

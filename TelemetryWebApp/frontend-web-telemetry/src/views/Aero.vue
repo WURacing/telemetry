@@ -4,8 +4,8 @@
     </div>
 
     <div class="flex flex-col">
-  <div class="flex items-center justify-between text-white p-4">
-    <div class="w-72 h-240 bg-red-900 mr-4">
+  <div class="flex flex-col md:flex-row items-center justify-between text-white p-4 gap-4 md:gap-0">
+    <div class="w-full md:w-72 h-240 bg-red-900 md:mr-4 md:shrink-0">
       <TrackMap msg="Track Map" />
     </div>
     <div class="w-full h-84" >
@@ -14,8 +14,8 @@
   </div>
 </div>
 <div class="flex flex-col">
-  <div class="flex items-center justify-between text-white p-4">
-    <div class="w-72 h-240 bg-red-900 mr-4">
+  <div class="flex flex-col md:flex-row items-center justify-between text-white p-4 gap-4 md:gap-0">
+    <div class="w-full md:w-72 h-240 bg-red-900 md:mr-4 md:shrink-0">
     <GGPlot />
     </div>
     <div class="w-full h-1/2" >
@@ -24,8 +24,8 @@
   </div>
 </div>
 <div class="flex flex-col">
-  <div class="flex items-center justify-between text-white p-4">
-    <div class="w-72 h-240 bg-red-900 mr-4">
+  <div class="flex flex-col md:flex-row items-center justify-between text-white p-4 gap-4 md:gap-0">
+    <div class="w-full md:w-72 h-240 bg-red-900 md:mr-4 md:shrink-0">
 <!--  Square plot here    -->
     </div>
     <div class="w-full h-1/2" >
@@ -34,11 +34,8 @@
   </div>
 </div>
 <div class="flex flex-col">
-  <div class="flex items-center justify-between text-white p-4">
-    <div class="w-16 h-16 mr-4">
-      <ThrottlePos msg="Throttle Position" />
-    </div>
-    <div class="w-full h-16 mr-4" >
+  <div class="flex flex-col md:flex-row items-center justify-between text-white p-4 gap-4 md:gap-0">
+    <div class="w-full" >
       <EngineSpeed />
     </div>
   </div>

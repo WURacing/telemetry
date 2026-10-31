@@ -4,8 +4,8 @@
   </div>
 
   <div class="flex flex-col">
-    <div class="flex items-center justify-between text-white p-4">
-      <div class="w-72 mr-4">
+    <div class="flex flex-col md:flex-row items-center justify-between text-white p-4 gap-4 md:gap-0">
+      <div class="w-full md:w-72 md:mr-4 md:shrink-0">
         <FuelGauge />
       </div>
       <div class="w-full">
@@ -15,8 +15,8 @@
   </div>
 
   <div class="flex flex-col">
-    <div class="flex items-center justify-between text-white p-4">
-      <div class="w-72 bg-red-900 mr-4">
+    <div class="flex flex-col md:flex-row items-center justify-between text-white p-4 gap-4 md:gap-0">
+      <div class="w-full md:w-72 bg-red-900 md:mr-4 md:shrink-0">
         <TrackMap msg="Track Map" />
         <MAT />
       </div>
@@ -28,8 +28,8 @@
   </div>
 
   <div class="flex flex-col">
-    <div class="flex items-center justify-between text-white p-4">
-      <div class="w-72 bg-red-900 mr-4">
+    <div class="flex flex-col md:flex-row items-center justify-between text-white p-4 gap-4 md:gap-0">
+      <div class="w-full md:w-72 bg-red-900 md:mr-4 md:shrink-0">
         <OilTemp />
       </div>
       <div class="w-full">
@@ -40,8 +40,8 @@
   </div>
 
   <div class="flex flex-col">
-    <div class="flex items-center justify-between text-white p-4">
-      <div class="w-72 bg-red-900 mr-4">
+    <div class="flex flex-col md:flex-row items-center justify-between text-white p-4 gap-4 md:gap-0">
+      <div class="w-full md:w-72 bg-red-900 md:mr-4 md:shrink-0">
         <GearPosPlot />
       </div>
       <div class="w-full">

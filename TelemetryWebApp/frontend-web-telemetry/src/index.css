@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* SciChart sets touch-action: none on its canvases, which blocks page scrolling on phones.
+   pan-y lets one-finger vertical swipes scroll the page; see services/twoFingerCharts.ts */
+[id^="scichart-"] canvas,
+#track-map canvas {
+  touch-action: pan-y !important;
+}
