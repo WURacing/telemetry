@@ -27,7 +27,7 @@ load_dotenv()
 SERIAL_CONFIG = {
     'PORT':      os.environ.get('SERIAL_PORT', '/dev/tty.usbserial-0001'),
     'BAUD_RATE': 19200,   # must match Trimble serial port setting
-    'TIMEOUT':   0.5,     # seconds — long enough to receive a full 51-byte packet
+    'TIMEOUT':   0.5,     # seconds — long enough to receive a full 43-byte packet
 }
 
 # ── Redis ─────────────────────────────────────────────────────────────────────
@@ -36,13 +36,16 @@ REDIS_PORT     = int(os.environ.get("REDIS_PORT"))
 REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD")
 
 # ── Binary packet constants ───────────────────────────────────────────────────
-PACKET_DATA_LEN = 48          # 6 frames × 8 bytes (5 sensor frames + fuel frame)
-NUM_CHANNELS    = 20          # 5 sensor frames × 4 int16 signals each
+PACKET_DATA_LEN = 40          # 5 frames × 8 bytes
+NUM_CHANNELS    = 20          # 5 frames × 4 int16 signals each
 
-# FuelUsed (litres since the meter was last reset) from the fuel frame, 6th frame in the packet.
-# TODO: confirm byte position/scale against the FuelUsed SG_ line in WUFR25.dbc.
-# Currently matches canFuelBytes() in Telemetry_Sender.ino: bytes 2-4, unsigned 24-bit LE, mL.
-FUEL_USED_OFFSET = 40 + 2     # byte offset within DATA
+# FuelUsed (litres since the meter was last reset) comes from CAN frame 0x33, laid out as in
+# canFuelBytes() in Telemetry_Sender.ino: bytes 2-4, unsigned 24-bit little-endian, mL.
+# FUEL_SLOT = which of the 5 frames in DATA holds 0x33 (0-4), or None until the sender
+# places it there. While None, FuelUsed is sent as -1 and the frontend shows "—".
+# TODO: set FUEL_SLOT once the Telemetry_Sender packet layout is confirmed.
+FUEL_SLOT        = None
+FUEL_USED_BYTE   = 2          # FuelUsed starts at this byte within the 0x33 frame
 FUEL_USED_LEN    = 3          # bytes
 FUEL_USED_FACTOR = 0.001      # mL -> L
 
@@ -103,8 +106,8 @@ def _crc8(data: bytes) -> int:
 
 def read_packet(ser: serial.Serial) -> Optional[List[float]]:
     """
-    Block until a valid 51-byte packet arrives on the serial port.
-    Packet format: [0x55][0xAA][SEQ:1][DATA:48][CRC8:1]
+    Block until a valid 43-byte packet arrives on the serial port.
+    Packet format: [0x55][0xAA][SEQ:1][DATA:40][CRC8:1]
     Returns 21 scaled float channel values (20 sensor channels + FuelUsed), or None on error.
     """
     # Seek to sync bytes 0x55 0xAA
@@ -118,7 +121,7 @@ def read_packet(ser: serial.Serial) -> Optional[List[float]]:
             break
         prev = cur
 
-    # Read seq(1) + data(48) + crc(1)
+    # Read seq(1) + data(40) + crc(1)
     rest = ser.read(1 + PACKET_DATA_LEN + 1)
     if len(rest) != 1 + PACKET_DATA_LEN + 1:
         return None
@@ -135,8 +138,12 @@ def read_packet(ser: serial.Serial) -> Optional[List[float]]:
     raw = struct.unpack_from('<20h', data_bytes)
     channels = [raw[i] * CHANNEL_FACTORS[i] + CHANNEL_OFFSETS[i] for i in range(NUM_CHANNELS)]
 
-    fuel_raw = int.from_bytes(data_bytes[FUEL_USED_OFFSET:FUEL_USED_OFFSET + FUEL_USED_LEN], 'little')
-    channels.append(fuel_raw * FUEL_USED_FACTOR)
+    if FUEL_SLOT is None:
+        channels.append(-1.0)                       # FuelUsed not in the packet yet
+    else:
+        start = FUEL_SLOT * 8 + FUEL_USED_BYTE
+        fuel_raw = int.from_bytes(data_bytes[start:start + FUEL_USED_LEN], 'little')
+        channels.append(fuel_raw * FUEL_USED_FACTOR)
     return channels
 
 
@@ -147,6 +154,8 @@ _fuel_history: deque = deque()   # (time in s, FuelUsed in L)
 
 def estimate_minutes_left(fuel_used: float, now: Optional[float] = None) -> float:
     """Estimated minutes of fuel left at the recent burn rate, or -1 if unknown."""
+    if fuel_used < 0:
+        return -1.0                  # no FuelUsed data
     now = time.monotonic() if now is None else now
     if _fuel_history and fuel_used < _fuel_history[-1][1] - 0.01:
         _fuel_history.clear()        # meter was reset (refuel), start over
@@ -221,7 +230,7 @@ CHANNEL_NAMES = [
     'TPS',        'MAP',        'CoolantTemp',  'OilPressure',
     'OilTemp',    'FuelPressure','Lambda',       'Gear',
     'MAT',        'GPS_Speed',  'GPS_X',        'GPS_Y',
-    'FuelUsed',                 # L since the meter was last reset
+    'FuelUsed',                 # L since the meter was last reset; -1 = not available
     'EstTimeLeft',              # minutes, calculated here; -1 = not enough data yet
 ]
 
