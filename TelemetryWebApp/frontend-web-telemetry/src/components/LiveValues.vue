@@ -11,14 +11,21 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useFileStoreStore } from '../stores/FileStore';
+import { fuelConfig, lastFinite } from '../services/fuelConfig';
 
 const store = useFileStoreStore();
 
 const smooth = (arr: number[], decimals = 1, n = 5): string => {
-  if (!arr || arr.length === 0) return '—';
-  const slice = arr.slice(-n);
+  // Skip NaN samples (e.g. packets that arrived without fuel data)
+  const slice = (arr ?? []).slice(-n).filter(Number.isFinite);
+  if (slice.length === 0) return '—';
   const avg = slice.reduce((a, b) => a + b, 0) / slice.length;
   return avg.toFixed(decimals);
+};
+
+const fuelLeft = (): string => {
+  const used = lastFinite(store.FuelUsed);
+  return used === null ? '—' : Math.max(0, fuelConfig.TANK_LITERS - used).toFixed(2);
 };
 
 const values = computed(() => [
@@ -30,6 +37,7 @@ const values = computed(() => [
   { label: 'MAP',       display: smooth(store.MAP),            unit: 'kPa' },
   { label: 'Lambda',    display: smooth(store.Lambda, 3),      unit: 'λ'   },
   { label: 'Gear',      display: smooth(store.GearPos, 0),     unit: ''    },
+  { label: 'Fuel Left', display: fuelLeft(),                   unit: 'L'   },
 ]);
 </script>
 
