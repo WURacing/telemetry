@@ -27,7 +27,7 @@ load_dotenv()
 SERIAL_CONFIG = {
     'PORT':      os.environ.get('SERIAL_PORT', '/dev/tty.usbserial-0001'),
     'BAUD_RATE': 19200,   # must match Trimble serial port setting
-    'TIMEOUT':   0.5,     # seconds — long enough to receive a full 43-byte packet
+    'TIMEOUT':   0.5,     # seconds — long enough to receive a full 53-byte packet
 }
 
 # ── Redis ─────────────────────────────────────────────────────────────────────
@@ -36,18 +36,21 @@ REDIS_PORT     = int(os.environ.get("REDIS_PORT"))
 REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD")
 
 # ── Binary packet constants ───────────────────────────────────────────────────
-PACKET_DATA_LEN = 40          # 5 frames × 8 bytes
-NUM_CHANNELS    = 20          # 5 frames × 4 int16 signals each
+# Packet layout is defined in firmware: 2026/Telemetry/Telemetry_Sender/Telemetry_Sender.h
+#   [0x55][0xAA][VERSION:1][SEQ:1][DATA:48][CRC8 over VERSION+SEQ+DATA:1]  = 53 bytes
+#   DATA = AiM frames 0x69-0x6D (40 bytes) + fuel frame 0x33 (8 bytes)
+# Change both sides together and bump PACKET_VERSION.
+PACKET_VERSION  = 1
+PACKET_DATA_LEN = 48          # 6 frames × 8 bytes
+NUM_CHANNELS    = 20          # 5 AiM frames × 4 int16 signals each
 
-# FuelUsed (litres since the meter was last reset) comes from CAN frame 0x33, laid out as in
-# canFuelBytes() in Telemetry_Sender.ino: bytes 2-4, unsigned 24-bit little-endian, mL.
-# FUEL_SLOT = which of the 5 frames in DATA holds 0x33 (0-4), or None until the sender
-# places it there. While None, FuelUsed is sent as -1 and the frontend shows "—".
-# TODO: set FUEL_SLOT once the Telemetry_Sender packet layout is confirmed.
-FUEL_SLOT        = None
-FUEL_USED_BYTE   = 2          # FuelUsed starts at this byte within the 0x33 frame
+# FuelUsed (litres since the meter was last reset): fuel frame 0x33, bytes 2-4,
+# unsigned 24-bit little-endian, in mL.
+FUEL_USED_OFFSET = 40 + 2     # byte offset within DATA
 FUEL_USED_LEN    = 3          # bytes
 FUEL_USED_FACTOR = 0.001      # mL -> L
+
+LOSS_LOG_PERIOD_S = 30.0      # how often to log received/lost packet counts
 
 # Estimated time left = fuel left / burn rate, burn rate taken from how much FuelUsed rose
 # over the last EST_WINDOW_S seconds. Sent as minutes; -1 when there isn't enough data.
@@ -104,11 +107,34 @@ def _crc8(data: bytes) -> int:
     return crc
 
 
+class LinkStats:
+    """Counts received and lost packets from gaps in SEQ."""
+
+    def __init__(self):
+        self.last_seq = None
+        self.received = 0
+        self.lost = 0
+        self.version_warned = False
+
+    def record(self, seq: int):
+        if self.last_seq is not None:
+            self.lost += (seq - self.last_seq - 1) % 256
+        self.last_seq = seq
+        self.received += 1
+
+    def report(self) -> str:
+        total = self.received + self.lost
+        pct = 100.0 * self.lost / total if total else 0.0
+        return f"link: received {self.received}/{total} packets ({pct:.1f}% lost)"
+
+
+link_stats = LinkStats()
+
+
 def read_packet(ser: serial.Serial) -> Optional[List[float]]:
     """
-    Block until a valid 43-byte packet arrives on the serial port.
-    Packet format: [0x55][0xAA][SEQ:1][DATA:40][CRC8:1]
-    Returns 21 scaled float channel values (20 sensor channels + FuelUsed), or None on error.
+    Block until a valid 53-byte packet arrives on the serial port.
+    Returns 21 scaled float channel values (20 AiM channels + FuelUsed), or None on error.
     """
     # Seek to sync bytes 0x55 0xAA
     prev = 0x00
@@ -121,29 +147,36 @@ def read_packet(ser: serial.Serial) -> Optional[List[float]]:
             break
         prev = cur
 
-    # Read seq(1) + data(40) + crc(1)
-    rest = ser.read(1 + PACKET_DATA_LEN + 1)
-    if len(rest) != 1 + PACKET_DATA_LEN + 1:
+    # Read version(1) + seq(1) + data(48) + crc(1)
+    rest = ser.read(2 + PACKET_DATA_LEN + 1)
+    if len(rest) != 2 + PACKET_DATA_LEN + 1:
         return None
 
-    data_bytes   = rest[1:1 + PACKET_DATA_LEN]
+    version = rest[0]
+    if version != PACKET_VERSION:
+        if not link_stats.version_warned:
+            logger.error(f"Sender is using packet version {version}, but this backend reads "
+                         f"version {PACKET_VERSION}. Update GetDataFromCar.py or the Telemetry Sender.")
+            link_stats.version_warned = True
+        return None
+
+    seq          = rest[1]
+    data_bytes   = rest[2:2 + PACKET_DATA_LEN]
     received_crc = rest[-1]
 
-    computed = _crc8(data_bytes)
+    computed = _crc8(rest[:-1])          # covers version, seq and data
     if computed != received_crc:
         logger.warning(f"CRC mismatch — got 0x{received_crc:02X}, expected 0x{computed:02X} — dropping packet")
         return None
 
     logger.info("Packet decoded OK")
+    link_stats.version_warned = False
+    link_stats.record(seq)
     raw = struct.unpack_from('<20h', data_bytes)
     channels = [raw[i] * CHANNEL_FACTORS[i] + CHANNEL_OFFSETS[i] for i in range(NUM_CHANNELS)]
 
-    if FUEL_SLOT is None:
-        channels.append(-1.0)                       # FuelUsed not in the packet yet
-    else:
-        start = FUEL_SLOT * 8 + FUEL_USED_BYTE
-        fuel_raw = int.from_bytes(data_bytes[start:start + FUEL_USED_LEN], 'little')
-        channels.append(fuel_raw * FUEL_USED_FACTOR)
+    fuel_raw = int.from_bytes(data_bytes[FUEL_USED_OFFSET:FUEL_USED_OFFSET + FUEL_USED_LEN], 'little')
+    channels.append(fuel_raw * FUEL_USED_FACTOR)
     return channels
 
 
@@ -230,15 +263,19 @@ CHANNEL_NAMES = [
     'TPS',        'MAP',        'CoolantTemp',  'OilPressure',
     'OilTemp',    'FuelPressure','Lambda',       'Gear',
     'MAT',        'GPS_Speed',  'GPS_X',        'GPS_Y',
-    'FuelUsed',                 # L since the meter was last reset; -1 = not available
+    'FuelUsed',                 # L since the meter was last reset
     'EstTimeLeft',              # minutes, calculated here; -1 = not enough data yet
 ]
 
 async def _serial_loop(processor: SerialProcessor):
     loop = asyncio.get_event_loop()
     logger.info("Serial loop started — waiting for packets")
+    last_loss_log = time.monotonic()
     while True:
         channels = await loop.run_in_executor(executor, read_packet, ser)
+        if time.monotonic() - last_loss_log >= LOSS_LOG_PERIOD_S:
+            last_loss_log = time.monotonic()
+            logger.info(link_stats.report())
         if channels:
             channels.append(estimate_minutes_left(channels[NUM_CHANNELS]))
             logger.info("  ".join(f"{name}={value:.3f}" for name, value in zip(CHANNEL_NAMES, channels)))
