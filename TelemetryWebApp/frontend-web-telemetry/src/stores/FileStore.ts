@@ -27,6 +27,8 @@ export type TelemetryField =
   | 'ShockPotFR'
   | 'ShockPotRL'
   | 'ShockPotRR'
+  | 'FuelUsed'
+  | 'EstTimeLeft'
 
 // Using hash maps for something that isn't leetcode
 type TelemetryState = Record<TelemetryField, Ref<number[]>>
@@ -58,6 +60,8 @@ const telemetryFields: TelemetryField[] = [
   'ShockPotFR',
   'ShockPotRL',
   'ShockPotRR',
+  'FuelUsed',
+  'EstTimeLeft',
 ]
 
 // For every field in telemetryFields, init that field as an empty array
