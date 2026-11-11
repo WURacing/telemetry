@@ -1,0 +1,22 @@
+import './index.css'
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+import { createRouter, createWebHistory } from 'vue-router'
+import App from './App.vue'
+import { installTwoFingerCharts } from './services/twoFingerCharts'
+
+installTwoFingerCharts()
+
+const app = createApp(App)
+const pinia = createPinia()
+const router = createRouter({
+    history: createWebHistory(),
+    routes: [
+        { path: '/',            component: () => import('./views/DriverInputs.vue') },
+        { path: '/powertrain',  component: () => import('./views/Powertrain.vue') },
+        { path: '/suspension',  component: () => import('./views/Aero.vue') },
+    ],
+    })
+app.use(pinia)
+app.use(router)
+app.mount('#app')

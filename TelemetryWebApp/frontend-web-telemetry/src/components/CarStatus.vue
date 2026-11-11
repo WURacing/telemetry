@@ -1,0 +1,50 @@
+// CarStatus.vue
+<template>
+  <div
+      class="rounded-lg px-4 py-2 text-white text-xs transition-colors duration-300"
+      :class="isCarConnected ? 'bg-green-500' : 'bg-green-800'"
+  >
+    Car Connection
+  </div>
+</template>
+
+<script setup lang="ts">
+  // Used as a debugging icon to test car connectivity, can be useful during testing/comp, but should be disabled for prompt.
+import { ref, onMounted, onUnmounted } from 'vue'
+import { WebSocketService} from "../services/websocketService";
+import { io, Socket } from 'socket.io-client';
+
+const isCarConnected = ref(false)
+const wsService = WebSocketService
+let timeoutId: any | undefined
+
+const socket = io('https://api.telemetry.mooo.com', { transports: ['websocket'] });
+
+const resetTimer = () => {
+  isCarConnected.value = true
+
+  if (timeoutId) {
+    clearTimeout(timeoutId)
+  }
+
+  timeoutId = setTimeout(() => {
+    isCarConnected.value = false
+  }, 1000)
+}
+
+onMounted(() => {
+  // Listen for telemetry updates
+  socket.on('telemetry_update', () => {
+    resetTimer()
+  })
+})
+
+onUnmounted(() => {
+  // Clean up
+  socket.off('telemetry_update')
+  if (timeoutId) {
+    isCarConnected.value = false
+    clearTimeout(timeoutId)
+  }
+})
+</script>
