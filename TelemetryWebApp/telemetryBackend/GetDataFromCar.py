@@ -1,0 +1,290 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from redis.asyncio.client import Redis
+from typing import List, Optional
+from pydantic import BaseModel
+from datetime import datetime
+from dotenv import load_dotenv
+from concurrent.futures import ThreadPoolExecutor
+from collections import deque
+import asyncio
+import time
+import struct
+import os
+import serial
+import uvicorn
+import socketio
+import redis.asyncio as redis
+import json
+import logging
+
+load_dotenv()
+
+# ── Serial port ───────────────────────────────────────────────────────────────
+# Set SERIAL_PORT in .env to match the port your Trimble receiver appears on.
+# macOS example: /dev/tty.usbserial-0001
+# Linux example: /dev/ttyUSB0  or  /dev/ttyS0
+SERIAL_CONFIG = {
+    'PORT':      os.environ.get('SERIAL_PORT', '/dev/tty.usbserial-0001'),
+    'BAUD_RATE': 19200,   # must match Trimble serial port setting
+    'TIMEOUT':   0.5,     # seconds — long enough to receive a full 53-byte packet
+}
+
+# ── Redis ─────────────────────────────────────────────────────────────────────
+REDIS_HOST     = os.environ.get("REDIS_HOST")
+REDIS_PORT     = int(os.environ.get("REDIS_PORT"))
+REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD")
+
+# ── Binary packet constants ───────────────────────────────────────────────────
+# Packet layout is defined in firmware: 2026/Telemetry/Telemetry_Sender/Telemetry_Sender.h
+#   [0x55][0xAA][VERSION:1][SEQ:1][DATA:48][CRC8 over VERSION+SEQ+DATA:1]  = 53 bytes
+#   DATA = AiM frames 0x69-0x6D (40 bytes) + fuel frame 0x33 (8 bytes)
+# Change both sides together and bump PACKET_VERSION.
+PACKET_VERSION  = 1
+PACKET_DATA_LEN = 48          # 6 frames × 8 bytes
+NUM_CHANNELS    = 20          # 5 AiM frames × 4 int16 signals each
+
+# FuelUsed (litres since the meter was last reset): fuel frame 0x33, bytes 2-4,
+# unsigned 24-bit little-endian, in mL.
+FUEL_USED_OFFSET = 40 + 2     # byte offset within DATA
+FUEL_USED_LEN    = 3          # bytes
+FUEL_USED_FACTOR = 0.001      # mL -> L
+
+LOSS_LOG_PERIOD_S = 30.0      # how often to log received/lost packet counts
+
+# Estimated time left = fuel left / burn rate, burn rate taken from how much FuelUsed rose
+# over the last EST_WINDOW_S seconds. Sent as minutes; -1 when there isn't enough data.
+TANK_LITERS       = 6.0       # keep in sync with TANK_LITERS in frontend fuelConfig.ts
+EST_WINDOW_S      = 30.0      # seconds of FuelUsed history used for the burn rate
+EST_MIN_HISTORY_S = 10.0      # wait for this much history before estimating
+EST_MIN_BURN_LPH  = 0.1       # below this (engine off) the estimate is meaningless
+
+# Scale factors applied to each raw int16 channel before publishing.
+# Indices match the FRAME_IDS order in Telemetry_Sender.ino:
+#   [0]  ShockPotFL  (mm,   ×0.1)    [1]  ShockPotFR  (mm,   ×0.1)
+#   [2]  ShockPotRL  (mm,   ×0.1)    [3]  ShockPotRR  (mm,   ×0.1)
+#   [4]  SteeringPot (deg,  ×0.1)    [5]  BrkPrsF     (psi,  ×0.1)
+#   [6]  BrkPrsR     (psi,  ×0.1)    [7]  RPM         (rpm,  ×1.0)
+#   [8]  TPS         (%,    ×0.01)   [9]  MAP         (kPa,  ×0.1)
+#   [10] CoolantTemp (°C,   ×0.1)    [11] OilPressure (psi,  ×0.1)
+#   [12] OilTemp     (°C,   ×0.1)    [13] FuelPressure(psi,  ×0.1)
+#   [14] Lambda      (λ,    ×0.001)  [15] Gear        (gear, ×1.0)
+#   [16] MAT         (°C,   ×0.1)    [17] GPS_Speed   (km/h, ×0.1)
+#   [18] GPS_X       (m,    ×0.1)    [19] GPS_Y       (m,    ×0.1)
+CHANNEL_FACTORS = [
+    0.1,   0.1,   0.1,   0.1,   # ShockPotFL, FR, RL, RR
+    0.1,   0.1,   0.1,   1.0,   # SteeringPot, BrkPrsF, BrkPrsR, RPM
+    0.01,  0.1,   0.1,   0.1,   # TPS, MAP, CoolantTemp, OilPressure
+    0.1,   0.1,   0.001, 1.0,   # OilTemp, FuelPressure, Lambda, Gear
+    0.1,   0.1,   0.1,   0.1,   # MAT, GPS_Speed, GPS_X, GPS_Y
+]
+CHANNEL_OFFSETS = [0.0] * NUM_CHANNELS
+
+# ── Globals ───────────────────────────────────────────────────────────────────
+redis_client: Optional[Redis] = None
+ser: Optional[serial.Serial]  = None
+executor = ThreadPoolExecutor(max_workers=1)
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+class TelemetryData(BaseModel):
+    timestamp: datetime
+    session_name: str
+    channels: list[float]
+
+
+# ── Packet decoder ────────────────────────────────────────────────────────────
+
+def _crc8(data: bytes) -> int:
+    crc = 0
+    for b in data:
+        crc ^= b
+        for _ in range(8):
+            crc = ((crc << 1) ^ 0x07) if crc & 0x80 else (crc << 1)
+            crc &= 0xFF
+    return crc
+
+
+class LinkStats:
+    """Counts received and lost packets from gaps in SEQ."""
+
+    def __init__(self):
+        self.last_seq = None
+        self.received = 0
+        self.lost = 0
+        self.version_warned = False
+
+    def record(self, seq: int):
+        if self.last_seq is not None:
+            self.lost += (seq - self.last_seq - 1) % 256
+        self.last_seq = seq
+        self.received += 1
+
+    def report(self) -> str:
+        total = self.received + self.lost
+        pct = 100.0 * self.lost / total if total else 0.0
+        return f"link: received {self.received}/{total} packets ({pct:.1f}% lost)"
+
+
+link_stats = LinkStats()
+
+
+def read_packet(ser: serial.Serial) -> Optional[List[float]]:
+    """
+    Block until a valid 53-byte packet arrives on the serial port.
+    Returns 21 scaled float channel values (20 AiM channels + FuelUsed), or None on error.
+    """
+    # Seek to sync bytes 0x55 0xAA
+    prev = 0x00
+    while True:
+        b = ser.read(1)
+        if not b:
+            return None
+        cur = b[0]
+        if prev == 0x55 and cur == 0xAA:
+            break
+        prev = cur
+
+    # Read version(1) + seq(1) + data(48) + crc(1)
+    rest = ser.read(2 + PACKET_DATA_LEN + 1)
+    if len(rest) != 2 + PACKET_DATA_LEN + 1:
+        return None
+
+    version = rest[0]
+    if version != PACKET_VERSION:
+        if not link_stats.version_warned:
+            logger.error(f"Sender is using packet version {version}, but this backend reads "
+                         f"version {PACKET_VERSION}. Update GetDataFromCar.py or the Telemetry Sender.")
+            link_stats.version_warned = True
+        return None
+
+    seq          = rest[1]
+    data_bytes   = rest[2:2 + PACKET_DATA_LEN]
+    received_crc = rest[-1]
+
+    computed = _crc8(rest[:-1])          # covers version, seq and data
+    if computed != received_crc:
+        logger.warning(f"CRC mismatch — got 0x{received_crc:02X}, expected 0x{computed:02X} — dropping packet")
+        return None
+
+    logger.info("Packet decoded OK")
+    link_stats.version_warned = False
+    link_stats.record(seq)
+    raw = struct.unpack_from('<20h', data_bytes)
+    channels = [raw[i] * CHANNEL_FACTORS[i] + CHANNEL_OFFSETS[i] for i in range(NUM_CHANNELS)]
+
+    fuel_raw = int.from_bytes(data_bytes[FUEL_USED_OFFSET:FUEL_USED_OFFSET + FUEL_USED_LEN], 'little')
+    channels.append(fuel_raw * FUEL_USED_FACTOR)
+    return channels
+
+
+# ── Fuel time-left estimate ──────────────────────────────────────────────────
+
+_fuel_history: deque = deque()   # (time in s, FuelUsed in L)
+
+
+def estimate_minutes_left(fuel_used: float, now: Optional[float] = None) -> float:
+    """Estimated minutes of fuel left at the recent burn rate, or -1 if unknown."""
+    if fuel_used < 0:
+        return -1.0                  # no FuelUsed data
+    now = time.monotonic() if now is None else now
+    if _fuel_history and fuel_used < _fuel_history[-1][1] - 0.01:
+        _fuel_history.clear()        # meter was reset (refuel), start over
+    _fuel_history.append((now, fuel_used))
+    while now - _fuel_history[0][0] > EST_WINDOW_S:
+        _fuel_history.popleft()
+
+    start_time, start_used = _fuel_history[0]
+    elapsed_s = now - start_time
+    if elapsed_s < EST_MIN_HISTORY_S:
+        return -1.0
+    burn_lph = (fuel_used - start_used) / (elapsed_s / 3600.0)
+    if burn_lph < EST_MIN_BURN_LPH:
+        return -1.0
+    return max(0.0, TANK_LITERS - fuel_used) / burn_lph * 60.0
+
+
+# ── Redis helper ──────────────────────────────────────────────────────────────
+
+class SerialProcessor:
+    def __init__(self):
+        self.redis = redis_client
+        self.current_session = "FSAE Telemetry"
+
+    async def save_to_redis(self, channels: List[float]):
+        timestamp = datetime.utcnow().isoformat()
+        telemetry_data = {
+            'timestamp':    timestamp,
+            'session_name': self.current_session,
+            'channels':     channels,
+        }
+        key = "telemetry_at_" + timestamp
+        await self.redis.set(key, json.dumps(telemetry_data), ex=3600)
+        await self.redis.publish("telemetry_channel", json.dumps(telemetry_data))
+        return telemetry_data
+
+
+# ── FastAPI / Socket.IO app ───────────────────────────────────────────────────
+
+app = FastAPI()
+sio = socketio.AsyncServer(async_mode='asgi', cors_allowed_origins='*')
+sio_app = socketio.ASGIApp(sio, app)
+
+
+@app.on_event("startup")
+async def start_serial_reading():
+    global redis_client, ser
+
+    redis_client = await redis.Redis(
+        host=REDIS_HOST, port=REDIS_PORT, password=REDIS_PASSWORD
+    )
+
+    try:
+        ser = serial.Serial(
+            SERIAL_CONFIG['PORT'],
+            SERIAL_CONFIG['BAUD_RATE'],
+            timeout=SERIAL_CONFIG['TIMEOUT'],
+        )
+        logger.info(f"Serial port open: {SERIAL_CONFIG['PORT']} @ {SERIAL_CONFIG['BAUD_RATE']} baud")
+    except serial.SerialException as e:
+        logger.error(f"Failed to open serial port: {e}")
+        return
+
+    processor = SerialProcessor()
+    processor.redis = redis_client
+    asyncio.create_task(_serial_loop(processor))
+
+
+CHANNEL_NAMES = [
+    'ShockPotFL', 'ShockPotFR', 'ShockPotRL',  'ShockPotRR',
+    'SteeringPot','BrkPrsF',    'BrkPrsR',      'RPM',
+    'TPS',        'MAP',        'CoolantTemp',  'OilPressure',
+    'OilTemp',    'FuelPressure','Lambda',       'Gear',
+    'MAT',        'GPS_Speed',  'GPS_X',        'GPS_Y',
+    'FuelUsed',                 # L since the meter was last reset
+    'EstTimeLeft',              # minutes, calculated here; -1 = not enough data yet
+]
+
+async def _serial_loop(processor: SerialProcessor):
+    loop = asyncio.get_event_loop()
+    logger.info("Serial loop started — waiting for packets")
+    last_loss_log = time.monotonic()
+    while True:
+        channels = await loop.run_in_executor(executor, read_packet, ser)
+        if time.monotonic() - last_loss_log >= LOSS_LOG_PERIOD_S:
+            last_loss_log = time.monotonic()
+            logger.info(link_stats.report())
+        if channels:
+            channels.append(estimate_minutes_left(channels[NUM_CHANNELS]))
+            logger.info("  ".join(f"{name}={value:.3f}" for name, value in zip(CHANNEL_NAMES, channels)))
+            try:
+                await processor.save_to_redis(channels)
+                logger.info("Published to Redis OK")
+            except Exception as e:
+                logger.error(f"Redis publish failed: {e}")
+
+
+if __name__ == "__main__":
+    uvicorn.run(sio_app, host="0.0.0.0", port=4500, log_level="info")
